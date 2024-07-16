@@ -1,3 +1,5 @@
+import { ToggleTheme } from "@/components/toggle-theme";
+import { ThemeProvider } from "@/context/theme-provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
@@ -24,7 +26,22 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
-      >{children}</body>
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+
+        >
+          <header className="pr-16 pt-2  flex items-center justify-end">
+
+            <ToggleTheme />
+
+          </header>
+          {children}
+
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
