@@ -33,13 +33,10 @@ export default function RootLayout({
           enableSystem
 
         >
-          <header className="pr-16 pt-2  flex items-center justify-end">
-
+          <div className="absolute right-8 top-4">
             <ToggleTheme />
-
-          </header>
+          </div>
           {children}
-
         </ThemeProvider>
       </body>
     </html>
