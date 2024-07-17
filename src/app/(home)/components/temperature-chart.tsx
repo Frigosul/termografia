@@ -1,5 +1,6 @@
 "use client"
-import ApexCharts from "react-apexcharts";
+
+import ApexCharts from 'react-apexcharts';
 
 const options = {
   colors: ["#20E647"],
@@ -53,7 +54,7 @@ const options = {
 
 
 
-export function TemperatureChart() {
+const TemperatureChart = () => {
 
   return (
     <div className="border rounded-md p-2">
@@ -83,6 +84,7 @@ export function TemperatureChart() {
   )
 }
 
+export default TemperatureChart;
 
 
 
