@@ -70,6 +70,13 @@ const config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      gridTemplateColumns: {
+        home: 'repeat(auto-fit, minmax(330px, 1fr))'
+      },
+      gridTemplateRows: {
+        home: 'minmax(190px, 200px)'
+      }
+
     },
   },
   plugins: [require("tailwindcss-animate")],
