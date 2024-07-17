@@ -71,7 +71,7 @@ const config = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       gridTemplateColumns: {
-        home: 'repeat(auto-fit, minmax(330px, 1fr))'
+        home: 'repeat(auto-fit, minmax(330px, 350px))'
       },
       gridTemplateRows: {
         home: 'minmax(190px, 200px)'
