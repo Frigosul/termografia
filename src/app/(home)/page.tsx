@@ -1,5 +1,5 @@
 
-import { SideBar } from "./components/sidebar";
+import { SideBar } from "@/components/sidebar";
 // import { TemperatureChart } from "./components/temperature-chart";
 import dynamic from "next/dynamic";
 const TemperatureChart = dynamic(() => import("@/app/(home)/components/temperature-chart"), { ssr: false });

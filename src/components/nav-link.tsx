@@ -3,18 +3,19 @@ import Link, { LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
-
 interface NavLinkProps extends LinkProps {
   children: ReactNode;
+
 }
 
 export function NavLink({ children, href, ...props }: NavLinkProps) {
   const pathname = usePathname()
 
+
   return (
     <Link
       data-current={pathname === href}
-      className="data-[current=true]:text-foreground"
+      className="data-[current=true]:text-foreground last:border-t last:pt-4 last:!mt-auto"
       href={href}
       {...props}
 
