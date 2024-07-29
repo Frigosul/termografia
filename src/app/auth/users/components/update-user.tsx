@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -13,35 +14,51 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NotebookPen } from "lucide-react";
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const userRoles = ["Administrador", "Nível 1", "Nível 2 ", "Nível 3"]
 
-const updateUser = z.object({
-  name: z.string().min(3, { message: 'O nome de usuário precisa ser maior que 03 caracteres.' }).max(20),
+const updateUserSchema = z.object({
+  name: z.string().min(3, { message: 'O nome de usuário precisa ser maior que 03 caracteres.' }),
   email: z.string().min(3, { message: 'O e-mail precisa ser maior que 03 caracteres!' }).email({ message: 'Digite um e-mail válido.' }).toLowerCase(),
+  confirm_email: z.string(),
   password: z.string().min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' }).max(20),
   confirm_password: z.string(),
 
   userRole: z
-    .string()
+    .string({ message: "Escolha um nível de usuário." })
     .refine(value => userRoles.includes(value), {
-      message: "Nível de acesso inválido. Escolha entre 'Administrador', 'Nível 1' ou 'Nível 2' ou 'Nível 3'",
+      message: "Nível de acesso inválido. Escolha entre 'Administrador', 'Nível 1', 'Nível 2' ou 'Nível 3'",
     }),
-}).refine(({ password, confirm_password }) => password === confirm_password, {
-  message: "As senhas não coincidem.",
-  path: ["confirm_password"]
+
+
+
+}).superRefine((value, ctx) => {
+  if (value.confirm_password !== value.password) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["confirm_password"],
+      message: "As senhas não coincidem."
+    })
+  }
+  if (value.email !== value.confirm_email) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['confirm_email'],
+      message: 'Os e-mails não coincidem.'
+    })
+  }
 })
 
 
 
-type UpdateUser = z.infer<typeof updateUser>
+type UpdateUserForm = z.infer<typeof updateUserSchema>
 export function UpdateUser() {
 
-  const { register, handleSubmit, formState: { isSubmitting, errors }, } = useForm<UpdateUser>({ resolver: zodResolver(updateUser) });
+  const { register, reset, handleSubmit, control, formState: { isSubmitting, errors }, } = useForm<UpdateUserForm>({ resolver: zodResolver(updateUserSchema) });
 
-  function handleSignUp(data: UpdateUser) {
+  function handleSignUp(data: UpdateUserForm) {
     console.log(data)
   }
 
@@ -68,35 +85,51 @@ export function UpdateUser() {
             {errors.email?.message && <p className="text-red-500 text-sm font-light" >{errors.email?.message}</p>}
           </div>
           <div className="space-y-2 ">
+            <Label htmlFor="confirm_email">Confirme seu e-mail</Label>
+            <Input id="confirm_email" type="email" placeholder="Confirme seu e-mail..." autoComplete="off" {...register('confirm_email')} />
+            {errors.confirm_email?.message && <p className="text-red-500 text-sm font-light" >{errors.confirm_email?.message}</p>}
+          </div>
+          <div className="space-y-2 ">
             <Label htmlFor="password">Sua senha</Label>
             <Input id="password" type="password" placeholder="Digite sua senha..." {...register('password')} />
             {errors.password?.message && <p className="text-red-500 text-sm font-light" >{errors.password?.message}</p>}
           </div>
           <div className="space-y-2 ">
             <Label htmlFor="confirm_password">Confirme sua senha</Label>
-            <Input id="confirm_password" type="password" placeholder="Confirme sua senha..." {...register('confirm_password')} />
+            <Input id="confirm_password" type="password" placeholder="Confirme sua senha..." autoComplete="off" {...register('confirm_password')} />
             {errors.confirm_password?.message && <p className="text-red-500 text-sm font-light" >{errors.confirm_password?.message}</p>}
           </div>
           <div className="space-y-2 ">
-            <Label htmlFor="confirm_password">Tipo de Usuário</Label>
-            <Select {...register("userRole")}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Nível 1">Nível 1</SelectItem>
-                <SelectItem value="Nível 2">Nível 2</SelectItem>
-                <SelectItem value="Nível 3">Nível 3</SelectItem>
-                <SelectItem value="Administrador">Administrador</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.userRole?.message && <p className="text-red-500 text-sm font-light" >{errors.userRole?.message}</p>}
+            <Label htmlFor="userRole">Tipo de Usuário</Label>
+            <Controller
+              name="userRole"
+              control={control}
+              render={({ field: { onChange, value, ref } }) => (
+                <Select onValueChange={onChange} value={value} name="userRole"  >
+                  <SelectTrigger ref={ref}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nível 1">Nível 1</SelectItem>
+                    <SelectItem value="Nível 2">Nível 2</SelectItem>
+                    <SelectItem value="Nível 3">Nível 3</SelectItem>
+                    <SelectItem value="Administrador">Administrador</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.userRole && <p className="text-red-500 text-sm font-light">{errors.userRole.message}</p>}
+
           </div>
 
 
-          <div className="flex gap-5 ml-auto mt-auto">
-            <Button variant="outline" type="button">Cancelar</Button>
+          <div className="flex gap-5 ml-auto mt-auto col-span-2">
+            <DialogClose asChild>
+              <Button variant="outline" onClick={() => reset()} type="button">Cancelar</Button>
+            </DialogClose>
             <Button disabled={isSubmitting} type="submit">Salvar</Button>
+
+
 
           </div>
         </form>

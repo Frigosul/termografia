@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -21,14 +22,10 @@ const userRoles = ["Administrador", "Nível 1", "Nível 2 ", "Nível 3"]
 const signUpForm = z.object({
   name: z.string().min(3, { message: 'O nome de usuário precisa ser maior que 03 caracteres.' }),
   email: z.string().min(3, { message: 'O e-mail precisa ser maior que 03 caracteres!' }).email({ message: 'Digite um e-mail válido.' }).toLowerCase(),
+  confirm_email: z.string(),
   password: z.string().min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' }).max(20),
-  confirm_password: z
-    .string()
-    .min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' }).max(20),
-  // .superRefine(({password, confirm_password}) => password === confirm_password,{
-  //   message: "As senhas não coincidem.",
-  //   path: ["confirm_password"]
-  // }),
+  confirm_password: z.string(),
+
   userRole: z
     .string({ message: "Escolha um nível de usuário." })
     .refine(value => userRoles.includes(value), {
@@ -37,16 +34,30 @@ const signUpForm = z.object({
 
 
 
-}).refine(({ password, confirm_password }) => password === confirm_password, {
-  message: "As senhas não coincidem.",
-  path: ["confirm_password"]
+}).superRefine((value, ctx) => {
+  if (value.confirm_password !== value.password) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["confirm_password"],
+      message: "As senhas não coincidem."
+    })
+  }
+  if (value.email !== value.confirm_email) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['confirm_email'],
+      message: 'Os e-mails não coincidem.'
+    })
+  }
 })
+
+
 
 
 type SignUpForm = z.infer<typeof signUpForm>
 export function CreateUser() {
 
-  const { register, handleSubmit, control, formState: { isSubmitting, errors }, } = useForm<SignUpForm>({ resolver: zodResolver(signUpForm) });
+  const { register, reset, handleSubmit, control, formState: { isSubmitting, errors }, } = useForm<SignUpForm>({ resolver: zodResolver(signUpForm) });
 
   function handleSignUp(data: SignUpForm) {
 
@@ -54,7 +65,7 @@ export function CreateUser() {
   }
 
   return (
-    <Dialog>
+    <Dialog >
       <DialogDescription className="sr-only" >Criação de usuários.</DialogDescription>
       <DialogTrigger asChild>
         <Button className="rounded-full p-3 items-center justify-center group">
@@ -81,13 +92,18 @@ export function CreateUser() {
             {errors.email?.message && <p className="text-red-500 text-sm font-light" >{errors.email?.message}</p>}
           </div>
           <div className="space-y-2 ">
+            <Label htmlFor="confirm_email">Confirme seu e-mail</Label>
+            <Input id="confirm_email" type="email" placeholder="Confirme seu e-mail..." autoComplete="off" {...register('confirm_email')} />
+            {errors.confirm_email?.message && <p className="text-red-500 text-sm font-light" >{errors.confirm_email?.message}</p>}
+          </div>
+          <div className="space-y-2 ">
             <Label htmlFor="password">Sua senha</Label>
             <Input id="password" type="password" placeholder="Digite sua senha..." {...register('password')} />
             {errors.password?.message && <p className="text-red-500 text-sm font-light" >{errors.password?.message}</p>}
           </div>
           <div className="space-y-2 ">
             <Label htmlFor="confirm_password">Confirme sua senha</Label>
-            <Input id="confirm_password" type="password" placeholder="Confirme sua senha..." {...register('confirm_password')} />
+            <Input id="confirm_password" type="password" placeholder="Confirme sua senha..." autoComplete="off" {...register('confirm_password')} />
             {errors.confirm_password?.message && <p className="text-red-500 text-sm font-light" >{errors.confirm_password?.message}</p>}
           </div>
           <div className="space-y-2 ">
@@ -114,10 +130,11 @@ export function CreateUser() {
           </div>
 
 
-          <div className="flex gap-5 ml-auto mt-auto">
-            <Button variant="outline" type="button">Cancelar</Button>
+          <div className="flex gap-5 ml-auto mt-auto col-span-2">
+            <DialogClose asChild>
+              <Button variant="outline" onClick={() => reset()} type="button">Cancelar</Button>
+            </DialogClose>
             <Button disabled={isSubmitting} type="submit">Salvar</Button>
-
           </div>
         </form>
       </DialogContent>
