@@ -75,7 +75,7 @@ const config = {
       },
       gridTemplateRows: {
         home: 'minmax(190px, 200px)'
-      }
+      },
 
     },
   },

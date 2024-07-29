@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -12,40 +13,49 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const userRoles = ["Administrador", "Nível 1", "Nível 2 ", "Nível 3"]
 
 const signUpForm = z.object({
-  name: z.string().min(3, { message: 'O nome de usuário precisa ser maior que 03 caracteres.' }).max(20),
+  name: z.string().min(3, { message: 'O nome de usuário precisa ser maior que 03 caracteres.' }),
   email: z.string().min(3, { message: 'O e-mail precisa ser maior que 03 caracteres!' }).email({ message: 'Digite um e-mail válido.' }).toLowerCase(),
   password: z.string().min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' }).max(20),
-  confirm_password: z.string(),
-
-  userRole: z
+  confirm_password: z
     .string()
+    .min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' }).max(20),
+  // .superRefine(({password, confirm_password}) => password === confirm_password,{
+  //   message: "As senhas não coincidem.",
+  //   path: ["confirm_password"]
+  // }),
+  userRole: z
+    .string({ message: "Escolha um nível de usuário." })
     .refine(value => userRoles.includes(value), {
-      message: "Nível de acesso inválido. Escolha entre 'Administrador', 'Nível 1' ou 'Nível 2' ou 'Nível 3'",
+      message: "Nível de acesso inválido. Escolha entre 'Administrador', 'Nível 1', 'Nível 2' ou 'Nível 3'",
     }),
+
+
+
 }).refine(({ password, confirm_password }) => password === confirm_password, {
   message: "As senhas não coincidem.",
   path: ["confirm_password"]
 })
 
 
-
 type SignUpForm = z.infer<typeof signUpForm>
 export function CreateUser() {
 
-  const { register, handleSubmit, formState: { isSubmitting, errors }, } = useForm<SignUpForm>({ resolver: zodResolver(signUpForm) });
+  const { register, handleSubmit, control, formState: { isSubmitting, errors }, } = useForm<SignUpForm>({ resolver: zodResolver(signUpForm) });
 
   function handleSignUp(data: SignUpForm) {
+
     console.log(data)
   }
 
   return (
     <Dialog>
+      <DialogDescription className="sr-only" >Criação de usuários.</DialogDescription>
       <DialogTrigger asChild>
         <Button className="rounded-full p-3 items-center justify-center group">
           <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear">
@@ -81,19 +91,26 @@ export function CreateUser() {
             {errors.confirm_password?.message && <p className="text-red-500 text-sm font-light" >{errors.confirm_password?.message}</p>}
           </div>
           <div className="space-y-2 ">
-            <Label htmlFor="confirm_password">Tipo de Usuário</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Nível 1">Nível 1</SelectItem>
-                <SelectItem value="Nível 2">Nível 2</SelectItem>
-                <SelectItem value="Nível 3">Nível 3</SelectItem>
-                <SelectItem value="Administrador">Administrador</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.userRole?.message && <p className="text-red-500 text-sm font-light" >{errors.userRole?.message}</p>}
+            <Label htmlFor="userRole">Tipo de Usuário</Label>
+            <Controller
+              name="userRole"
+              control={control}
+              render={({ field: { onChange, value, ref } }) => (
+                <Select onValueChange={onChange} value={value} name="userRole"  >
+                  <SelectTrigger ref={ref}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nível 1">Nível 1</SelectItem>
+                    <SelectItem value="Nível 2">Nível 2</SelectItem>
+                    <SelectItem value="Nível 3">Nível 3</SelectItem>
+                    <SelectItem value="Administrador">Administrador</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.userRole && <p className="text-red-500 text-sm font-light">{errors.userRole.message}</p>}
+
           </div>
 
 

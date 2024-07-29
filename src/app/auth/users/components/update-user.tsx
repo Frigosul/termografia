@@ -79,7 +79,7 @@ export function UpdateUser() {
           </div>
           <div className="space-y-2 ">
             <Label htmlFor="confirm_password">Tipo de Usuário</Label>
-            <Select>
+            <Select {...register("userRole")}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
               </SelectTrigger>
