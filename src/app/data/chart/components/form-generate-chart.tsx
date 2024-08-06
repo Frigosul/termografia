@@ -10,7 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { formattedDate } from "@/utils/formatted-date";
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from "react";
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -56,10 +58,10 @@ const generateDataChart = z.object({
   limit: z.number({ message: "Defina um limite." }),
   detour: z.number({ message: "Defina um desvio" }),
   variationTemp: z.number({ message: "Defina uma variação na coluna de temperatura." }),
-  minValue: z.number({ message: "Defina um valor mínimo." }).nullable(),
-  maxValue: z.number({ message: "Defina um valor máximo." }).nullable(),
-  startDate: z.date({ message: "Defina a data de início." }),
-  endDate: z.date({ message: "Defina a data final." }),
+  minValue: z.number({ message: "Defina um valor mínimo." }),
+  maxValue: z.number({ message: "Defina um valor máximo." }),
+  startDate: z.string({ message: "Defina a data de início." }),
+  endDate: z.string({ message: "Defina a data final." }),
   description: z.string().nullable(),
 })
 
@@ -69,13 +71,23 @@ type GenerateDataChart = z.infer<typeof generateDataChart>
 export function FormGenerateChart() {
 
 
-  const { register, handleSubmit, control, formState: { isSubmitting, errors } } = useForm<GenerateDataChart>({
+  const { register, handleSubmit, watch, setValue, control, formState: { isSubmitting, errors } } = useForm<GenerateDataChart>({
     resolver: zodResolver(generateDataChart)
   })
 
   function handleGenerateDataChart(data: GenerateDataChart) {
     console.log(data)
   }
+  const startDateValue = watch('startDate')
+
+  useEffect(() => {
+    if (!startDateValue) return
+    const convertInDate = new Date(startDateValue)
+    const addHoursToStartDate = new Date(convertInDate.setHours(convertInDate.getHours() + 24))
+    const formattedEndDate = formattedDate(addHoursToStartDate)
+    setValue('endDate', formattedEndDate)
+
+  }, [startDateValue])
 
 
   return (
@@ -189,7 +201,7 @@ export function FormGenerateChart() {
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="limit">Valor Limite</Label>
-                  <Input id="limit" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('limit')} />
+                  <Input id="limit" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('limit', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -204,7 +216,7 @@ export function FormGenerateChart() {
                 <div>
                   <Label className="font-light text-sm" htmlFor="detour">Desvio</Label>
 
-                  <Input id="detour" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('detour')} />
+                  <Input id="detour" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('detour', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -218,7 +230,7 @@ export function FormGenerateChart() {
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="variationTemp">Var. Col. Temp.</Label>
-                  <Input id="variationTemp" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('variationTemp')} />
+                  <Input id="variationTemp" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('variationTemp', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -233,7 +245,7 @@ export function FormGenerateChart() {
                 <div>
                   <Label className="font-light text-sm" htmlFor="minValue">Valor Min.</Label>
 
-                  <Input id="minValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('minValue')} />
+                  <Input id="minValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('minValue', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -248,7 +260,7 @@ export function FormGenerateChart() {
                 <div>
                   <Label className="font-light text-sm" htmlFor="maxValue">Valor Max.</Label>
 
-                  <Input id="maxValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('maxValue')} />
+                  <Input id="maxValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('maxValue', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -287,10 +299,8 @@ export function FormGenerateChart() {
           </div>
         </div>
         <div className="space-y-2 ">
-
           <Label className="font-light text-sm" htmlFor="description">Informações adicionais</Label>
           <Textarea id="description" placeholder="Informações adicionais que deseja que apareça no gráfico." {...register('description')} />
-
           {errors.description?.message && <p className="text-red-500 text-sm font-light" >{errors.description?.message}</p>}
         </div>
         <div className="flex gap-5 ml-auto mt-auto">
