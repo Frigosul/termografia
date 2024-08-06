@@ -30,7 +30,7 @@ export function SignInForm() {
     <form onSubmit={handleSubmit(handleSignIn)} className="w-[20rem] space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Seu e-mail</Label>
-        <Input id="email" type="email" placeholder="Digite seu usuário..." {...register('email')} />
+        <Input id="email" type="email" placeholder="Digite seu e-mail..." {...register('email')} />
         {errors.email?.message && <p className="text-red-500 text-sm font-light" >{errors.email?.message}</p>}
       </div>
       <div className="space-y-2">
