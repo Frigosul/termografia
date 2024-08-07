@@ -93,8 +93,8 @@ export function FormGenerateChart() {
   return (
     <form onSubmit={handleSubmit(handleGenerateDataChart)} className="gap-2  flex flex-col items-start">
       <TooltipProvider>
-        <div className="flex flex-1 gap-3">
-          <div className="space-y-2 w-60">
+        <div className="flex w-full gap-3">
+          <div className="space-y-2 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -104,7 +104,7 @@ export function FormGenerateChart() {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} >
-                        <SelectTrigger ref={ref}>
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900"  >
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
@@ -126,8 +126,7 @@ export function FormGenerateChart() {
 
             {errors.localChamber?.message && <p className="text-red-500 text-sm font-light" >{errors.localChamber?.message}</p>}
           </div>
-
-          <div className="space-y-2 w-60">
+          <div className="space-y-2 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -137,7 +136,7 @@ export function FormGenerateChart() {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} >
-                        <SelectTrigger ref={ref}>
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900" >
                           <SelectValue placeholder="Variação do gráfico" />
                         </SelectTrigger>
                         <SelectContent>
@@ -159,7 +158,7 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.variationChart?.message && <p className="text-red-500 text-sm font-light" >{errors.variationChart?.message}</p>}
           </div>
-          <div className="space-y-2 w-60">
+          <div className="space-y-2 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -169,7 +168,7 @@ export function FormGenerateChart() {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} >
-                        <SelectTrigger ref={ref}>
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900" >
                           <SelectValue placeholder="Variação da tabela" />
                         </SelectTrigger>
                         <SelectContent>
@@ -195,13 +194,13 @@ export function FormGenerateChart() {
           </div>
         </div>
 
-        <div className="flex items-end gap-2">
-          <div className="space-y-2 w-20">
+        <div className="flex w-full items-end gap-2">
+          <div className="space-y-2 w-20 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="limit">Valor Limite</Label>
-                  <Input id="limit" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('limit', { valueAsNumber: true })} />
+                  <Input id="limit" type="number" className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('limit', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -210,13 +209,13 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.limit?.message && <p className="text-red-500 text-sm font-light" >{errors.limit?.message}</p>}
           </div>
-          <div className="space-y-2 w-20">
+          <div className="space-y-2 w-20 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="detour">Desvio</Label>
 
-                  <Input id="detour" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('detour', { valueAsNumber: true })} />
+                  <Input id="detour" type="number" className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('detour', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -225,12 +224,12 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.detour?.message && <p className="text-red-500 text-sm font-light" >{errors.detour?.message}</p>}
           </div>
-          <div className="space-y-2 w-32">
+          <div className="space-y-2 w-32 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="variationTemp">Var. Col. Temp.</Label>
-                  <Input id="variationTemp" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('variationTemp', { valueAsNumber: true })} />
+                  <Input id="variationTemp" type="number" className="[appearance:tex  dark:bg-slate-900 tfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('variationTemp', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -239,13 +238,13 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.variationTemp?.message && <p className="text-red-500 text-sm font-light" >{errors.variationTemp?.message}</p>}
           </div>
-          <div className="space-y-2 w-20">
+          <div className="space-y-2 w-20 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="minValue">Valor Min.</Label>
 
-                  <Input id="minValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('minValue', { valueAsNumber: true })} />
+                  <Input id="minValue" type="number" className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('minValue', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -254,13 +253,13 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.minValue?.message && <p className="text-red-500 text-sm font-light" >{errors.minValue?.message}</p>}
           </div>
-          <div className="space-y-2 w-20">
+          <div className="space-y-2 w-20 flex-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="maxValue">Valor Max.</Label>
 
-                  <Input id="maxValue" type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('maxValue', { valueAsNumber: true })} />
+                  <Input id="maxValue" type="number" className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" {...register('maxValue', { valueAsNumber: true })} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -269,12 +268,12 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.maxValue?.message && <p className="text-red-500 text-sm font-light" >{errors.maxValue?.message}</p>}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="startDate">Data Inicial</Label>
-                  <Input id="startDate" type="datetime-local" min="2000-01-01T00:00" max="9999-12-31T23:59" {...register('startDate')} />
+                  <Input id="startDate" type="datetime-local" min="2000-01-01T00:00" max="9999-12-31T23:59" className="dark:bg-slate-900" {...register('startDate')} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -283,12 +282,12 @@ export function FormGenerateChart() {
             </Tooltip>
             {errors.startDate?.message && <p className="text-red-500 text-sm font-light" >{errors.startDate?.message}</p>}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="endDate">Data Final</Label>
-                  <Input id="endDate" type="datetime-local" min="2000-01-01T00:00" max="9999-12-31T23:59" {...register('endDate')} />
+                  <Input id="endDate" type="datetime-local" min="2000-01-01T00:00" max="9999-12-31T23:59" className="dark:bg-slate-900" {...register('endDate')} />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -298,15 +297,18 @@ export function FormGenerateChart() {
             {errors.endDate?.message && <p className="text-red-500 text-sm font-light" >{errors.endDate?.message}</p>}
           </div>
         </div>
-        <div className="space-y-2 ">
-          <Label className="font-light text-sm" htmlFor="description">Informações adicionais</Label>
-          <Textarea id="description" placeholder="Informações adicionais que deseja que apareça no gráfico." {...register('description')} />
-          {errors.description?.message && <p className="text-red-500 text-sm font-light" >{errors.description?.message}</p>}
+        <div className="flex w-full gap-3 items-end">
+          <div className="space-y-2 flex-1">
+            <Label className="font-light text-sm" htmlFor="description">Informações adicionais</Label>
+            <Textarea id="description" placeholder="Informações adicionais que deseja que apareça no gráfico." className="dark:bg-slate-900 resize-none" {...register('description')} />
+            {errors.description?.message && <p className="text-red-500 text-sm font-light" >{errors.description?.message}</p>}
+          </div>
+          <Button disabled={isSubmitting} type="submit" className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground">Gerar gráfico</Button>
+          <Button disabled={isSubmitting} type="button" variant="secondary" className="dark:bg-gray-950 bg-slate-300 hover:bg-slate-400 hover:dark:bg-gray-900">Imprimir gráfico</Button>
         </div>
-        <div className="flex gap-5 ml-auto mt-auto">
-          <Button disabled={isSubmitting} type="submit">Gerar gráfico</Button>
-          <Button disabled={isSubmitting} type="button" variant="secondary">Imprimir gráfico</Button>
-        </div>
+
+
+
       </TooltipProvider>
     </form>
   )
