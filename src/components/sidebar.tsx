@@ -4,9 +4,9 @@ import { NavLink } from "./nav-link";
 export function SideBar() {
 
   return (
-    <aside className="flex flex-col h-screen border-r px-4">
+    <aside className="flex flex-col min-h-screen border-r px-4 sr-only lg:not-sr-only">
       <p className="m-4 text-center text-xl uppercase tracking-tight font-medium">Menu</p>
-      <nav className="flex flex-col space-y-4 mt-5 h-full pb-8">
+      <nav className="flex flex-col space-y-4 mt-5 flex-1 p-4">
 
         <NavLink href="/" >
           <LayoutGrid size={20} />

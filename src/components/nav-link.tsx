@@ -21,7 +21,6 @@ export function NavLink({ children, href, ...props }: NavLinkProps) {
 
     >
       <span className="flex items-center gap-4  font-medium text-muted-foreground hover:text-foreground">
-
         {children}
       </span>
 
