@@ -6,10 +6,10 @@ export default function Home() {
   return (
 
 
-    <main className="mt-4 grid grid-cols-home  gap-2  items-start justify-center overflow-x-scroll">
+    <main className=" grid grid-cols-home  gap-2 h-[calc(100vh_-_7.5rem)] py-4 items-start justify-center  overflow-y-scroll">
 
       {Array.from({ length: 60 }).map((i, item) => {
-        console.log(item)
+
         return (
           <TemperatureChart key={item} />
         )
