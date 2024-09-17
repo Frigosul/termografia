@@ -1,4 +1,3 @@
-import { SideBar } from "@/components/sidebar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
@@ -17,7 +16,7 @@ export default function Register() {
 
   return (
     <div className="flex items-start">
-      <SideBar />
+
       <main className="px-8  flex-1 gap-2  mt-20 items-start">
         <div className="flex justify-between items-center w-full my-4">
           <h2 className="font-normal tracking-tight text-foreground ">Gerencie usuários Termografia</h2>

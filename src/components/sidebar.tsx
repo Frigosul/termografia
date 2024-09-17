@@ -12,7 +12,7 @@ export function SideBar() {
           <LayoutGrid size={20} />
           Home
         </NavLink>
-        <NavLink href="/auth/users" >
+        <NavLink href="/users" >
           <Users size={20} />
           Usuários
         </NavLink>
