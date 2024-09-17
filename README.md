@@ -1,12 +1,13 @@
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center">
+<div align="center" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
 
-<img src="/public/favicon.ico" style="border-radius: 10%; width: 100px; height: auto; margin-right: 2rem" /> 
-<h1>Projeto Termografia Frigosul</h1>
-<h3>Segue documentação da API</h3>
+<img src="/public/favicon.ico" alt="Logo" style="border-radius: 10%; width: 100px; height: auto; margin-bottom: 1rem;" />
 
-- [Documentação](./docs/index.md)
+# Projeto Termografia Frigosul
+
+### Segue documentação da API
+
+[Documentação](./docs/index.md)
+
 </div>
-
-
 
 
