@@ -11,12 +11,10 @@ import { EllipsisVertical } from "lucide-react";
 import { CreateUser } from "./components/create-user";
 import { DeleteUser } from "./components/delete-user";
 import { UpdateUser } from "./components/update-user";
-
 export default function Register() {
 
   return (
     <div className="flex items-start">
-
       <main className="px-8  flex-1 gap-2  mt-20 items-start">
         <div className="flex justify-between items-center w-full my-4">
           <h2 className="font-normal tracking-tight text-foreground ">Gerencie usuários Termografia</h2>
@@ -45,22 +43,15 @@ export default function Register() {
                         <EllipsisVertical size={18} />
                       </PopoverTrigger>
                       <PopoverContent className="space-y-2 w-30 mr-9">
-
                         <UpdateUser />
                         <DeleteUser />
-
                       </PopoverContent>
                     </Popover>
                   </TableCell>
                 </TableRow>
               )
             })}
-
-
-
-
           </TableBody>
-
         </Table>
       </main>
     </div>

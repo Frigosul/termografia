@@ -59,7 +59,7 @@ const TemperatureChart = () => {
   return (
     <div className="border rounded-md p-2">
       <div className="flex flex-col">
-        <strong className="font-normal text-xl text-center">Camara 01</strong>
+        <strong className="font-normal text-xl text-center">Câmara 01</strong>
         <div className="h-[10rem]">
           <ApexCharts
             type="radialBar"

@@ -39,7 +39,7 @@ export function SignInForm() {
         {errors.password?.message && <p className="text-red-500 text-sm font-light" >{errors.password?.message}</p>}
       </div>
 
-      <Button className="w-full" disabled={isSubmitting} type="submit">Entrar</Button>
+      <Button className="w-full dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground" disabled={isSubmitting} type="submit">Entrar</Button>
     </form>
   )
 }
