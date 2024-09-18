@@ -40,7 +40,7 @@ export function SideBar() {
           <LockKeyhole size={20} />
           Alterar senha
         </NavLink>
-        <NavLink href="/auth/sign-in">
+        <NavLink href="/auth">
           <LogOut size={20} className="rotate-180" />
           Sair
         </NavLink>

@@ -17,8 +17,8 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex">
       <SideBar />
-      <div className="flex-1">
-        <header className="flex flex-1 justify-between items-center py-8 shadow-sm px-6 md:justify-end border-b">
+      <div className="flex-1 flex flex-col ">
+        <header className="flex justify-between items-center py-8 shadow-sm px-6 md:justify-end border-b ">
           <Sheet>
             <SheetTrigger asChild className="md:sr-only">
               <Button variant="ghost">
@@ -70,6 +70,9 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
           </Sheet>
         </header>
         {children}
+        <footer className="border shadow-sm flex justify-center items-center text-sm tracking-wide text-muted-foreground py-5">
+          Termografia | suporte2.apms@frigosul.com.br
+        </footer>
       </div>
     </div>
   );
