@@ -1,9 +1,12 @@
-
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRef } from "react";
 import { Chart } from "./components/chart";
 import { FormGenerateChart } from "./components/form-generate-chart";
 import { Table } from "./components/table";
 export default function PageChart() {
+  const divPdfRef = useRef<HTMLDivElement>(null)
+
 
   return (
     <div className="h-[calc(100vh_-_7.5rem)] overflow-y-scroll">
@@ -12,11 +15,11 @@ export default function PageChart() {
           <CardTitle className="text-xl tracking-tight text-blue-600 dark:text-blue-500 underline">Gerar gráfico</CardTitle>
         </CardHeader>
         <CardContent>
-          <FormGenerateChart />
+          <FormGenerateChart divRef={divPdfRef} />
         </CardContent>
       </Card>
       <Card className="w-3/4 mx-auto mt-4 bg-muted  dark:bg-slate-800 shadow-sm   py-4" >
-        <CardContent>
+        <CardContent ref={divPdfRef} className="dark:bg-slate-800 pt-4">
           <Chart />
           <Table />
           <div className="flex gap-2 h-32 mt-4">

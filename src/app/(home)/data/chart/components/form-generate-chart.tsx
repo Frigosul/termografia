@@ -10,9 +10,10 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { useGeneratePDF } from "@/hooks/useGeneratorPdf";
 import { formattedDate } from "@/utils/formatted-date";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from "react";
+import { RefObject, useEffect } from "react";
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -68,8 +69,15 @@ const generateDataChart = z.object({
 
 
 type GenerateDataChart = z.infer<typeof generateDataChart>
-export function FormGenerateChart() {
 
+interface FormGenerateChartProps {
+  divRef: RefObject<HTMLDivElement>;
+}
+
+
+
+export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
+  const { generatePDF } = useGeneratePDF()
 
   const { register, handleSubmit, watch, setValue, control, formState: { isSubmitting, errors } } = useForm<GenerateDataChart>({
     resolver: zodResolver(generateDataChart)
@@ -77,6 +85,7 @@ export function FormGenerateChart() {
 
   function handleGenerateDataChart(data: GenerateDataChart) {
     console.log(data)
+
   }
   const startDateValue = watch('startDate')
 
@@ -304,10 +313,8 @@ export function FormGenerateChart() {
             {errors.description?.message && <p className="text-red-500 text-sm font-light" >{errors.description?.message}</p>}
           </div>
           <Button disabled={isSubmitting} type="submit" className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground">Gerar gráfico</Button>
-          <Button disabled={isSubmitting} type="button" variant="secondary" className="dark:bg-gray-950 bg-slate-300 hover:bg-slate-400 hover:dark:bg-gray-900">Imprimir gráfico</Button>
+          <Button disabled={isSubmitting} type="button" onClick={() => generatePDF(divRef)} variant="secondary" className="dark:bg-gray-950 bg-slate-300 hover:bg-slate-400 hover:dark:bg-gray-900">Imprimir gráfico</Button>
         </div>
-
-
 
       </TooltipProvider>
     </form>

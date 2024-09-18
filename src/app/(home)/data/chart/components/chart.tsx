@@ -1,14 +1,9 @@
 'use client'
 import logo from "@/assets/frigosul.png";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+
 import Image from "next/image";
-import { useRef } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
-
-
-export interface ChartProps { }
 
 
 const chartConfig = {
@@ -54,37 +49,16 @@ const chartData = [
 
 ]
 
-export function Chart(props: ChartProps) {
-  const chartRef = useRef(null)
+
+export function Chart() {
+
   const initialValue = -20
   const finishedValue = 20
   const interval = Math.abs(finishedValue - initialValue) + 1
 
-  async function generatePDFChart() {
-    const chartElement = chartRef.current
-
-    // captura a div como imagem
-    const canvas = await html2canvas(chartElement!)
-    // obtém a imagem do canvas em formato png
-    const imageData = canvas.toDataURL('image/png')
-    // cria um novo documento pdf
-    const pdf = new jsPDF('p', 'mm', 'a4')
-
-    // Define a largura e altura do PDF
-    const imgWidth = 210; // Largura do PDF em mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    // adiciona a imagem ao pdf
-    pdf.addImage(imageData, 'PNG', 0, 0, imgWidth, imgHeight)
-
-    // salva o pdf
-    pdf.save('chart.pdf')
-
-  }
-
 
   return (
-    <div ref={chartRef}>
+    <div>
       <div className="flex justify-between mb-4 px-4">
         <Image src={logo} alt="Logo Frigosul" width={200} />
         <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
@@ -104,7 +78,6 @@ export function Chart(props: ChartProps) {
 
         </div>
         <ChartContainer config={chartConfig} className="min-h-[200px]" >
-
           <LineChart
             width={500}
             data={chartData}
@@ -115,7 +88,6 @@ export function Chart(props: ChartProps) {
               bottom: 5,
             }}
           >
-
             <CartesianGrid stroke="hsl(var(--muted-foreground))" strokeWidth={0.5} />
             <XAxis dataKey="time" stroke="hsl(var(--card-foreground))" />
             <YAxis
@@ -129,7 +101,6 @@ export function Chart(props: ChartProps) {
             <ReferenceLine y={10} label="Max." stroke="red" />
             <ReferenceLine y={0} stroke="black" strokeWidth={2} />
             <ChartTooltip content={<ChartTooltipContent />} />
-
             <Line
               type="monotone"
               dataKey="temp"
@@ -139,7 +110,6 @@ export function Chart(props: ChartProps) {
               activeDot={{ r: 8 }} />
 
           </LineChart>
-
         </ChartContainer>
       </div>
     </div>

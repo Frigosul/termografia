@@ -68,3 +68,17 @@
     
   }
 }
+.scrollbar-webkit::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-webkit::-webkit-scrollbar-track {
+  background-color: #bfdbfe;
+}
+
+.scrollbar-webkit::-webkit-scrollbar-thumb {
+  background-color: #2563eb;
+  border-radius: 5px;
+  border: 1px solid red;
+}

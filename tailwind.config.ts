@@ -1,5 +1,5 @@
-import type { Config } from "tailwindcss"
-import { fontFamily } from "tailwindcss/defaultTheme"
+import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 const config = {
   darkMode: ["class"],
@@ -79,7 +79,25 @@ const config = {
 
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function ({ addUtilities }: { addUtilities: (utilities: Record<string, any>, variants: string[]) => void }) {
+      const newUtilities = {
+        ".scrollbar-thin": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "#2563eb #bfdbfe", // Duas cores: thumb e track
+        },
+        ".scrollbar-thin-light": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "#60a5fa #dbeafe", // Duas cores: thumb e track
+        },
+
+      };
+
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    }
+
+  ],
 } satisfies Config
 
 export default config
