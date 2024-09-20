@@ -9,10 +9,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
-import { useGeneratePDF } from "@/hooks/useGeneratorPdf";
 import { formattedDate } from "@/utils/formatted-date";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RefObject, useEffect } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -54,14 +53,12 @@ const managedDataChart = z.object({
 
 type ManagedDataChart = z.infer<typeof managedDataChart>
 
-interface FormManagedDataProps {
-  divRef: RefObject<HTMLDivElement>;
-}
 
 
 
-export function FormManagedData({ divRef }: FormManagedDataProps) {
-  const { generatePDF } = useGeneratePDF()
+
+export function FormManagedData() {
+
 
   const { register, handleSubmit, watch, setValue, control, formState: { isSubmitting, errors } } = useForm<ManagedDataChart>({
     resolver: zodResolver(managedDataChart)
@@ -188,7 +185,6 @@ export function FormManagedData({ divRef }: FormManagedDataProps) {
           <div className="flex w-full gap-3 justify-end">
 
             <Button disabled={isSubmitting} type="submit" className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground">Gerar dados</Button>
-            <Button disabled={isSubmitting} type="button" onClick={() => generatePDF(divRef)} variant="secondary" className="dark:bg-gray-950 bg-slate-300 hover:bg-slate-400 hover:dark:bg-gray-900">Imprimir dados</Button>
           </div>
         </div>
       </TooltipProvider>
