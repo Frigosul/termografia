@@ -313,7 +313,7 @@ export function TableManagedData() {
             return (
               <TableRow
                 key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 "
+                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
               >
                 <TableCell
                   className="border text-center"
@@ -324,7 +324,7 @@ export function TableManagedData() {
                   {editCell.rowId === row.id &&
                   editCell.field === 'dateTime' ? (
                     <input
-                      className="border rounded p-1"
+                      className="bg-transparent w-full h-11"
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
