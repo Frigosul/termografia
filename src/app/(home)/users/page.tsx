@@ -23,7 +23,7 @@ export default function Register() {
       <Table className="border border-collapse rounded-md">
         <TableHeader>
           <TableRow>
-            <TableHead className="border"  >Nome</TableHead>
+            <TableHead className="border" >Nome</TableHead>
             <TableHead className="border" >E-mail</TableHead>
             <TableHead className="border" >Tipo de Usuário</TableHead>
             <TableHead className="border" >Ações</TableHead>
