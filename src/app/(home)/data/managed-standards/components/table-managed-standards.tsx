@@ -39,7 +39,7 @@ const searchDataSchema = z.object({
 
 type SearchData = z.infer<typeof searchDataSchema>
 
-export function TableManagedData() {
+export function TableManagedStandards() {
   const { control, register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
@@ -324,7 +324,7 @@ export function TableManagedData() {
                   {editCell.rowId === row.id &&
                   editCell.field === 'dateTime' ? (
                     <input
-                      className="bg-transparent w-full h-11"
+                      className="bg-transparent w-full "
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
@@ -345,7 +345,7 @@ export function TableManagedData() {
                   {editCell.rowId === row.id &&
                   editCell.field === 'temperature' ? (
                     <input
-                      className="border rounded p-1"
+                      className="bg-transparent w-full"
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}

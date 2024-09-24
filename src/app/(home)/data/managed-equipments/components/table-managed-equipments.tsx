@@ -1,12 +1,11 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   Table,
   TableBody,
@@ -16,31 +15,28 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Minus, Plus, Save, Search, X } from 'lucide-react'
+import { EllipsisVertical, Save, Search, X } from 'lucide-react'
 import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface RowData {
   id: number
-  dateTime: string
-  temperature: number
-  status: string
+  equipment: string
+  name: string
+  active: boolean
+  type: 'temp' | 'press' | 'temp/press'
+  orderBy: number
 }
-const searchParams = ['igual à', 'menor ou igual à', 'maior ou igual à']
+
 const searchDataSchema = z.object({
-  hour: z.string(),
-  searchParams: z.string().refine((value) => searchParams.includes(value), {
-    message:
-      'Parâmetro de pesquisa inválido. Escolha um dos valores disponíveis.',
-  }),
-  temperature: z.string(),
+  search: z.string(),
 })
 
 type SearchData = z.infer<typeof searchDataSchema>
 
-export function TableManagedData() {
-  const { control, register, handleSubmit } = useForm<SearchData>({
+export function TableManagedEquipments() {
+  const { register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
 
@@ -51,75 +47,83 @@ export function TableManagedData() {
   const [data, setData] = useState<RowData[]>([
     {
       id: 1,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 2.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 01',
+      name: 'Câmara 01',
+      type: 'temp/press',
+      active: true,
+      orderBy: 1,
     },
     {
       id: 2,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 3.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 02',
+      name: 'Câmara 02',
+      type: 'temp',
+      active: true,
+      orderBy: 2,
     },
     {
       id: 3,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 4.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 03',
+      name: 'Câmara 03',
+      type: 'temp/press',
+      active: true,
+      orderBy: 3,
     },
     {
       id: 4,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 6.6,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 04',
+      name: 'Câmara 04',
+      type: 'temp',
+      active: true,
+      orderBy: 4,
     },
     {
       id: 5,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 11.0,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 05',
+      name: 'Câmara 05',
+      type: 'press',
+      active: true,
+      orderBy: 5,
     },
     {
       id: 6,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 11.0,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 06',
+      name: 'Câmara 06',
+      type: 'temp',
+      active: true,
+      orderBy: 6,
     },
     {
       id: 7,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 2.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 07',
+      name: 'Câmara 07',
+      type: 'temp',
+      active: true,
+      orderBy: 7,
     },
     {
       id: 8,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 3.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 08',
+      name: 'Câmara 08',
+      type: 'temp',
+      active: true,
+      orderBy: 8,
     },
     {
       id: 9,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 4.5,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 09',
+      name: 'Câmara 09',
+      type: 'temp',
+      active: true,
+      orderBy: 9,
     },
     {
       id: 10,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 6.6,
-      status: 'Temperatura Integrada',
-    },
-    {
-      id: 11,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 11.0,
-      status: 'Temperatura Integrada',
-    },
-    {
-      id: 12,
-      dateTime: '17/08/2024 - 12:23',
-      temperature: 11.0,
-      status: 'Temperatura Integrada',
+      equipment: 'Câmara 10',
+      name: 'Câmara 10',
+      type: 'temp',
+      active: true,
+      orderBy: 10,
     },
   ])
 
@@ -150,8 +154,7 @@ export function TableManagedData() {
         item.id === rowId
           ? {
               ...item,
-              [field]:
-                field === 'temperature' ? Number(inputValue) : inputValue,
+              [field]: field === 'equipment' ? Number(inputValue) : inputValue,
             }
           : item,
       ),
@@ -198,7 +201,7 @@ export function TableManagedData() {
   }
   // Função para obter a próxima coluna (campo) da tabela
   function getNextField(currentField: keyof RowData): keyof RowData | null {
-    const fields: (keyof RowData)[] = ['dateTime', 'temperature']
+    const fields: (keyof RowData)[] = ['equipment', 'name']
     const currentIndex = fields.indexOf(currentField)
     const nextIndex = currentIndex + 1
     if (nextIndex < fields.length) {
@@ -233,14 +236,6 @@ export function TableManagedData() {
     <div className="flex flex-col w-full items-center justify-between border border-card-foreground rounded-md h-[30rem] overflow-hidden relative">
       <div className="flex justify-between w-full border-b border-card-foreground">
         <div className="flex gap-1">
-          <Button variant="ghost" className="flex gap-1 hover:bg-blue-600/40">
-            <Plus className="size-4" />
-            Adicionar
-          </Button>
-          <Button variant="ghost" className="flex gap-1 hover:bg-yellow-400/30">
-            <Minus className="size-4" />
-            Apagar
-          </Button>
           <Button variant="ghost" className="flex gap-1 hover:bg-green-400/30">
             <Save className="size-4" />
             Salvar
@@ -255,37 +250,12 @@ export function TableManagedData() {
           onSubmit={handleSubmit(handleSearchData)}
         >
           <Input
-            {...register('hour')}
-            placeholder="Hora"
-            type="time"
+            {...register('search')}
+            placeholder="Digite o nome..."
+            type="text"
             className="w-22"
           />
-          <Controller
-            name="searchParams"
-            control={control}
-            render={({ field: { onChange, value, ref } }) => (
-              <Select onValueChange={onChange} value={value}>
-                <SelectTrigger
-                  ref={ref}
-                  className="dark:bg-slate-900 w-[20rem]"
-                >
-                  <SelectValue placeholder="Igual à" />
-                </SelectTrigger>
-                <SelectContent className="w-[20rem]">
-                  <SelectItem value="equal">Igual à</SelectItem>
-                  <SelectItem value="lessOrEqual">Menor ou igual à</SelectItem>
-                  <SelectItem value="greaterOrEqual">
-                    Maior ou igual à
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <Input
-            {...register('temperature')}
-            placeholder="ºC"
-            className="w-20"
-          />
+
           <Button
             variant="default"
             className="flex items-center justify-center rounded-none hover:bg-slate-300"
@@ -297,14 +267,23 @@ export function TableManagedData() {
       <Table className="border border-collapse rounded-md">
         <TableHeader className="bg-card sticky z-10 top-0 border-b">
           <TableRow>
-            <TableHead className="border text-card-foreground w-64 text-center ">
-              Data - Hora
+            <TableHead className="border text-card-foreground  text-center ">
+              Id
             </TableHead>
-            <TableHead className="border text-card-foreground w-20 text-center ">
-              Temperatura
+            <TableHead className="border text-card-foreground  text-center ">
+              Equipamento
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center w-60">
+              Nome de exibição
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center w-40">
+              Tipo
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center">
+              Ativo
             </TableHead>
             <TableHead className="border text-card-foreground ">
-              Status de alteração
+              Order de exibição
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -313,51 +292,78 @@ export function TableManagedData() {
             return (
               <TableRow
                 key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 "
+                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
               >
+                <TableCell className="border text-center w-24">
+                  {row.id}
+                </TableCell>
+                <TableCell className="border text-center">
+                  {row.equipment}
+                </TableCell>
                 <TableCell
-                  className="border text-center"
+                  className="border text-center w-60"
                   onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'dateTime', row.dateTime)
+                    handleDoubleClick(row.id, 'name', row.name)
                   }
                 >
-                  {editCell.rowId === row.id &&
-                  editCell.field === 'dateTime' ? (
+                  {editCell.rowId === row.id && editCell.field === 'name' ? (
                     <input
-                      className="bg-transparent w-full"
-                      type="text"
+                      className="bg-transparent"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'dateTime')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'dateTime')}
+                      onBlur={() => handleSave(row.id, 'name')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'name')}
                       autoFocus
                     />
                   ) : (
-                    row.dateTime
+                    row.name
                   )}
+                </TableCell>
+                <TableCell className=" text-center flex justify-between items-center w-40 px-4">
+                  {row.type}
+                  <Popover>
+                    <PopoverTrigger>
+                      <EllipsisVertical className="size-5" />
+                    </PopoverTrigger>
+
+                    <PopoverContent className="flex flex-col gap-4 w-40">
+                      <div className="flex items-center">
+                        <Checkbox value="temp" />
+                        <span className="text-sm ml-2 tracking-wider font-light">
+                          Temperatura
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <Checkbox value="press" />
+                        <span className="text-sm ml-2 tracking-wider font-light">
+                          Pressão
+                        </span>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </TableCell>
+                <TableCell className="border text-center">
+                  <Checkbox defaultChecked={true} />
                 </TableCell>
                 <TableCell
-                  className="border text-center"
+                  className="border text-center w-40 "
                   onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'temperature', row.temperature)
+                    handleDoubleClick(row.id, 'orderBy', row.orderBy)
                   }
                 >
-                  {editCell.rowId === row.id &&
-                  editCell.field === 'temperature' ? (
+                  {editCell.rowId === row.id && editCell.field === 'orderBy' ? (
                     <input
-                      className="bg-transparent w-full"
-                      type="text"
+                      className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type="number"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'temperature')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'temperature')}
-                      autoFocus
+                      onBlur={() => handleSave(row.id, 'orderBy')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'orderBy')}
                     />
                   ) : (
-                    `${row.temperature} ºC`
+                    row.orderBy
                   )}
                 </TableCell>
-                <TableCell className="border">{row.status}</TableCell>
               </TableRow>
             )
           })}
