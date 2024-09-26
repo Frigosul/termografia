@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "json-server": "json-server --watch db.json -p 3333"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -27,6 +27,7 @@
     "date-fns": "^3.6.0",
     "html2canvas": "^1.4.1",
     "json-server": "1.0.0-beta.3",
+    "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.2",
     "lucide-react": "^0.408.0",
     "next": "14.2.5",
@@ -46,6 +47,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

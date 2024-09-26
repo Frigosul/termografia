@@ -4,12 +4,13 @@ import { Cell, Pie, PieChart } from 'recharts'
 interface ChartProps {
   chart: {
     name: string
-    type: 'press' | 'temp'
+    type: 'temp' | 'press'
+    status: 'deg' | 'vent' | 'comp' | 'port'
     value: number
   }
 }
 
-const Chart = ({ chart: { name, type, value } }: ChartProps) => {
+const Chart = ({ chart: { name, type, value, status } }: ChartProps) => {
   const valueInPercent = ((value + 100) / 200) * 100
 
   const data = [
@@ -34,7 +35,7 @@ const Chart = ({ chart: { name, type, value } }: ChartProps) => {
             dataKey="value" // Valor do gráfico
             stroke="none" // Sem bordas
           >
-            {data.map((entry, index) => (
+            {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
           </Pie>
@@ -50,16 +51,28 @@ const Chart = ({ chart: { name, type, value } }: ChartProps) => {
       </div>
       <div className="flex justify-between p-2">
         <span className="font-normal text-sm flex items-center justify-center gap-3">
-          DEGE. <div className="w-3 h-3 rounded-full bg-zinc-400" />{' '}
+          DEGE.{' '}
+          <div
+            className={`size-4 rounded-full ${status === 'deg' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />{' '}
         </span>
         <span className="font-normal text-sm flex items-center justify-center gap-3">
-          VENT. <div className="w-3 h-3 rounded-full bg-zinc-400" />{' '}
+          VENT.{' '}
+          <div
+            className={`size-4 rounded-full ${status === 'vent' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />{' '}
         </span>
         <span className="font-normal text-sm flex items-center justify-center gap-3">
-          COMP. <div className="w-3 h-3 rounded-full bg-zinc-400" />{' '}
+          COMP.{' '}
+          <div
+            className={`size-4 rounded-full ${status === 'comp' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />{' '}
         </span>
         <span className="font-normal text-sm flex items-center justify-center gap-3">
-          PORT. <div className="w-3 h-3 rounded-full bg-zinc-400" />{' '}
+          PORT.{' '}
+          <div
+            className={`size-4 rounded-full ${status === 'port' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />{' '}
         </span>
       </div>
     </div>
