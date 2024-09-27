@@ -1,4 +1,5 @@
 'use client'
+import { createUser } from '@/app/http/create-user'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,7 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { userRoles } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -64,20 +68,39 @@ const signUpForm = z
 
 type SignUpForm = z.infer<typeof signUpForm>
 export function CreateUser() {
+  const [open, setIsOpen] = useState<boolean>(false)
+
+  const queryClient = useQueryClient()
+  const createUserMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['list-users'] })
+      setIsOpen(false)
+    },
+    onError: (error) => {
+      console.log('error' + error)
+    },
+  })
+
   const {
     register,
     reset,
     handleSubmit,
     control,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useForm<SignUpForm>({ resolver: zodResolver(signUpForm) })
 
   function handleSignUp(data: SignUpForm) {
-    console.log(data)
+    createUserMutation.mutateAsync({
+      name: data.name,
+      email: data.email,
+      userRole: data.userRole,
+      password: data.password,
+    })
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setIsOpen}>
       <DialogDescription className="sr-only">
         Criação de usuários.
       </DialogDescription>
@@ -180,10 +203,11 @@ export function CreateUser() {
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Nível 1">Nível 1</SelectItem>
-                    <SelectItem value="Nível 2">Nível 2</SelectItem>
-                    <SelectItem value="Nível 3">Nível 3</SelectItem>
-                    <SelectItem value="Administrador">Administrador</SelectItem>
+                    {userRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -201,8 +225,8 @@ export function CreateUser() {
                 Cancelar
               </Button>
             </DialogClose>
-            <Button disabled={isSubmitting} type="submit">
-              Salvar
+            <Button disabled={createUserMutation.isPending} type="submit">
+              {createUserMutation.isPending ? 'Salvando' : ' Salvar'}
             </Button>
           </div>
         </form>

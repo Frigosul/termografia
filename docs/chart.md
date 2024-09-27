@@ -1,4 +1,5 @@
 # Termografia - HomePage
+
 - [Voltar](./index.md)
 
 ## Endpoint
@@ -11,7 +12,6 @@ Este endpoint retorna um objeto contendo o nome da câmara, a data e hora de abe
 
 No corpo da requisição, você deve enviar os seguintes dados:
 
-- **Id** Identificador único da câmara.
 - **Nome:** Nome da câmara.
 - **Variação do gráfico:** A variação para o gráfico (obrigatório).
 - **Variação da tabela:** A variação para a tabela (obrigatório).
@@ -26,9 +26,9 @@ No corpo da requisição, você deve enviar os seguintes dados:
 
 Exemplo de Requisição
 O corpo da requisição deve ser enviado em formato JSON, conforme o exemplo abaixo:
+
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Câmara 1",
   "graphVariation": "10min",
   "tableVariation": "5min",
@@ -39,10 +39,9 @@ O corpo da requisição deve ser enviado em formato JSON, conforme o exemplo aba
   "maxValue": 20,
   "startDateTime": "2024-08-10T12:00",
   "endDateTime": "2024-08-11T12:00",
-  "description": "Informações adicionais sobre a câmara",
+  "description": "Informações adicionais sobre a câmara"
 }
 ```
-
 
 ## Request
 
@@ -51,7 +50,7 @@ O corpo da requisição deve ser enviado em formato JSON, conforme o exemplo aba
 
 ## Autenticação
 
-Essa requisição só deve retornar os dados caso o usuário esteja logado com o  **token JWT**, que deve ser enviado no cabeçalho da  requisição.
+Essa requisição só deve retornar os dados caso o usuário esteja logado com o **token JWT**, que deve ser enviado no cabeçalho da requisição.
 
 ### Exemplo de uso:
 
@@ -60,7 +59,9 @@ Authorization: Bearer jwt_token
 ```
 
 ## Response
+
 ### Response Body (200 - Success)
+
 Este endpoint retorna um objeto contendo as seguintes informações:
 
 - **Id**: O identificador único para a câmara.
@@ -98,7 +99,7 @@ Este endpoint retorna um objeto contendo as seguintes informações:
       "temperature": 4.5
     }
   ],
-   "tableTemperatureRange": [
+  "tableTemperatureRange": [
     {
       "time": "2024-09-17T08:00",
       "temperature": 22.4
@@ -121,6 +122,4 @@ Este endpoint retorna um objeto contendo as seguintes informações:
     }
   ]
 }
-
-
 ```

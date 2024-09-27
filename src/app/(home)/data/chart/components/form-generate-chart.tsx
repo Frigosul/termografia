@@ -1,4 +1,8 @@
 'use client'
+import {
+  GenerateChartRequest,
+  GenerateChartResponse,
+} from '@/app/http/generate-chart'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -30,14 +34,14 @@ const localChamber = [
   'Câmara 04',
   'Câmara 05',
 ]
-const variationChart = [
+const graphVariation = [
   '10 minutos',
   '15 minutos',
   '20 minutos',
   '30 minutos',
   '01 hora',
 ]
-const variationTable = [
+const tableVariation = [
   '01 minuto',
   '05 minutos',
   '10 minutos',
@@ -52,14 +56,14 @@ const generateDataChart = z.object({
     .refine((value) => localChamber.includes(value), {
       message: 'Local inválido. Escolha outro local.',
     }),
-  variationChart: z
+  graphVariation: z
     .string({ message: 'Defina a variação desejada no gráfico.' })
-    .refine((value) => variationChart.includes(value), {
+    .refine((value) => graphVariation.includes(value), {
       message: 'Variação inválida. Escolha outra variação.',
     }),
-  variationTable: z
+  tableVariation: z
     .string({ message: 'Defina a variação desejada na tabela' })
-    .refine((value) => variationTable.includes(value), {
+    .refine((value) => tableVariation.includes(value), {
       message: 'Variação inválida. Escolha outra variação.',
     }),
   limit: z.number({ message: 'Defina um limite.' }),
@@ -78,9 +82,10 @@ type GenerateDataChart = z.infer<typeof generateDataChart>
 
 interface FormGenerateChartProps {
   divRef: RefObject<HTMLDivElement>
+  mutate: (data: GenerateChartRequest) => Promise<GenerateChartResponse>
 }
 
-export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
+export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
   const { generatePDF } = useGeneratePDF()
 
   const {
@@ -94,8 +99,20 @@ export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
     resolver: zodResolver(generateDataChart),
   })
 
-  function handleGenerateDataChart(data: GenerateDataChart) {
-    console.log(data)
+  async function handleGenerateDataChart(data: GenerateDataChart) {
+    await mutate({
+      name: data.localChamber,
+      graphVariation: data.graphVariation,
+      tableVariation: data.tableVariation,
+      limit: data.limit,
+      detour: data.detour,
+      variationTemp: data.variationTemp,
+      minValue: data.minValue,
+      maxValue: data.maxValue,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      description: data.description!,
+    })
   }
   const startDateValue = watch('startDate')
 
@@ -161,7 +178,7 @@ export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
                     Variação gráfico
                   </Label>
                   <Controller
-                    name="variationChart"
+                    name="graphVariation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
@@ -184,9 +201,9 @@ export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
                 Selecione a variação desejada para gerar o gráfico.
               </TooltipContent>
             </Tooltip>
-            {errors.variationChart?.message && (
+            {errors.graphVariation?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.variationChart?.message}
+                {errors.graphVariation?.message}
               </p>
             )}
           </div>
@@ -198,7 +215,7 @@ export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
                     Variação tabela
                   </Label>
                   <Controller
-                    name="variationTable"
+                    name="tableVariation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
@@ -222,9 +239,9 @@ export function FormGenerateChart({ divRef }: FormGenerateChartProps) {
                 Selecione a variação desejada para gerar a tabela.
               </TooltipContent>
             </Tooltip>
-            {errors.variationTable?.message && (
+            {errors.tableVariation?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.variationTable?.message}
+                {errors.tableVariation?.message}
               </p>
             )}
           </div>

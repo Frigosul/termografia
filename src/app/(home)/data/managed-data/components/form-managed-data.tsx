@@ -79,7 +79,7 @@ export function FormManagedData() {
     )
     const formattedEndDate = formattedDate(addHoursToStartDate)
     setValue('endDate', formattedEndDate)
-  }, [startDateValue])
+  }, [startDateValue, setValue])
 
   return (
     <form

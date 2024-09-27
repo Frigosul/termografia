@@ -17,8 +17,8 @@ export default function Home() {
   if (!data) return null
   return (
     <main className="grid grid-cols-home justify-center gap-2 h-[calc(100vh_-_7.5rem)] py-4 overflow-y-scroll">
-      {data.map((chamber) => {
-        return <Chart key={chamber.id} chart={chamber} />
+      {data.map((chamber, index) => {
+        return <Chart key={index} chart={chamber} />
       })}
     </main>
   )
