@@ -111,6 +111,7 @@ export function UpdateUser({ id, email, name, password, userRole }: User) {
       password: data.password,
       userRole: data.userRole,
     })
+    reset()
   }
 
   return (

@@ -6,6 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { formattedTime } from '@/utils/formatted-time'
 
 import Image from 'next/image'
 import {
@@ -35,16 +36,54 @@ const chartConfig = {
 } satisfies ChartConfig
 
 interface ChartProps {
+  local: string
+  chartType: 'temp' | 'press'
+  dateClose: Date
+  dateOpen: Date
+  minValue?: number
+  maxValue?: number
   data: {
     time: Date
     temp: number
   }[]
 }
-export function Chart({ data }: ChartProps) {
-  const initialValue = -20
-  const finishedValue = 20
-  const interval = Math.abs(finishedValue - initialValue) + 1
+export function Chart({
+  data,
+  dateClose,
+  dateOpen,
+  local,
+  minValue,
+  maxValue,
+}: ChartProps) {
+  console.log('antes do reduce' + minValue, maxValue)
+  if (!minValue || !maxValue) {
+    console.log('entrou no if')
 
+    const minAndMaxValue = data.reduce(
+      (acc, current) => {
+        return {
+          minValue:
+            current.temp < acc.minValue ? current.temp + 1 : acc.minValue,
+          maxValue:
+            current.temp > acc.maxValue ? current.temp + 1 : acc.maxValue,
+        }
+      },
+      { minValue: Infinity, maxValue: -Infinity },
+    )
+    minValue = minAndMaxValue.minValue
+    maxValue = minAndMaxValue.maxValue
+  }
+
+  console.log(minValue, maxValue)
+  const interval = Math.abs(Number(maxValue) - Number(minValue)) + 1
+  const formattedOpenDate = String(dateOpen).replace('T', ' ')
+  const formattedCloseDate = String(dateClose).replace('T', ' ')
+  const formattedData = data.map((item) => {
+    return {
+      time: formattedTime(new Date(item.time)),
+      temp: item.temp,
+    }
+  })
   return (
     <div>
       <div className="flex justify-between mb-4 px-4">
@@ -70,21 +109,21 @@ export function Chart({ data }: ChartProps) {
         <div className="absolute right-9 top-9 min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-2 px-3 text-xs font-light flex flex-col gap-1">
           <div className="flex justify-between">
             <span>Local: </span>
-            <span>Câmara 01</span>
+            <span>{local}</span>
           </div>
           <div className="flex justify-between">
             <span>Fechamento: </span>
-            <span>13/09/2024 11:20</span>
+            <span>{formattedCloseDate}</span>
           </div>
           <div className="flex justify-between">
             <span>Abertura: </span>
-            <span>14/09/2024 11:20</span>
+            <span>{formattedOpenDate}</span>
           </div>
         </div>
         <ChartContainer config={chartConfig} className="min-h-[200px]">
           <LineChart
             width={500}
-            data={data}
+            data={formattedData}
             margin={{
               top: 5,
               right: 30,
@@ -99,9 +138,9 @@ export function Chart({ data }: ChartProps) {
             <XAxis dataKey="time" stroke="hsl(var(--card-foreground))" />
             <YAxis
               type="number"
-              domain={[initialValue, finishedValue]}
+              domain={[minValue, maxValue]}
               ticks={Array.from({ length: interval }).map(
-                (_, i) => initialValue + i,
+                (_, i) => minValue + i,
               )}
               interval={0}
               stroke="hsl(var(--card-foreground))"

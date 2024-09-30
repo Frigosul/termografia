@@ -44,7 +44,15 @@ export default function PageChart() {
         <CardContent ref={divPdfRef} className="dark:bg-slate-800 pt-4">
           {dataChart && (
             <>
-              <Chart data={dataChart?.chartTemperature} />
+              <Chart
+                maxValue={dataChart.maxValue}
+                minValue={dataChart.minValue}
+                chartType={dataChart.chartType}
+                dateClose={dataChart.dateClose}
+                dateOpen={dataChart.dateOpen}
+                local={dataChart.local}
+                data={dataChart?.chartTemperature}
+              />
               <Table data={dataChart?.tableTemperatureRange} />
             </>
           )}

@@ -23,12 +23,14 @@ export function Table({ data }: TableProps) {
               )}
               <div
                 key={index}
-                className="border-r border-b border-dashed border-muted-foreground w-[9rem] h-6 px-4 flex items-center justify-between "
+                className="border-r border-dashed border-muted-foreground w-[9rem] h-6 px-4 flex items-center justify-between"
               >
-                <span className="text-xs tracking-wide">
+                <span className="text-xs tracking-wide dark:font-light ">
                   {formattedTime(new Date(item.time))}
                 </span>
-                <span className="text-xs tracking-wide">{item.temp}</span>
+                <span className="text-xs tracking-wide dark:font-light ">
+                  {item.temp}
+                </span>
               </div>
             </Fragment>
           )

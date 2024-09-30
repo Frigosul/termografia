@@ -12,6 +12,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Trash2 } from 'lucide-react'
+import { FormEvent } from 'react'
 
 interface DeleteUserProps {
   userId: string
@@ -29,7 +30,8 @@ export function DeleteUser({ userId }: DeleteUserProps) {
     },
   })
 
-  function handleDeleteUser(id: string) {
+  function handleDeleteUser(e: FormEvent, id: string) {
+    e.preventDefault()
     deleteUserMutation.mutateAsync({ userId: id })
   }
 
@@ -48,7 +50,7 @@ export function DeleteUser({ userId }: DeleteUserProps) {
         </DialogHeader>
 
         <form
-          onSubmit={() => handleDeleteUser(userId)}
+          onSubmit={(event) => handleDeleteUser(event, userId)}
           className="flex gap-5 mx-auto"
         >
           <DialogClose asChild>

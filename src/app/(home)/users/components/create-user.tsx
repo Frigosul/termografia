@@ -97,6 +97,7 @@ export function CreateUser() {
       userRole: data.userRole,
       password: data.password,
     })
+    reset()
   }
 
   return (
@@ -106,7 +107,7 @@ export function CreateUser() {
       </DialogDescription>
       <DialogTrigger asChild>
         <Button className="rounded-full p-3 items-center justify-center group">
-          <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-linear">
+          <span className="max-w-0 overflow-hidden group-hover:max-w-xs lg:max-w-xs transition-all duration-500 ease-linear">
             Adicionar usuário <span className="pr-2"></span>
           </span>
           <span className=" text-2xl">+</span>

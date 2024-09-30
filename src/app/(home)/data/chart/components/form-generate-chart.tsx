@@ -71,11 +71,11 @@ const generateDataChart = z.object({
   variationTemp: z.number({
     message: 'Defina uma variação na coluna de temperatura.',
   }),
-  minValue: z.number({ message: 'Defina um valor mínimo.' }),
-  maxValue: z.number({ message: 'Defina um valor máximo.' }),
+  minValue: z.number({ invalid_type_error: 'Deve ser um número' }).optional(),
+  maxValue: z.number({ invalid_type_error: 'Deve ser um número' }).optional(),
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
-  description: z.string().nullable(),
+  description: z.string().optional(),
 })
 
 type GenerateDataChart = z.infer<typeof generateDataChart>
@@ -97,11 +97,16 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     formState: { isSubmitting, errors },
   } = useForm<GenerateDataChart>({
     resolver: zodResolver(generateDataChart),
+    defaultValues: {
+      minValue: 0,
+      maxValue: 0,
+    },
   })
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
+    console.log(data)
     await mutate({
-      name: data.localChamber,
+      local: data.localChamber,
       graphVariation: data.graphVariation,
       tableVariation: data.tableVariation,
       limit: data.limit,
@@ -111,7 +116,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
       maxValue: data.maxValue,
       startDate: data.startDate,
       endDate: data.endDate,
-      description: data.description!,
+      description: data.description,
     })
   }
   const startDateValue = watch('startDate')
@@ -338,7 +343,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                     id="minValue"
                     type="number"
                     className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('minValue', { valueAsNumber: true })}
+                    {...register('minValue', {
+                      valueAsNumber: true,
+                    })}
                   />
                 </div>
               </TooltipTrigger>
@@ -364,7 +371,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                     id="maxValue"
                     type="number"
                     className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('maxValue', { valueAsNumber: true })}
+                    {...register('maxValue', {
+                      valueAsNumber: true,
+                    })}
                   />
                 </div>
               </TooltipTrigger>

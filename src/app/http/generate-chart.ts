@@ -1,12 +1,12 @@
 export type GenerateChartRequest = {
-  name: string
+  local: string
   graphVariation: string
   tableVariation: string
   limit: number
   detour: number
   variationTemp: number
-  minValue: number
-  maxValue: number
+  minValue?: number
+  maxValue?: number
   startDate: string
   endDate: string
   description?: string
@@ -17,15 +17,18 @@ type TemperatureData = {
 }
 export type GenerateChartResponse = {
   id: string
-  name: string
-  startDate: string
-  endDate: string
+  local: string
+  chartType: 'temp' | 'press'
+  dateClose: Date
+  dateOpen: Date
+  minValue?: number
+  maxValue?: number
   chartTemperature: TemperatureData[]
   tableTemperatureRange: TemperatureData[]
 }
 
 export async function generateChart({
-  name,
+  local,
   graphVariation,
   tableVariation,
   limit,
@@ -39,7 +42,7 @@ export async function generateChart({
 }: GenerateChartRequest): Promise<GenerateChartResponse> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dataBody = {
-    name,
+    local,
     graphVariation,
     tableVariation,
     limit,
