@@ -145,8 +145,6 @@
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "local": "Câmara 1",
     "chartType": "temp",
-    "minValue": -20,
-    "maxValue": 20,
     "dateOpen": "2024-08-11T12:00",
     "dateClose": "2024-08-10T12:00",
     "chartTemperature": [

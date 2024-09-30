@@ -2,9 +2,9 @@ export type GenerateChartRequest = {
   local: string
   graphVariation: string
   tableVariation: string
-  limit: number
-  detour: number
-  variationTemp: number
+  limit?: number
+  detour?: number
+  variationTemp?: number
   minValue?: number
   maxValue?: number
   startDate: string
@@ -23,6 +23,8 @@ export type GenerateChartResponse = {
   dateOpen: Date
   minValue?: number
   maxValue?: number
+  limit?: number
+  variationTemp?: number
   chartTemperature: TemperatureData[]
   tableTemperatureRange: TemperatureData[]
 }
@@ -57,5 +59,13 @@ export async function generateChart({
   const response = await fetch('http://localhost:3333/chart')
   const data = await response.json()
 
-  return data
+  const dataAndValues = {
+    ...data,
+    minValue,
+    maxValue,
+    variationTemp,
+    limit,
+  }
+
+  return dataAndValues
 }

@@ -40,6 +40,8 @@ interface ChartProps {
   chartType: 'temp' | 'press'
   dateClose: Date
   dateOpen: Date
+  limit?: number
+  variationTemp?: number
   minValue?: number
   maxValue?: number
   data: {
@@ -53,29 +55,29 @@ export function Chart({
   dateOpen,
   local,
   minValue,
+  limit,
+  variationTemp,
   maxValue,
 }: ChartProps) {
-  console.log('antes do reduce' + minValue, maxValue)
   if (!minValue || !maxValue) {
-    console.log('entrou no if')
-
     const minAndMaxValue = data.reduce(
       (acc, current) => {
         return {
           minValue:
-            current.temp < acc.minValue ? current.temp + 1 : acc.minValue,
+            current.temp < acc.minValue ? current.temp - 1 : acc.minValue,
           maxValue:
             current.temp > acc.maxValue ? current.temp + 1 : acc.maxValue,
         }
       },
       { minValue: Infinity, maxValue: -Infinity },
     )
-    minValue = minAndMaxValue.minValue
-    maxValue = minAndMaxValue.maxValue
+    minValue = Number(minAndMaxValue.minValue.toFixed(2))
+    maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
   }
 
-  console.log(minValue, maxValue)
-  const interval = Math.abs(Number(maxValue) - Number(minValue)) + 1
+  const interval = Number(
+    (Math.abs(Number(maxValue) - Number(minValue)) + 1).toFixed(0),
+  )
   const formattedOpenDate = String(dateOpen).replace('T', ' ')
   const formattedCloseDate = String(dateClose).replace('T', ' ')
   const formattedData = data.map((item) => {
@@ -84,10 +86,16 @@ export function Chart({
       temp: item.temp,
     }
   })
+
   return (
     <div>
       <div className="flex justify-between mb-4 px-4">
-        <Image src={logo} alt="Logo Frigosul" width={200} />
+        <Image
+          src={logo}
+          alt="Logo Frigosul"
+          width={200}
+          style={{ width: 'auto', height: 'auto' }}
+        />
         <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
           <span>
             Empresa:{' '}
@@ -142,10 +150,10 @@ export function Chart({
               ticks={Array.from({ length: interval }).map(
                 (_, i) => minValue + i,
               )}
-              interval={0}
+              interval={variationTemp ? variationTemp - 1 : 0}
               stroke="hsl(var(--card-foreground))"
             />
-            <ReferenceLine y={10} label="Max." stroke="red" />
+            {limit && <ReferenceLine y={limit} label="Max." stroke="red" />}
             <ReferenceLine y={0} stroke="black" strokeWidth={2} />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line

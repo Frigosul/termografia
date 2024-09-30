@@ -66,13 +66,23 @@ const generateDataChart = z.object({
     .refine((value) => tableVariation.includes(value), {
       message: 'Variação inválida. Escolha outra variação.',
     }),
-  limit: z.number({ message: 'Defina um limite.' }),
-  detour: z.number({ message: 'Defina um desvio' }),
-  variationTemp: z.number({
-    message: 'Defina uma variação na coluna de temperatura.',
-  }),
-  minValue: z.number({ invalid_type_error: 'Deve ser um número' }).optional(),
-  maxValue: z.number({ invalid_type_error: 'Deve ser um número' }).optional(),
+  limit: z
+    .union([z.number({ message: 'Defina um limite.' }), z.nan()])
+    .optional(),
+  detour: z
+    .union([z.number({ message: 'Defina o desvio' }), z.nan()])
+    .optional(),
+  variationTemp: z
+    .union([
+      z.number({
+        message: 'Defina uma variação na coluna de temperatura.',
+      }),
+      z.nan(),
+    ])
+    .optional(),
+
+  minValue: z.union([z.number(), z.nan()]).optional(),
+  maxValue: z.union([z.number(), z.nan()]).optional(),
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
   description: z.string().optional(),
@@ -95,16 +105,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     setValue,
     control,
     formState: { isSubmitting, errors },
-  } = useForm<GenerateDataChart>({
-    resolver: zodResolver(generateDataChart),
-    defaultValues: {
-      minValue: 0,
-      maxValue: 0,
-    },
-  })
+  } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
-    console.log(data)
     await mutate({
       local: data.localChamber,
       graphVariation: data.graphVariation,
@@ -138,7 +141,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     >
       <TooltipProvider>
         <div className="flex w-full gap-3">
-          <div className="space-y-2 flex-1">
+          <div className="space-y-2 flex-1 h-20 ">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -175,7 +178,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="space-y-2 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -212,7 +215,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="space-y-2 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -253,7 +256,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
         </div>
 
         <div className="flex w-full items-end gap-2">
-          <div className="space-y-2 w-20 flex-1">
+          <div className="space-y-2 w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -279,7 +282,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-20 flex-1">
+          <div className="space-y-2 w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -306,7 +309,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-32 flex-1">
+          <div className="space-y-2 w-32 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -331,7 +334,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-20 flex-1">
+          <div className="space-y-2 w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -359,7 +362,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-20 flex-1">
+          <div className="space-y-2 w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -387,7 +390,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -414,7 +417,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
