@@ -106,22 +106,22 @@ export function CreateUser() {
         Criação de usuários.
       </DialogDescription>
       <DialogTrigger asChild>
-        <Button className="rounded-full p-3 items-center justify-center group">
-          <span className="max-w-0 overflow-hidden group-hover:max-w-xs lg:max-w-xs transition-all duration-500 ease-linear">
+        <Button className="rounded-full p-3 items-center justify-center">
+          <span className="max-w-0 overflow-hidden  lg:max-w-xs transition-all duration-500 ease-linear">
             Adicionar usuário <span className="pr-2"></span>
           </span>
           <span className=" text-2xl">+</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-screen-xl">
+      <DialogContent className="max-w-80 rounded-md md:max-w-2xl lg:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Informações</DialogTitle>
+          <DialogTitle className="text-sm text-left">Criar usuário</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={handleSubmit(handleSignUp)}
-          className="w-full gap-2 grid grid-cols-2"
+          className="gap-2 grid grid-cols-form justify-center gap-x-4"
         >
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="name">Seu Nome</Label>
             <Input
               id="name"
@@ -135,7 +135,7 @@ export function CreateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="email">Seu e-mail</Label>
             <Input
               id="email"
@@ -149,7 +149,7 @@ export function CreateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="confirm_email">Confirme seu e-mail</Label>
             <Input
               id="confirm_email"
@@ -164,7 +164,7 @@ export function CreateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="password">Sua senha</Label>
             <Input
               id="password"
@@ -178,7 +178,7 @@ export function CreateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="confirm_password">Confirme sua senha</Label>
             <Input
               id="confirm_password"
@@ -193,7 +193,7 @@ export function CreateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <Label htmlFor="userRole">Tipo de Usuário</Label>
             <Controller
               name="userRole"
@@ -220,7 +220,7 @@ export function CreateUser() {
             )}
           </div>
 
-          <div className="flex gap-5 ml-auto mt-auto col-span-2">
+          <div className="flex flex-col-reverse gap-3 mt-2 md:flex-row md:gap-5 md:ml-auto md:mt-auto md:col-span-2">
             <DialogClose asChild>
               <Button variant="outline" onClick={() => reset()} type="button">
                 Cancelar

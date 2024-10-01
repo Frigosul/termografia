@@ -33,10 +33,10 @@ export function ListUsers() {
   if (!users) return null
 
   return (
-    <Table className="border border-collapse rounded-md">
+    <Table className="rounded-md">
       <TableHeader>
         <TableRow>
-          <TableHead className="border">Nome</TableHead>
+          <TableHead className="border ">Nome</TableHead>
           <TableHead className="border">E-mail</TableHead>
           <TableHead className="border">Tipo de Usuário</TableHead>
           <TableHead className="border">Ações</TableHead>
@@ -49,9 +49,13 @@ export function ListUsers() {
               key={user.id}
               className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
             >
-              <TableCell className="border">{user.name}</TableCell>
-              <TableCell className="border">{user.email}</TableCell>
-              <TableCell className="border">{user.userRole}</TableCell>
+              <TableCell className="border min-w-52 w-96">
+                {user.name}
+              </TableCell>
+              <TableCell className="border min-w-52 w-96">
+                {user.email}
+              </TableCell>
+              <TableCell className="border min-w-40">{user.userRole}</TableCell>
               <TableCell className="text-center w-4 border ">
                 <Popover>
                   <PopoverTrigger className="h-4">
