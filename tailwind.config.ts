@@ -71,7 +71,8 @@ const config = {
         sans: ['var(--font-sans)', ...fontFamily.sans],
       },
       gridTemplateColumns: {
-        home: 'repeat(auto-fit, minmax(330px, 350px))',
+        // home: 'repeat(auto-fit, minmax(330px, 350px))',
+        home: 'repeat(auto-fit, minmax(330px, 340px))',
       },
       gridTemplateRows: {
         home: 'minmax(190px, 200px)',
@@ -83,6 +84,7 @@ const config = {
     function ({
       addUtilities,
     }: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       addUtilities: (utilities: Record<string, any>, variants: string[]) => void
     }) {
       const newUtilities = {

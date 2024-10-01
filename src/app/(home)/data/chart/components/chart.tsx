@@ -41,6 +41,7 @@ interface ChartProps {
   dateClose: Date
   dateOpen: Date
   limit?: number
+  detour?: number
   variationTemp?: number
   minValue?: number
   maxValue?: number
@@ -55,6 +56,7 @@ export function Chart({
   dateOpen,
   local,
   minValue,
+  detour,
   limit,
   variationTemp,
   maxValue,
@@ -128,7 +130,7 @@ export function Chart({
             <span>{formattedOpenDate}</span>
           </div>
         </div>
-        <ChartContainer config={chartConfig} className="min-h-[200px]">
+        <ChartContainer config={chartConfig} className="min-h-[13.5rem]">
           <LineChart
             width={500}
             data={formattedData}
@@ -143,9 +145,33 @@ export function Chart({
               stroke="hsl(var(--muted-foreground))"
               strokeWidth={0.5}
             />
-            <XAxis dataKey="time" stroke="hsl(var(--card-foreground))" />
+            <XAxis
+              dataKey="time"
+              stroke="hsl(var(--card-foreground))"
+              label={{
+                value: 'Horário',
+                position: 'bottom',
+                offset: -10,
+                style: {
+                  textAnchor: 'middle',
+                  fontSize: 12,
+                  fontWeight: 'normal',
+                },
+              }}
+            />
             <YAxis
               type="number"
+              label={{
+                value: 'Temperatura',
+                position: 'left',
+                angle: -90,
+                offset: -15,
+                style: {
+                  textAnchor: 'middle',
+                  fontSize: 12,
+                  fontWeight: 'normal',
+                },
+              }}
               domain={[minValue, maxValue]}
               ticks={Array.from({ length: interval }).map(
                 (_, i) => minValue + i,
@@ -166,6 +192,12 @@ export function Chart({
             />
           </LineChart>
         </ChartContainer>
+
+        {typeof detour === 'number' && !isNaN(detour) && (
+          <div className="text-xs font-light text-left ml-12 dark:text-slate-200">
+            Desvio: {detour} °C
+          </div>
+        )}
       </div>
     </div>
   )

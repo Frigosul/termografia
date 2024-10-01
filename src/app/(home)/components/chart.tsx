@@ -49,30 +49,30 @@ const Chart = ({ chart: { name, type, value, status } }: ChartProps) => {
           </p>
         </div>
       </div>
-      <div className="flex justify-between p-2">
-        <span className="font-normal text-sm flex items-center justify-center gap-3">
-          DEGE.{' '}
+      <div className="flex justify-between lg:p-2 flex-wrap">
+        <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
+          DEGE.
           <div
-            className={`size-4 rounded-full ${status === 'deg' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-          />{' '}
+            className={`size-3 lg:size-4 rounded-full ${status === 'deg' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />
         </span>
-        <span className="font-normal text-sm flex items-center justify-center gap-3">
-          VENT.{' '}
+        <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
+          VENT.
           <div
-            className={`size-4 rounded-full ${status === 'vent' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-          />{' '}
+            className={`size-3 lg:size-4 rounded-full ${status === 'vent' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />
         </span>
-        <span className="font-normal text-sm flex items-center justify-center gap-3">
-          COMP.{' '}
+        <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
+          COMP.
           <div
-            className={`size-4 rounded-full ${status === 'comp' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-          />{' '}
+            className={`size-3 lg:size-4 rounded-full ${status === 'comp' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />
         </span>
-        <span className="font-normal text-sm flex items-center justify-center gap-3">
-          PORT.{' '}
+        <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
+          PORT.
           <div
-            className={`size-4 rounded-full ${status === 'port' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-          />{' '}
+            className={`size-3 lg:size-4 rounded-full ${status === 'port' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+          />
         </span>
       </div>
     </div>

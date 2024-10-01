@@ -22,6 +22,7 @@ export type GenerateChartResponse = {
   dateClose: Date
   dateOpen: Date
   minValue?: number
+  detour?: number
   maxValue?: number
   limit?: number
   variationTemp?: number
@@ -65,6 +66,7 @@ export async function generateChart({
     maxValue,
     variationTemp,
     limit,
+    detour,
   }
 
   return dataAndValues

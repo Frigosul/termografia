@@ -51,6 +51,7 @@ export default function PageChart() {
                 dateClose={dataChart.dateClose}
                 dateOpen={dataChart.dateOpen}
                 limit={dataChart.limit}
+                detour={dataChart.detour}
                 variationTemp={dataChart.variationTemp}
                 local={dataChart.local}
                 data={dataChart?.chartTemperature}
