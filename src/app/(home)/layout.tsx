@@ -25,7 +25,7 @@ import { ReactNode } from 'react'
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex border border-yellow-400 max-h-screen overflow-hidden">
+    <div className="flex max-h-screen overflow-hidden">
       <SideBar />
       <div className="flex-1 flex flex-col">
         <header className="flex justify-between items-center py-3 lg:py-8 shadow-sm px-6 lg:justify-end border-b">

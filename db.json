@@ -20,6 +20,13 @@
       "userRole": "Administrador",
       "email": "dyan@email.com",
       "password": "dyan123456"
+    },
+    {
+      "id": "232c",
+      "name": "Wagner Xavier",
+      "userRole": "Administrador",
+      "email": "wagner@email.com",
+      "password": "wgner123456"
     }
   ],
   "summary": [

@@ -123,13 +123,15 @@ export function UpdateUser({ id, email, name, password, userRole }: User) {
         <NotebookPen size={19} />
         Editar
       </DialogTrigger>
-      <DialogContent className="max-w-screen-xl">
+      <DialogContent className="w-11/12 rounded-md md:max-w-3xl lg:max-w-screen-xl">
         <DialogHeader>
-          <DialogTitle>Editar Informações</DialogTitle>
+          <DialogTitle className="text-sm lg:text-base text-left">
+            Editar usuário
+          </DialogTitle>
         </DialogHeader>
         <form
           onSubmit={handleSubmit(handleUpdateUser)}
-          className="w-full gap-2 grid grid-cols-2"
+          className="gap-2 grid grid-cols-form md:grid-cols-2 justify-center lg:justify-between gap-x-4"
         >
           <div className="space-y-2 ">
             <Label htmlFor="name">Seu Nome</Label>
@@ -231,13 +233,22 @@ export function UpdateUser({ id, email, name, password, userRole }: User) {
             )}
           </div>
 
-          <div className="flex gap-5 ml-auto mt-auto col-span-2">
+          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2">
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => reset()} type="button">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => reset()}
+                type="button"
+              >
                 Cancelar
               </Button>
             </DialogClose>
-            <Button disabled={updateUserMutation.isPending} type="submit">
+            <Button
+              className="flex-1"
+              disabled={updateUserMutation.isPending}
+              type="submit"
+            >
               {updateUserMutation.isPending ? 'Salvando' : 'Salvar'}
             </Button>
           </div>

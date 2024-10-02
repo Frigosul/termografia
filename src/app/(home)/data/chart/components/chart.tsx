@@ -92,12 +92,7 @@ export function Chart({
   return (
     <div>
       <div className="flex justify-between mb-4 px-4">
-        <Image
-          src={logo}
-          alt="Logo Frigosul"
-          width={200}
-          style={{ width: 'auto', height: 'auto' }}
-        />
+        <Image src={logo} alt="Logo Frigosul" className="w-52" />
         <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
           <span>
             Empresa:{' '}

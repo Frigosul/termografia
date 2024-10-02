@@ -23,6 +23,7 @@ import {
 import { userRoles } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -106,20 +107,22 @@ export function CreateUser() {
         Criação de usuários.
       </DialogDescription>
       <DialogTrigger asChild>
-        <Button className="rounded-full p-3 items-center justify-center">
-          <span className="max-w-0 overflow-hidden  lg:max-w-xs transition-all duration-500 ease-linear">
+        <Button>
+          <span className="max-w-0 overflow-hidden  lg:max-w-xs ">
             Adicionar usuário <span className="pr-2"></span>
           </span>
-          <span className=" text-2xl">+</span>
+          <Plus className="size-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-80 rounded-md md:max-w-2xl lg:max-w-3xl">
+      <DialogContent className="w-11/12 rounded-md md:max-w-3xl lg:max-w-screen-xl">
         <DialogHeader>
-          <DialogTitle className="text-sm text-left">Criar usuário</DialogTitle>
+          <DialogTitle className="text-sm lg:text-base text-left">
+            Criar usuário
+          </DialogTitle>
         </DialogHeader>
         <form
           onSubmit={handleSubmit(handleSignUp)}
-          className="gap-2 grid grid-cols-form justify-center gap-x-4"
+          className="gap-2 grid grid-cols-form md:grid-cols-2 justify-center lg:justify-between gap-x-4"
         >
           <div className="space-y-2">
             <Label htmlFor="name">Seu Nome</Label>
@@ -220,13 +223,22 @@ export function CreateUser() {
             )}
           </div>
 
-          <div className="flex flex-col-reverse gap-3 mt-2 md:flex-row md:gap-5 md:ml-auto md:mt-auto md:col-span-2">
+          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2">
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => reset()} type="button">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => reset()}
+                type="button"
+              >
                 Cancelar
               </Button>
             </DialogClose>
-            <Button disabled={createUserMutation.isPending} type="submit">
+            <Button
+              className="flex-1"
+              disabled={createUserMutation.isPending}
+              type="submit"
+            >
               {createUserMutation.isPending ? 'Salvando' : ' Salvar'}
             </Button>
           </div>
