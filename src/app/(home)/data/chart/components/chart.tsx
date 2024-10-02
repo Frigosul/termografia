@@ -6,6 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { formattedDateTime } from '@/utils/formatted-datetime'
 import { formattedTime } from '@/utils/formatted-time'
 
 import Image from 'next/image'
@@ -80,19 +81,24 @@ export function Chart({
   const interval = Number(
     (Math.abs(Number(maxValue) - Number(minValue)) + 1).toFixed(0),
   )
-  const formattedOpenDate = String(dateOpen).replace('T', ' ')
-  const formattedCloseDate = String(dateClose).replace('T', ' ')
+
   const formattedData = data.map((item) => {
     return {
       time: formattedTime(new Date(item.time)),
       temp: item.temp,
     }
   })
+  const formattedDateClose = formattedDateTime(dateClose)
+  const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
     <div>
-      <div className="flex justify-between mb-4 px-4">
-        <Image src={logo} alt="Logo Frigosul" className="w-52" />
+      <div className="flex flex-col gap-3 md:gap-0 md:flex-row justify-between mb-4 px-4">
+        <Image
+          src={logo}
+          alt="Logo Frigosul"
+          className="w-full h-10 md:w-52 md:h-full "
+        />
         <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
           <span>
             Empresa:{' '}
@@ -110,19 +116,19 @@ export function Chart({
           </span>
         </div>
       </div>
-      <div className="relative border border-card-foreground rounded-md py-4 ">
-        <div className="absolute right-9 top-9 min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-2 px-3 text-xs font-light flex flex-col gap-1">
+      <div className="relative border border-card-foreground rounded-md py-4 overflow-auto">
+        <div className="absolute right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
           <div className="flex justify-between">
             <span>Local: </span>
             <span>{local}</span>
           </div>
           <div className="flex justify-between">
             <span>Fechamento: </span>
-            <span>{formattedCloseDate}</span>
+            <span>{formattedDateClose}</span>
           </div>
           <div className="flex justify-between">
             <span>Abertura: </span>
-            <span>{formattedOpenDate}</span>
+            <span>{formattedDateOpen}</span>
           </div>
         </div>
         <ChartContainer config={chartConfig} className="min-h-[13.5rem]">

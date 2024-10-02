@@ -16,10 +16,12 @@ export default function Home() {
   if (error) return <p>Erro ao buscar dados</p>
   if (!data) return null
   return (
-    <main className="grid grid-cols-home justify-center gap-2 pt-3 overflow-y-scroll">
-      {data.map((chamber, index) => {
-        return <Chart key={index} chart={chamber} />
-      })}
+    <main className="flex-1  overflow-y-scroll">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-home px-2 justify-center gap-2 pt-3 ">
+        {data.map((chamber, index) => {
+          return <Chart key={index} chart={chamber} />
+        })}
+      </div>
     </main>
   )
 }

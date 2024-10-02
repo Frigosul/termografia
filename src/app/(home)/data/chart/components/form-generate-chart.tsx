@@ -137,10 +137,10 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
   return (
     <form
       onSubmit={handleSubmit(handleGenerateDataChart)}
-      className="gap-2  flex flex-col items-start"
+      className="gap-2 flex flex-col items-center md:items-start"
     >
       <TooltipProvider>
-        <div className="flex w-full gap-3">
+        <div className="flex flex-col w-full md:flex-row gap-2 md:gap-3">
           <div className="space-y-2 flex-1 h-20 ">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -255,8 +255,8 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
           </div>
         </div>
 
-        <div className="flex w-full items-end gap-2">
-          <div className="space-y-2 w-20 flex-1 h-20">
+        <div className="flex flex-wrap w-full  items-end  gap-2 overflow-hidden">
+          <div className="space-y-2 md:min-w-44 lg:min-w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -282,7 +282,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-20 flex-1 h-20">
+          <div className="space-y-2 md:min-w-44 lg:min-w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -309,7 +309,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-32 flex-1 h-20">
+          <div className="space-y-2 min-w-28  md:min-w-44 lg:min-w-20 flex-1 h-20">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
@@ -334,118 +334,122 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </p>
             )}
           </div>
-          <div className="space-y-2 w-20 flex-1 h-20">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Label className="font-light text-sm" htmlFor="minValue">
-                    Valor Min.
-                  </Label>
+          <div className="flex md:flex-1 md:min-w-56 lg:min-w-44 h-20 gap-2 ">
+            <div className="space-y-2 flex-1 ">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="font-light text-sm" htmlFor="minValue">
+                      Valor Min.
+                    </Label>
 
-                  <Input
-                    id="minValue"
-                    type="number"
-                    className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('minValue', {
-                      valueAsNumber: true,
-                    })}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Valor mínimo do gráfico, deixe em branco para ser automático.
-              </TooltipContent>
-            </Tooltip>
-            {errors.minValue?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.minValue?.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2 w-20 flex-1 h-20">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Label className="font-light text-sm" htmlFor="maxValue">
-                    Valor Max.
-                  </Label>
+                    <Input
+                      id="minValue"
+                      type="number"
+                      className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      {...register('minValue', {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Valor mínimo do gráfico, deixe em branco para ser automático.
+                </TooltipContent>
+              </Tooltip>
+              {errors.minValue?.message && (
+                <p className="text-red-500 text-sm font-light">
+                  {errors.minValue?.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2 flex-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="font-light text-sm" htmlFor="maxValue">
+                      Valor Max.
+                    </Label>
 
-                  <Input
-                    id="maxValue"
-                    type="number"
-                    className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('maxValue', {
-                      valueAsNumber: true,
-                    })}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Valor máximo do gráfico, deixe em branco para ser automático.
-              </TooltipContent>
-            </Tooltip>
-            {errors.maxValue?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.maxValue?.message}
-              </p>
-            )}
+                    <Input
+                      id="maxValue"
+                      type="number"
+                      className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      {...register('maxValue', {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Valor máximo do gráfico, deixe em branco para ser automático.
+                </TooltipContent>
+              </Tooltip>
+              {errors.maxValue?.message && (
+                <p className="text-red-500 text-sm font-light">
+                  {errors.maxValue?.message}
+                </p>
+              )}
+            </div>
           </div>
-          <div className="space-y-2 h-20">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Label className="font-light text-sm" htmlFor="startDate">
-                    Data Inicial
-                  </Label>
-                  <Input
-                    id="startDate"
-                    type="datetime-local"
-                    min="2000-01-01T00:00"
-                    max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
-                    {...register('startDate')}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Data e hora inicial para gerar o gráfico.
-              </TooltipContent>
-            </Tooltip>
-            {errors.startDate?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.startDate?.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2 h-20">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Label className="font-light text-sm" htmlFor="endDate">
-                    Data Final
-                  </Label>
-                  <Input
-                    id="endDate"
-                    type="datetime-local"
-                    min="2000-01-01T00:00"
-                    max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
-                    {...register('endDate')}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Data e hora final para gerar o gráfico.
-              </TooltipContent>
-            </Tooltip>
-            {errors.endDate?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.endDate?.message}
-              </p>
-            )}
+          <div className="flex w-full flex-1 gap-2">
+            <div className="space-y-2 w-full h-20">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="font-light text-sm" htmlFor="startDate">
+                      Data Inicial
+                    </Label>
+                    <Input
+                      id="startDate"
+                      type="datetime-local"
+                      min="2000-01-01T00:00"
+                      max="9999-12-31T23:59"
+                      className="dark:bg-slate-900 [appearance:textfield] [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      {...register('startDate')}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Data e hora inicial para gerar o gráfico.
+                </TooltipContent>
+              </Tooltip>
+              {errors.startDate?.message && (
+                <p className="text-red-500 text-sm font-light">
+                  {errors.startDate?.message}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2 w-full h-20">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Label className="font-light text-sm" htmlFor="endDate">
+                      Data Final
+                    </Label>
+                    <Input
+                      id="endDate"
+                      type="datetime-local"
+                      min="2000-01-01T00:00"
+                      max="9999-12-31T23:59"
+                      className="dark:bg-slate-900 "
+                      {...register('endDate')}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Data e hora final para gerar o gráfico.
+                </TooltipContent>
+              </Tooltip>
+              {errors.endDate?.message && (
+                <p className="text-red-500 text-sm font-light">
+                  {errors.endDate?.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex w-full gap-3 items-end">
+        <div className="flex flex-col md:flex-row w-full gap-3  md:items-end ">
           <div className="space-y-2 flex-1">
             <Label className="font-light text-sm" htmlFor="description">
               Informações adicionais

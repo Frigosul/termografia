@@ -74,9 +74,6 @@ const config = {
         form: 'repeat(auto-fit, minmax(150px, 470px))',
         home: 'repeat(auto-fit, minmax(330px, 340px))',
       },
-      gridTemplateRows: {
-        home: 'minmax(190px, 200px)',
-      },
     },
   },
   plugins: [

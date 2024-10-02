@@ -1,5 +1,4 @@
 import {
-  BadgeInfo,
   BetweenHorizontalEnd,
   Database,
   LayoutGrid,
@@ -42,10 +41,7 @@ export function SideBar() {
           <BetweenHorizontalEnd size={20} />
           Gerenciar equipamentos
         </NavLink>
-        <NavLink href="/data/register-access">
-          <BadgeInfo size={20} />
-          Registro de acessos
-        </NavLink>
+
         <NavLink href="/auth/reset-password">
           <LockKeyhole size={20} />
           Alterar senha
