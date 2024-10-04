@@ -15,4 +15,17 @@ model User {
   userRole String
 
   createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+model Chamber {
+  id        String   @id @default(uuid())
+  name      String
+  type      String
+  status    String
+  value     Float // alter value to float
+  createdAt DateTime @default(now())
+
+  @@map("chambers")
 }

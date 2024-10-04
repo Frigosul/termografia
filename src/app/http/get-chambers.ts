@@ -3,11 +3,11 @@ type ChambersResponse = {
   name: string
   type: 'temp' | 'press'
   status: 'deg' | 'vent' | 'comp' | 'port'
-  value: number
+  value: string
 }[]
 
 export async function getChambers(): Promise<ChambersResponse> {
-  const response = await fetch('http://localhost:3333/summary')
+  const response = await fetch('/api/chambers/summary')
   const data = await response.json()
   return data
 }

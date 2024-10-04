@@ -16,7 +16,7 @@ export function SideBar() {
       <p className="m-4 text-center text-xl uppercase tracking-tight font-medium">
         Menu
       </p>
-      <nav className="flex flex-col space-y-4 mt-5 flex-1 p-4">
+      <nav className="flex flex-col space-y-4 mt-5 flex-1 p-5">
         <NavLink href="/">
           <LayoutGrid size={20} />
           Home

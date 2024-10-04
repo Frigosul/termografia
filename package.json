@@ -1,11 +1,14 @@
 {
   "name": "termografia",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "start": "next start",
-    "json-server": "json-server --watch db.json -p 3333"
+    "start": "next start"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -20,6 +23,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
     "@rocketseat/eslint-config": "^2.2.2",
+    "@snaplet/seed": "^0.98.0",
     "@tanstack/react-query": "^5.56.2",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
@@ -49,6 +53,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^5.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
@@ -61,7 +66,10 @@
     "postcss": "^8",
     "prisma": "^5.20.0",
     "tailwindcss": "^3.4.5",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
     "typescript": "^5"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
   }
 }

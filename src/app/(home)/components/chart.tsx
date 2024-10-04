@@ -6,12 +6,12 @@ interface ChartProps {
     name: string
     type: 'temp' | 'press'
     status: 'deg' | 'vent' | 'comp' | 'port'
-    value: number
+    value: string
   }
 }
 
 export function Chart({ chart: { name, type, value, status } }: ChartProps) {
-  const valueInPercent = ((value + 100) / 200) * 100
+  const valueInPercent = ((Number(value) + 100) / 200) * 100
 
   const data = [
     { value: valueInPercent }, // Parte preenchida
@@ -45,7 +45,7 @@ export function Chart({ chart: { name, type, value, status } }: ChartProps) {
             {type === 'temp' ? <span> Temp.</span> : <span>Press.</span>}
           </p>
           <p className="text-center">
-            {value.toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
+            {Number(value).toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
           </p>
         </div>
       </div>
