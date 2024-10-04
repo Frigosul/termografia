@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 type UserRequest = {
   name: string
   userRole: 'Administrador' | 'Nível 1' | 'Nível 2'
@@ -11,7 +13,7 @@ export async function createUser({
   email,
   password,
 }: UserRequest) {
-  const response = await fetch(`http://localhost:3333/users`, {
+  const response = await fetchServer(`/api/users/create-user`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

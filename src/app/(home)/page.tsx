@@ -1,11 +1,10 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import dynamic from 'next/dynamic'
+
 import { getChambers } from '../http/get-chambers'
+import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
-const Chart = dynamic(() => import('@/app/(home)/components/chart'), {
-  ssr: false,
-})
+
 export default function Home() {
   const { data, isLoading } = useQuery({
     queryKey: ['list-chambers'],

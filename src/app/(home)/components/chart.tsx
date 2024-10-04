@@ -10,7 +10,7 @@ interface ChartProps {
   }
 }
 
-const Chart = ({ chart: { name, type, value, status } }: ChartProps) => {
+export function Chart({ chart: { name, type, value, status } }: ChartProps) {
   const valueInPercent = ((value + 100) / 200) * 100
 
   const data = [
@@ -78,5 +78,3 @@ const Chart = ({ chart: { name, type, value, status } }: ChartProps) => {
     </div>
   )
 }
-
-export default Chart

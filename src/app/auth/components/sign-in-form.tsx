@@ -3,9 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useSignIn } from '@/hooks/useSignIn'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -23,17 +22,17 @@ const signInForm = z.object({
 type SignInForm = z.infer<typeof signInForm>
 
 export function SignInForm() {
-  const route = useRouter()
+  // const route = useRouter()
 
-  const signInMutation = useSignIn(
-    (data) => {
-      console.log('login success' + data.token)
-      route.push('/')
-    },
-    (error) => {
-      alert(error.message)
-    },
-  )
+  // const signInMutation = useSignIn(
+  //   (data) => {
+  //     console.log('login success' + data.token)
+  //     route.push('/')
+  //   },
+  //   (error) => {
+  //     alert(error.message)
+  //   },
+  // )
   const {
     register,
     handleSubmit,
@@ -41,9 +40,13 @@ export function SignInForm() {
   } = useForm<SignInForm>({ resolver: zodResolver(signInForm) })
 
   async function handleSignIn(data: SignInForm) {
-    signInMutation.mutateAsync({
-      email: data.email,
-      password: data.password,
+    // signInMutation.mutateAsync({
+    //   email: data.email,
+    //   password: data.password,
+    // })
+    signIn('credentials', {
+      ...data,
+      redirectTo: '/',
     })
   }
 

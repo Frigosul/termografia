@@ -42,9 +42,10 @@ const updateUserSchema = z
     confirm_email: z.string(),
     password: z
       .string()
-      .min(8, { message: 'A senha precisa ter no mínimo 8 caracteres.' })
-      .max(20),
-    confirm_password: z.string(),
+      .min(8, { message: ' A senha deve ter no mínimo 8 caracteres' })
+      .max(100)
+      .or(z.string().max(0)),
+    confirm_password: z.string().optional(),
 
     userRole: z.enum(['Administrador', 'Nível 1', 'Nível 2'], {
       message:
@@ -70,14 +71,13 @@ const updateUserSchema = z
 
 type UpdateUserForm = z.infer<typeof updateUserSchema>
 
-export function UpdateUser({ id, email, name, password, userRole }: User) {
+export function UpdateUser({ id, email, name, userRole }: User) {
   const [isOpen, setIsOpen] = useState(false)
   const {
     register,
     reset,
     handleSubmit,
     control,
-
     formState: { errors },
   } = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
@@ -85,8 +85,6 @@ export function UpdateUser({ id, email, name, password, userRole }: User) {
       name,
       email,
       confirm_email: email,
-      password,
-      confirm_password: password,
       userRole,
     },
   })

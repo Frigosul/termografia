@@ -3,7 +3,7 @@ interface DeleteUserRequest {
 }
 
 export async function deleteUser({ userId }: DeleteUserRequest): Promise<void> {
-  const response = await fetch(`http://localhost:3333/users/${userId}`, {
+  const response = await fetch(`/api/users/delete-user?userId=${userId}`, {
     method: 'DELETE',
   })
   if (response.ok) {
