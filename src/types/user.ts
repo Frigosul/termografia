@@ -1,7 +1,9 @@
+import { UserRolesType } from '@/utils/user-roles'
+
 export interface User {
   id: string
   name: string
-  userRole: 'Administrador' | 'Nível 1' | 'Nível 2'
+  userRole: UserRolesType
   email: string
   password: string
 }

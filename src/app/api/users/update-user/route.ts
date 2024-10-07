@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 
 export async function PUT(req: NextRequest) {
   const { name, email, password, userRole } = await req.json()
-  console.log(req.nextUrl.searchParams.get('userId'))
   const userId = req.nextUrl.searchParams.get('userId')!
 
   if (!name || !email || !userRole) {

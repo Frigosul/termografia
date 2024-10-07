@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { userRoles } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
 import { EllipsisVertical } from 'lucide-react'
 import { DeleteUser } from './delete-user'
@@ -55,7 +56,9 @@ export function ListUsers() {
               <TableCell className="border min-w-52 w-96">
                 {user.email}
               </TableCell>
-              <TableCell className="border min-w-40">{user.userRole}</TableCell>
+              <TableCell className="border min-w-40">
+                {userRoles[user.userRole] || user.userRole}
+              </TableCell>
               <TableCell className="text-center w-4 border ">
                 <Popover>
                   <PopoverTrigger className="h-4">

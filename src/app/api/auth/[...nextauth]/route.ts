@@ -1,50 +1,73 @@
-import NextAuth from 'next-auth'
-import Credentials from 'next-auth/providers/credentials'
-import { setCookie } from 'nookies'
+import { NextAuthOptions } from 'next-auth'
+import NextAuth from 'next-auth/next'
+import CredentialProvider from 'next-auth/providers/credentials'
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const authOptions: NextAuthOptions = {
   providers: [
-    Credentials({
+    CredentialProvider({
+      name: 'credentials',
       credentials: {
-        email: {},
-        password: {},
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Senha', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials) return null
-
         try {
           const response = await fetch(
-            `http://localhost:3333/users?email=${credentials.email}`,
-          )
-          const user = await response.json()
-          if (!user) {
-            return null
-          }
-          const responseData = await fetch(`http://localhost:3333/users`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+            'http://localhost:3000/api/users/sign-in',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
             },
-            body: JSON.stringify({
-              email: user.email,
-              password: credentials.password,
-            }),
-          })
-          if (responseData.status !== 200) return null
+          )
 
-          const authData = await responseData.json()
-          if (!authData.jwt || !authData.user) return null
+          if (response.status !== 200) return null
 
-          setCookie(null, 'token_jwt', authData.jwt)
+          const data = await response.json()
+          if (!data.token || !data.role) return null
 
           return {
-            id: authData.user.id,
-            email: authData.user.email,
-            name: authData.user.name,
+            id: data.token.id,
+            email: data.email,
+            role: data.role,
+            name: data.name,
           }
-        } catch (error) {}
-        return null
+        } catch (error) {
+          console.error('Erro na autenticação:', error)
+          return null
+        }
       },
     }),
   ],
-})
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = user.role
+      }
+
+      return token
+    },
+    async session({ session, token }) {
+      session.id = token.id as string
+      session.role = token.role as string
+
+      return session
+    },
+    async redirect() {
+      return '/'
+    },
+  },
+  pages: {
+    signIn: '/auth',
+    signOut: '/auth',
+  },
+}
+
+const handler = NextAuth(authOptions)
+
+export { handler as GET, handler as POST }

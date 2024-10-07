@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { User } from '@/types/user'
-import { userRoles } from '@/utils/user-roles'
+import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { NotebookPen } from 'lucide-react'
@@ -47,10 +47,12 @@ const updateUserSchema = z
       .or(z.string().max(0)),
     confirm_password: z.string().optional(),
 
-    userRole: z.enum(['Administrador', 'Nível 1', 'Nível 2'], {
-      message:
-        'Nível de usuário inválido, Escolha entre Administrador, Nível 1, Nível 2',
-    }),
+    userRole: z.enum(
+      Object.keys(userRoles) as [UserRolesType, ...UserRolesType[]],
+      {
+        message: `Nível de usuário inválido, Escolha entre ${Object.values(userRoles).join(', ')}`,
+      },
+    ),
   })
   .superRefine((value, ctx) => {
     if (value.confirm_password !== value.password) {
@@ -215,9 +217,9 @@ export function UpdateUser({ id, email, name, userRole }: User) {
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {userRoles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role}
+                    {Object.entries(userRoles).map(([value, name]) => (
+                      <SelectItem key={value} value={value}>
+                        {name}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -1,8 +1,9 @@
 import { fetchServer } from '@/middlewares/fetch-server'
+import { UserRolesType } from '@/utils/user-roles'
 
 type UserRequest = {
   name: string
-  userRole: 'Administrador' | 'Nível 1' | 'Nível 2'
+  userRole: UserRolesType
   email: string
   password: string
 }

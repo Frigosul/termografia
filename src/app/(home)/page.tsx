@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-
+import { useSession } from 'next-auth/react'
 import { getChambers } from '../http/get-chambers'
 import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
@@ -11,6 +11,8 @@ export default function Home() {
     queryFn: getChambers,
     staleTime: 1000 * 10, // 10 seconds
   })
+  const { data: session } = useSession()
+  console.log(session)
 
   return (
     <main className="flex-1  overflow-y-scroll">

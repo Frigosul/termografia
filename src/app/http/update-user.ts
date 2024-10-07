@@ -1,13 +1,15 @@
+import { UserRolesType } from '@/utils/user-roles'
+
 type UserResponse = {
   id: string
   name: string
-  userRole: 'Administrador' | 'Nível 1' | 'Nível 2'
+  userRole: UserRolesType
   email: string
 }
 type UserRequest = {
   userId: string
   name: string
-  userRole: 'Administrador' | 'Nível 1' | 'Nível 2'
+  userRole: UserRolesType
   email: string
   password?: string
 }
