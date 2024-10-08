@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { CircleX } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const signInForm = z.object({
@@ -31,8 +33,30 @@ export function SignInForm() {
   } = useForm<SignInForm>({ resolver: zodResolver(signInForm) })
 
   async function handleSignIn(data: SignInForm) {
-    signIn('credentials', data)
-    router.push('/')
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      })
+
+      if (!result || result.error) {
+        toast.error('Usuário ou senha inválidos. Tente novamente.', {
+          richColors: true,
+          position: 'top-right',
+          icon: <CircleX />,
+        })
+      } else {
+        router.push('/')
+      }
+    } catch (error) {
+      // Trata erros inesperados e mostra toast com a mensagem de erro
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+    }
   }
 
   return (

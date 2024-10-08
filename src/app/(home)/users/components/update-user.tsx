@@ -24,9 +24,10 @@ import { User } from '@/types/user'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { NotebookPen } from 'lucide-react'
+import { CircleCheck, CircleX, NotebookPen } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const updateUserSchema = z
@@ -94,11 +95,21 @@ export function UpdateUser({ id, email, name, userRole }: User) {
   const queryClient = useQueryClient()
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['list-users'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['list-users'] })
+      toast.success('Usuário atualizado com sucesso', {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
       setIsOpen(false)
     },
     onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleX />,
+      })
       console.log('error' + error)
     },
   })

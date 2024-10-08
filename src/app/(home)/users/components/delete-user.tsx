@@ -12,21 +12,34 @@ import {
 } from '@/components/ui/dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { Trash2 } from 'lucide-react'
+import { CircleCheck, CircleX, Trash2 } from 'lucide-react'
 import { FormEvent } from 'react'
+import { toast } from 'sonner'
 
 interface DeleteUserProps {
   userId: string
 }
 
 export function DeleteUser({ userId }: DeleteUserProps) {
+  // const { toast } = useToast()
   const queryClient = useQueryClient()
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['list-users'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['list-users'] })
+      toast.success('Usuário deletado com sucesso', {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
     },
     onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+
       console.log('error' + error)
     },
   })

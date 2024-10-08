@@ -1,4 +1,5 @@
 import { ToggleTheme } from '@/components/toggle-theme'
+import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/context/theme-provider'
 import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/providers/auth-provider'
@@ -35,7 +36,10 @@ export default async function RootLayout({
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToggleTheme />
-            <ReactQueryProvider>{children}</ReactQueryProvider>
+            <ReactQueryProvider>
+              <Toaster />
+              {children}
+            </ReactQueryProvider>
           </ThemeProvider>
         </body>
       </AuthProvider>

@@ -58,8 +58,9 @@ const authOptions: NextAuthOptions = {
 
       return session
     },
-    async redirect() {
-      return '/'
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      return baseUrl
     },
   },
   pages: {

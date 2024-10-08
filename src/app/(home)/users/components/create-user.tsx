@@ -20,12 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus } from 'lucide-react'
+import { CircleCheck, CircleX, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 const signUpForm = z
@@ -76,11 +78,21 @@ export function CreateUser() {
   const queryClient = useQueryClient()
   const createUserMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['list-users'] })
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['list-users'] })
+      toast.success('Usuário cadastrado com sucesso', {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
       setIsOpen(false)
     },
     onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleX />,
+      })
       console.log('error' + error)
     },
   })
@@ -100,6 +112,7 @@ export function CreateUser() {
       userRole: data.userRole,
       password: data.password,
     })
+
     reset()
   }
 
