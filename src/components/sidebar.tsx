@@ -5,11 +5,10 @@ import {
   LayoutGrid,
   LineChart,
   LockKeyhole,
-  LogOut,
   ScrollText,
   Users,
 } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { NavLink } from './nav-link'
 
 export function SideBar() {
@@ -62,10 +61,6 @@ export function SideBar() {
             </NavLink>
           </>
         )}
-        <NavLink onClick={() => signOut()} href="/auth">
-          <LogOut size={20} className="rotate-180" />
-          Sair
-        </NavLink>
       </nav>
     </aside>
   )

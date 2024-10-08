@@ -1,6 +1,4 @@
-'use client'
 import { Cell, Pie, PieChart } from 'recharts'
-
 interface ChartProps {
   chart: {
     name: string

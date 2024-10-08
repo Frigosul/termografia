@@ -2,12 +2,20 @@
 import { NavLink } from '@/components/nav-link'
 import { Button } from '@/components/ui/button'
 import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
+import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import {
   BetweenHorizontalEnd,
   Database,
@@ -17,9 +25,10 @@ import {
   LogOut,
   Menu,
   ScrollText,
+  UserPen,
   Users,
 } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 export function SheetSidebar() {
   const { data: session } = useSession()
 
@@ -35,6 +44,40 @@ export function SheetSidebar() {
           Termografia
         </SheetTitle>
         <SheetDescription className="sr-only">Menu</SheetDescription>
+        <NavigationMenu className="my-4 flex items-center justify-center px-0 md:hidden">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="flex items-center justify-center gap-2">
+                <Avatar className="size-9 flex items-center justify-center">
+                  <AvatarImage
+                    className="rounded-full"
+                    // src="https://github.com/joaoeduardodias.png"
+                  />
+                  <AvatarFallback className="flex items-center justify-center bg-slate-500/50 rounded-full size-9">
+                    JD
+                  </AvatarFallback>
+                </Avatar>
+                João Dias
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <NavigationMenuList className="flex flex-col w-40 gap-3 p-2 items-start justify-center text-sm font-light">
+                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2 ml-1">
+                    <UserPen size={18} />
+                    Alterar Perfil
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2">
+                    <LockKeyhole size={16} />
+                    Alterar Senha
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2">
+                    <LogOut size={16} className="rotate-180" />
+                    Sair
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
         <nav className="flex flex-col space-y-4 h-full pb-12">
           <NavLink href="/">
             <LayoutGrid size={20} />
@@ -62,10 +105,6 @@ export function SheetSidebar() {
                 <Users size={20} />
                 Usuários
               </NavLink>
-              <NavLink href="/auth/reset-password">
-                <LockKeyhole size={20} />
-                Alterar senha
-              </NavLink>
             </>
           )}
 
@@ -77,10 +116,6 @@ export function SheetSidebar() {
               </NavLink>
             </>
           )}
-          <NavLink onClick={() => signOut()} href="/auth">
-            <LogOut size={20} className="rotate-180" />
-            Sair
-          </NavLink>
         </nav>
       </SheetContent>
     </Sheet>
