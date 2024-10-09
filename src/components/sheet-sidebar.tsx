@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import {
   BetweenHorizontalEnd,
   Database,
-  LayoutGrid,
+  House,
   LineChart,
   LockKeyhole,
   LogOut,
@@ -80,7 +80,7 @@ export function SheetSidebar() {
         </NavigationMenu>
         <nav className="flex flex-col space-y-4 h-full pb-12">
           <NavLink href="/">
-            <LayoutGrid size={20} />
+            <House size={20} />
             Home
           </NavLink>
           {session?.role === 'adm' && (

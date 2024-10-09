@@ -1,5 +1,6 @@
 'use client'
 import { getUsers } from '@/app/http/get-users'
+import { Button } from '@/components/ui/button'
 import {
   Popover,
   PopoverContent,
@@ -13,13 +14,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useModal } from '@/context/open-dialog'
 import { userRoles } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
-import { EllipsisVertical } from 'lucide-react'
+import { EllipsisVertical, NotebookPen, Trash2 } from 'lucide-react'
 import { DeleteUser } from './delete-user'
 import { UpdateUser } from './update-user'
 
 export function ListUsers() {
+  const { openModal } = useModal()
   const {
     data: users,
     error,
@@ -59,12 +62,20 @@ export function ListUsers() {
               <TableCell className="border min-w-40">
                 {userRoles[user.userRole] || user.userRole}
               </TableCell>
-              <TableCell className="text-center w-4 border ">
+              <TableCell className="text-center w-4 border">
                 <Popover>
                   <PopoverTrigger className="h-4">
                     <EllipsisVertical size={18} />
                   </PopoverTrigger>
                   <PopoverContent className="space-y-2 w-30 mr-9">
+                    <Button
+                      variant="ghost"
+                      className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
+                      onClick={() => openModal('update-modal')}
+                    >
+                      <NotebookPen size={19} />
+                      Editar
+                    </Button>
                     <UpdateUser
                       id={user.id}
                       email={user.email}
@@ -72,6 +83,14 @@ export function ListUsers() {
                       password={user.password}
                       userRole={user.userRole}
                     />
+                    <Button
+                      variant="ghost"
+                      className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
+                      onClick={() => openModal('delete-modal')}
+                    >
+                      <Trash2 size={20} />
+                      Excluir
+                    </Button>
                     <DeleteUser userId={user.id} />
                   </PopoverContent>
                 </Popover>

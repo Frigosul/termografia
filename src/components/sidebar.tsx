@@ -2,9 +2,8 @@
 import {
   BetweenHorizontalEnd,
   Database,
-  LayoutGrid,
+  House,
   LineChart,
-  LockKeyhole,
   ScrollText,
   Users,
 } from 'lucide-react'
@@ -21,7 +20,7 @@ export function SideBar() {
       </p>
       <nav className="flex flex-col space-y-4 mt-5 flex-1 p-5 min-w-64">
         <NavLink href="/">
-          <LayoutGrid size={20} />
+          <House size={20} />
           Home
         </NavLink>
         {session?.role === 'adm' && (
@@ -46,10 +45,10 @@ export function SideBar() {
               <Users size={20} />
               Usuários
             </NavLink>
-            <NavLink href="/auth/reset-password">
+            {/* <NavLink href="/auth/reset-password">
               <LockKeyhole size={20} />
               Alterar senha
-            </NavLink>
+            </NavLink> */}
           </>
         )}
 

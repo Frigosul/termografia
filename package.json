@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "server": "json-server --watch db.json --port 3333"
   },
   "prisma": {
     "seed": "tsx prisma/seed/seed.ts"

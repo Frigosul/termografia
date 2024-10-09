@@ -1,15 +1,14 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
 const prisma = new PrismaClient()
 
 export async function PUT(req: NextRequest) {
-  const { name, email, password, userRole } = await req.json()
+  const { name, email, userRole } = await req.json()
   const userId = req.nextUrl.searchParams.get('userId')!
 
   if (!name || !email || !userRole) {
     return NextResponse.json(
-      { message: 'name or email or password or user role missing' },
+      { message: 'name or email  or user role missing' },
       { status: 400 },
     )
   }
@@ -19,15 +18,11 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ message: 'User not exist' }, { status: 404 })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 8)
-    const newPassword = password ? hashedPassword : existingUser.password
-
     const updateUser = await prisma.user.update({
       where: { id: userId },
       data: {
         name,
         email,
-        password: newPassword,
         userRole,
       },
     })

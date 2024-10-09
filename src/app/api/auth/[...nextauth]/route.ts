@@ -30,8 +30,12 @@ const authOptions: NextAuthOptions = {
           const data = await response.json()
           if (!data.token || !data.role) return null
 
+          const parseJWT = await JSON.parse(
+            Buffer.from(data.token.split('.')[1], 'base64').toString(),
+          )
+
           return {
-            id: data.token.id,
+            id: parseJWT.userId,
             email: data.email,
             role: data.role,
             name: data.name,

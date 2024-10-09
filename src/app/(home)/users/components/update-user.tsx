@@ -3,12 +3,10 @@ import { updateUser } from '@/app/http/update-user'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -20,12 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useModal } from '@/context/open-dialog'
 import { User } from '@/types/user'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CircleCheck, CircleX, NotebookPen } from 'lucide-react'
-import { useState } from 'react'
+import { CircleCheck, CircleX } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -41,12 +39,6 @@ const updateUserSchema = z
       .email({ message: 'Digite um e-mail válido.' })
       .toLowerCase(),
     confirm_email: z.string(),
-    password: z
-      .string()
-      .min(8, { message: ' A senha deve ter no mínimo 8 caracteres' })
-      .max(100)
-      .or(z.string().max(0)),
-    confirm_password: z.string().optional(),
 
     userRole: z.enum(
       Object.keys(userRoles) as [UserRolesType, ...UserRolesType[]],
@@ -56,13 +48,6 @@ const updateUserSchema = z
     ),
   })
   .superRefine((value, ctx) => {
-    if (value.confirm_password !== value.password) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['confirm_password'],
-        message: 'As senhas não coincidem.',
-      })
-    }
     if (value.email !== value.confirm_email) {
       ctx.addIssue({
         code: 'custom',
@@ -75,7 +60,8 @@ const updateUserSchema = z
 type UpdateUserForm = z.infer<typeof updateUserSchema>
 
 export function UpdateUser({ id, email, name, userRole }: User) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { modals, closeModal } = useModal()
+
   const {
     register,
     reset,
@@ -102,7 +88,7 @@ export function UpdateUser({ id, email, name, userRole }: User) {
         position: 'top-right',
         icon: <CircleCheck />,
       })
-      setIsOpen(false)
+      closeModal('update-modal')
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
@@ -119,21 +105,20 @@ export function UpdateUser({ id, email, name, userRole }: User) {
       userId: id,
       email: data.email,
       name: data.name,
-      password: data.password,
       userRole: data.userRole,
     })
     reset()
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={modals['update-modal']}
+      onOpenChange={(open) => (open ? null : closeModal('update-modal'))}
+    >
       <DialogDescription className="sr-only">
         Modal de edição de usuário
       </DialogDescription>
-      <DialogTrigger className="flex gap-2 text-muted-foreground font-normal items-center justify-center hover:text-foreground">
-        <NotebookPen size={19} />
-        Editar
-      </DialogTrigger>
+
       <DialogContent className="w-11/12 rounded-md md:max-w-3xl lg:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle className="text-sm lg:text-base text-left">
@@ -155,6 +140,33 @@ export function UpdateUser({ id, email, name, userRole }: User) {
             {errors.name?.message && (
               <p className="text-red-500 text-sm font-light">
                 {errors.name?.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="userRole">Tipo de Usuário</Label>
+            <Controller
+              name="userRole"
+              control={control}
+              defaultValue={userRole}
+              render={({ field: { onChange, value, ref } }) => (
+                <Select onValueChange={onChange} value={value} name="userRole">
+                  <SelectTrigger ref={ref}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(userRoles).map(([value, name]) => (
+                      <SelectItem key={value} value={value}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.userRole && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.userRole.message}
               </p>
             )}
           </div>
@@ -187,74 +199,20 @@ export function UpdateUser({ id, email, name, userRole }: User) {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
-            <Label htmlFor="password">Sua senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Digite sua senha..."
-              {...register('password')}
-            />
-            {errors.password?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.password?.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2 ">
-            <Label htmlFor="confirm_password">Confirme sua senha</Label>
-            <Input
-              id="confirm_password"
-              type="password"
-              placeholder="Confirme sua senha..."
-              autoComplete="off"
-              {...register('confirm_password')}
-            />
-            {errors.confirm_password?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.confirm_password?.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2 ">
-            <Label htmlFor="userRole">Tipo de Usuário</Label>
-            <Controller
-              name="userRole"
-              control={control}
-              defaultValue={userRole}
-              render={({ field: { onChange, value, ref } }) => (
-                <Select onValueChange={onChange} value={value} name="userRole">
-                  <SelectTrigger ref={ref}>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(userRoles).map(([value, name]) => (
-                      <SelectItem key={value} value={value}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.userRole && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.userRole.message}
-              </p>
-            )}
-          </div>
 
-          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2">
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => reset()}
-                type="button"
-              >
-                Cancelar
-              </Button>
-            </DialogClose>
+          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2 mt-1">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                closeModal('update-modal')
+                reset()
+              }}
+              type="button"
+            >
+              Cancelar
+            </Button>
+
             <Button
               className="flex-1"
               disabled={updateUserMutation.isPending}

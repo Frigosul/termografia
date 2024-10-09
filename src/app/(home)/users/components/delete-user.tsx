@@ -8,8 +8,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
+import { useModal } from '@/context/open-dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { CircleCheck, CircleX, Trash2 } from 'lucide-react'
@@ -21,7 +21,7 @@ interface DeleteUserProps {
 }
 
 export function DeleteUser({ userId }: DeleteUserProps) {
-  // const { toast } = useToast()
+  const { modals, closeModal } = useModal()
   const queryClient = useQueryClient()
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
@@ -50,11 +50,10 @@ export function DeleteUser({ userId }: DeleteUserProps) {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger className="flex gap-2 text-muted-foreground font-normal items-center justify-center hover:text-foreground">
-        <Trash2 size={20} />
-        Excluir
-      </DialogTrigger>
+    <Dialog
+      open={modals['delete-modal']}
+      onOpenChange={(open) => (open ? null : closeModal('delete-modal'))}
+    >
       <DialogContent className="w-11/12 rounded-md">
         <DialogHeader className="flex items-center justify-center pb-4 border-b">
           <Trash2 className="text-red-600" size={48} strokeWidth={1} />
