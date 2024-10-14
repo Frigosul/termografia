@@ -24,7 +24,7 @@ model Chamber {
   name      String
   type      String
   status    String
-  value     Float // alter value to float
+  value     Float
   createdAt DateTime @default(now())
 
   @@map("chambers")
