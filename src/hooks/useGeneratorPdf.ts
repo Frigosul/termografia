@@ -16,6 +16,7 @@ export const useGeneratePDF = () => {
     const imgData = canvas.toDataURL('image/png')
 
     // Cria um novo PDF com jsPDF
+    // eslint-disable-next-line new-cap
     const pdf = new jsPDF('p', 'mm', 'a4')
 
     // Define a largura e altura do PDF
