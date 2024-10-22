@@ -8,24 +8,47 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
-  userRole String
-
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  userRole  String
   createdAt DateTime @default(now())
 
   @@map("users")
 }
 
-model Chamber {
-  id        String   @id @default(uuid())
-  name      String
-  type      String
-  status    String
-  value     Float
-  createdAt DateTime @default(now())
+model Instrument {
+  id            String                   @id @default(uuid())
+  name          String                   @unique
+  type          String
+  status        String
+  isSensorError Boolean                  @default(false)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @default(now())
+  temperatures  InstrumentsTemperature[]
 
-  @@map("chambers")
+  @@map("instruments")
+}
+
+model Temperature {
+  id            String                   @id @default(uuid())
+  value         Float
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @default(now())
+  userUpdatedAt String?
+  editValue     Float
+  instruments   InstrumentsTemperature[]
+
+  @@map("temperatures")
+}
+
+model InstrumentsTemperature {
+  instruments    Instrument  @relation(fields: [instrument_id], references: [id])
+  instrument_id  String
+  temperature    Temperature @relation(fields: [temperature_id], references: [id])
+  temperature_id String
+
+  @@id([instrument_id, temperature_id])
+  @@map("temperature_instrument")
 }

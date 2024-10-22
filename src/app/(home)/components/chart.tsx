@@ -1,19 +1,21 @@
 import { Cell, Pie, PieChart } from 'recharts'
 interface ChartProps {
-  chart: {
+  data: {
+    id: string
     name: string
     type: 'temp' | 'press'
-    status: 'deg' | 'vent' | 'comp' | 'port'
-    value: string
+    status: 'deg' | 'resf' | 'vent' | 'port'
+    isSensorError: boolean
+    temperature: number
   }
 }
 
-export function Chart({ chart: { name, type, value, status } }: ChartProps) {
-  const valueInPercent = ((Number(value) + 100) / 200) * 100
+export function Chart({ data: { name, type, temperature, status } }: ChartProps) {
+  const temperatureInPercent = ((Number(temperature) + 100) / 200) * 100
 
   const data = [
-    { value: valueInPercent }, // Parte preenchida
-    { value: 100 - valueInPercent }, // Parte não preenchida
+    { value: temperatureInPercent }, // Parte preenchida
+    { value: 100 - temperatureInPercent }, // Parte não preenchida
   ]
 
   const COLORS = ['#2178db', '#93b1e4']
@@ -43,7 +45,7 @@ export function Chart({ chart: { name, type, value, status } }: ChartProps) {
             {type === 'temp' ? <span> Temp.</span> : <span>Press.</span>}
           </p>
           <p className="text-center">
-            {Number(value).toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
+            {Number(temperature).toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
           </p>
         </div>
       </div>
@@ -61,9 +63,9 @@ export function Chart({ chart: { name, type, value, status } }: ChartProps) {
           />
         </span>
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
-          COMP.
+          REFR.
           <div
-            className={`size-3 lg:size-4 rounded-full ${status === 'comp' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+            className={`size-3 lg:size-4 rounded-full ${status === 'resf' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
           />
         </span>
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">

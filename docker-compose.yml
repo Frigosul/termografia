@@ -1,0 +1,11 @@
+
+services:
+  db:
+    image: postgres:17 
+    container_name: postgres_db_termografia
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: termografia 
+      POSTGRES_DB: db_termografia
+    ports:
+      - "5432:5432"
