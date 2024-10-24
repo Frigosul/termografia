@@ -24,6 +24,7 @@ model Instrument {
   type          String
   status        String
   isSensorError Boolean                  @default(false)
+  displayOrder  Int                      @default(autoincrement())
   createdAt     DateTime                 @default(now())
   updatedAt     DateTime                 @default(now())
   temperatures  InstrumentsTemperature[]
@@ -34,8 +35,8 @@ model Instrument {
 model Temperature {
   id            String                   @id @default(uuid())
   value         Float
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @default(now())
+  createdAt     DateTime
+  updatedAt     DateTime?
   userUpdatedAt String?
   editValue     Float
   instruments   InstrumentsTemperature[]

@@ -22,6 +22,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+
+
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <AuthProvider>
@@ -32,13 +34,15 @@ export default async function RootLayout({
             fontSans.variable,
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ToggleTheme />
-            <ReactQueryProvider>
+
+          <ReactQueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <ToggleTheme />
               <Toaster />
               {children}
-            </ReactQueryProvider>
-          </ThemeProvider>
+            </ThemeProvider>
+
+          </ReactQueryProvider>
         </body>
       </AuthProvider>
     </html>

@@ -12,6 +12,7 @@ export default function PageChart() {
   const generateChartMutation = useMutation({
     mutationFn: generateChart,
     onSuccess: (data) => {
+      console.log(data)
       setDataChart(data)
     },
     onError: (error) => {
@@ -54,7 +55,7 @@ export default function PageChart() {
                   limit={dataChart.limit}
                   detour={dataChart.detour}
                   variationTemp={dataChart.variationTemp}
-                  local={dataChart.local}
+                  local={dataChart.name}
                   data={dataChart?.chartTemperature}
                 />
                 <Table data={dataChart?.tableTemperatureRange} />

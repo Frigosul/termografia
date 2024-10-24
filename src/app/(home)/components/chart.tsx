@@ -1,23 +1,22 @@
 import { Cell, Pie, PieChart } from 'recharts'
 interface ChartProps {
-  data: {
+  dataChart: {
     id: string
     name: string
     type: 'temp' | 'press'
-    status: 'deg' | 'resf' | 'vent' | 'port'
+    status: string
     isSensorError: boolean
     temperature: number
   }
 }
 
-export function Chart({ data: { name, type, temperature, status } }: ChartProps) {
-  const temperatureInPercent = ((Number(temperature) + 100) / 200) * 100
+export function Chart({ dataChart: { name, type, temperature, status } }: ChartProps) {
 
+  const temperatureInPercent = ((Number(temperature) + 100) / 200) * 100
   const data = [
     { value: temperatureInPercent }, // Parte preenchida
     { value: 100 - temperatureInPercent }, // Parte não preenchida
   ]
-
   const COLORS = ['#2178db', '#93b1e4']
 
   return (
@@ -40,11 +39,11 @@ export function Chart({ data: { name, type, temperature, status } }: ChartProps)
             ))}
           </Pie>
         </PieChart>
-        <div className="flex flex-col text-center space-y-1 mt-[-9rem]">
+        <div className="flex flex-col text-center space-y-1 mt-[-9.5rem]">
           <p className="text-center text-sm text-blue-800 dark:text-blue-500">
             {type === 'temp' ? <span> Temp.</span> : <span>Press.</span>}
           </p>
-          <p className="text-center">
+          <p className="text-center text-2xl">
             {Number(temperature).toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
           </p>
         </div>
@@ -53,25 +52,25 @@ export function Chart({ data: { name, type, temperature, status } }: ChartProps)
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
           DEGE.
           <div
-            className={`size-3 lg:size-4 rounded-full ${status === 'deg' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+            className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
           />
         </span>
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
           VENT.
           <div
-            className={`size-3 lg:size-4 rounded-full ${status === 'vent' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+            className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
           />
         </span>
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
-          REFR.
+          RESF.
           <div
-            className={`size-3 lg:size-4 rounded-full ${status === 'resf' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+            className={`size-3 lg:size-4 rounded-full ${status.includes('resf') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
           />
         </span>
         <span className="text-xs  font-normal lg:text-sm flex items-center justify-center gap-3">
           PORT.
           <div
-            className={`size-3 lg:size-4 rounded-full ${status === 'port' ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+            className={`size-3 lg:size-4 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
           />
         </span>
       </div>

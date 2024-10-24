@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -26,7 +27,7 @@ interface RowData {
   name: string
   active: boolean
   type: 'temp' | 'press' | 'temp/press'
-  orderBy: number
+  displayOrder: number
 }
 
 const searchDataSchema = z.object({
@@ -44,6 +45,7 @@ export function TableManagedEquipments() {
     console.log(data)
   }
 
+  //dados estão aqui
   const [data, setData] = useState<RowData[]>([
     {
       id: 1,
@@ -51,7 +53,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 01',
       type: 'temp/press',
       active: true,
-      orderBy: 1,
+      displayOrder: 1,
     },
     {
       id: 2,
@@ -59,7 +61,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 02',
       type: 'temp',
       active: true,
-      orderBy: 2,
+      displayOrder: 2,
     },
     {
       id: 3,
@@ -67,7 +69,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 03',
       type: 'temp/press',
       active: true,
-      orderBy: 3,
+      displayOrder: 3,
     },
     {
       id: 4,
@@ -75,7 +77,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 04',
       type: 'temp',
       active: true,
-      orderBy: 4,
+      displayOrder: 4,
     },
     {
       id: 5,
@@ -83,7 +85,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 05',
       type: 'press',
       active: true,
-      orderBy: 5,
+      displayOrder: 5,
     },
     {
       id: 6,
@@ -91,7 +93,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 06',
       type: 'temp',
       active: true,
-      orderBy: 6,
+      displayOrder: 6,
     },
     {
       id: 7,
@@ -99,7 +101,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 07',
       type: 'temp',
       active: true,
-      orderBy: 7,
+      displayOrder: 7,
     },
     {
       id: 8,
@@ -107,7 +109,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 08',
       type: 'temp',
       active: true,
-      orderBy: 8,
+      displayOrder: 8,
     },
     {
       id: 9,
@@ -115,7 +117,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 09',
       type: 'temp',
       active: true,
-      orderBy: 9,
+      displayOrder: 9,
     },
     {
       id: 10,
@@ -123,7 +125,7 @@ export function TableManagedEquipments() {
       name: 'Câmara 10',
       type: 'temp',
       active: true,
-      orderBy: 10,
+      displayOrder: 10,
     },
   ])
 
@@ -153,9 +155,9 @@ export function TableManagedEquipments() {
       prevData.map((item) =>
         item.id === rowId
           ? {
-              ...item,
-              [field]: field === 'equipment' ? Number(inputValue) : inputValue,
-            }
+            ...item,
+            [field]: field === 'equipment' ? Number(inputValue) : inputValue,
+          }
           : item,
       ),
     )
@@ -233,7 +235,8 @@ export function TableManagedEquipments() {
   }
 
   return (
-    <div className="flex flex-col w-full items-center justify-between border border-card-foreground rounded-md h-[30rem] overflow-hidden relative">
+    <div className="flex-1 flex flex-col overflow-hidden border border-card-foreground rounded-md">
+      {/* div form de busca */}
       <div className="flex justify-between w-full border-b border-card-foreground">
         <div className="flex gap-1">
           <Button variant="ghost" className="flex gap-1 hover:bg-green-400/30">
@@ -264,111 +267,114 @@ export function TableManagedEquipments() {
           </Button>
         </form>
       </div>
-      <Table className="border border-collapse rounded-md">
-        <TableHeader className="bg-card sticky z-10 top-0 border-b">
-          <TableRow>
-            <TableHead className="border text-card-foreground  text-center ">
-              Id
-            </TableHead>
-            <TableHead className="border text-card-foreground  text-center ">
-              Equipamento
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center w-60">
-              Nome de exibição
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center w-40">
-              Tipo
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center">
-              Ativo
-            </TableHead>
-            <TableHead className="border text-card-foreground ">
-              Order de exibição
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="overflow-y-scroll">
-          {data.map((row) => {
-            return (
-              <TableRow
-                key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
-              >
-                <TableCell className="border text-center w-24">
-                  {row.id}
-                </TableCell>
-                <TableCell className="border text-center">
-                  {row.equipment}
-                </TableCell>
-                <TableCell
-                  className="border text-center w-60"
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'name', row.name)
-                  }
+      <ScrollArea>
+        <ScrollBar className='bg-red-500' />
+        <Table className="border border-collapse">
+          <TableHeader className="bg-card sticky z-10 top-0 border-b">
+            <TableRow>
+              <TableHead className="border text-card-foreground  text-center ">
+                Id
+              </TableHead>
+              <TableHead className="border text-card-foreground  text-center ">
+                Equipamento
+              </TableHead>
+              <TableHead className="border text-card-foreground text-center w-60">
+                Nome de exibição
+              </TableHead>
+              <TableHead className="border text-card-foreground text-center w-40">
+                Tipo
+              </TableHead>
+              <TableHead className="border text-card-foreground text-center">
+                Ativo
+              </TableHead>
+              <TableHead className="border text-card-foreground ">
+                Order de exibição
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((row) => {
+              return (
+                <TableRow
+                  key={row.id}
+                  className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
                 >
-                  {editCell.rowId === row.id && editCell.field === 'name' ? (
-                    <input
-                      className="bg-transparent"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'name')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'name')}
-                      autoFocus
-                    />
-                  ) : (
-                    row.name
-                  )}
-                </TableCell>
-                <TableCell className=" text-center flex justify-between items-center w-40 px-4">
-                  {row.type}
-                  <Popover>
-                    <PopoverTrigger>
-                      <EllipsisVertical className="size-5" />
-                    </PopoverTrigger>
+                  <TableCell className="border text-center w-24">
+                    {row.id}
+                  </TableCell>
+                  <TableCell className="border text-center">
+                    {row.equipment}
+                  </TableCell>
+                  <TableCell
+                    className="border text-center w-60"
+                    onDoubleClick={() =>
+                      handleDoubleClick(row.id, 'name', row.name)
+                    }
+                  >
+                    {editCell.rowId === row.id && editCell.field === 'name' ? (
+                      <input
+                        className="bg-transparent"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onBlur={() => handleSave(row.id, 'name')}
+                        onKeyDown={(e) => handleKeyDown(e, row.id, 'name')}
+                        autoFocus
+                      />
+                    ) : (
+                      row.name
+                    )}
+                  </TableCell>
+                  <TableCell className=" text-center flex justify-between items-center w-40 px-4">
+                    {row.type}
+                    <Popover>
+                      <PopoverTrigger>
+                        <EllipsisVertical className="size-5" />
+                      </PopoverTrigger>
 
-                    <PopoverContent className="flex flex-col gap-4 w-40">
-                      <div className="flex items-center">
-                        <Checkbox value="temp" />
-                        <span className="text-sm ml-2 tracking-wider font-light">
-                          Temperatura
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <Checkbox value="press" />
-                        <span className="text-sm ml-2 tracking-wider font-light">
-                          Pressão
-                        </span>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TableCell>
-                <TableCell className="border text-center">
-                  <Checkbox defaultChecked={true} />
-                </TableCell>
-                <TableCell
-                  className="border text-center w-40 "
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'orderBy', row.orderBy)
-                  }
-                >
-                  {editCell.rowId === row.id && editCell.field === 'orderBy' ? (
-                    <input
-                      className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      type="number"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'orderBy')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'orderBy')}
-                    />
-                  ) : (
-                    row.orderBy
-                  )}
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+                      <PopoverContent className="flex flex-col gap-4 w-40">
+                        <div className="flex items-center">
+                          <Checkbox value="temp" />
+                          <span className="text-sm ml-2 tracking-wider font-light">
+                            Temperatura
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <Checkbox value="press" />
+                          <span className="text-sm ml-2 tracking-wider font-light">
+                            Pressão
+                          </span>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </TableCell>
+                  <TableCell className="border text-center">
+                    <Checkbox defaultChecked={true} />
+                  </TableCell>
+                  <TableCell
+                    className="border text-center w-40 "
+                    onDoubleClick={() =>
+                      handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
+                    }
+                  >
+                    {editCell.rowId === row.id && editCell.field === 'displayOrder' ? (
+                      <input
+                        className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        type="number"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onBlur={() => handleSave(row.id, 'displayOrder')}
+                        onKeyDown={(e) => handleKeyDown(e, row.id, 'displayOrder')}
+                      />
+                    ) : (
+                      row.displayOrder
+                    )}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </ScrollArea>
     </div>
   )
 }

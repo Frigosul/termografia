@@ -48,7 +48,7 @@ interface ChartProps {
   maxValue?: number
   data: {
     time: Date
-    temp: number
+    temperature: number
   }[]
 }
 export function Chart({
@@ -67,9 +67,9 @@ export function Chart({
       (acc, current) => {
         return {
           minValue:
-            current.temp < acc.minValue ? current.temp - 1 : acc.minValue,
+            current.temperature < acc.minValue ? current.temperature - 1 : acc.minValue,
           maxValue:
-            current.temp > acc.maxValue ? current.temp + 1 : acc.maxValue,
+            current.temperature > acc.maxValue ? current.temperature + 1 : acc.maxValue,
         }
       },
       { minValue: Infinity, maxValue: -Infinity },
@@ -85,7 +85,7 @@ export function Chart({
   const formattedData = data.map((item) => {
     return {
       time: formattedTime(new Date(item.time)),
-      temp: item.temp,
+      temp: item.temperature,
     }
   })
   const formattedDateClose = formattedDateTime(dateClose)

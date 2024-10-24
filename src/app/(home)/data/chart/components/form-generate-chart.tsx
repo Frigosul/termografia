@@ -3,6 +3,7 @@ import {
   GenerateChartRequest,
   GenerateChartResponse,
 } from '@/app/http/generate-chart'
+import { getInstruments } from '@/app/http/get-instruments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -23,17 +24,12 @@ import {
 import { useGeneratePDF } from '@/hooks/useGeneratorPdf'
 import { formattedDate } from '@/utils/formatted-date'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { RefObject, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const localChamber = [
-  'Câmara 01',
-  'Câmara 02',
-  'Câmara 03',
-  'Câmara 04',
-  'Câmara 05',
-]
+
 const graphVariation = [
   '10 minutos',
   '15 minutos',
@@ -52,20 +48,13 @@ const tableVariation = [
 
 const generateDataChart = z.object({
   localChamber: z
-    .string({ message: 'Selecione o local desejado.' })
-    .refine((value) => localChamber.includes(value), {
-      message: 'Local inválido. Escolha outro local.',
-    }),
+    .string({ message: 'Selecione o local desejado.' }),
   graphVariation: z
-    .string({ message: 'Defina a variação desejada no gráfico.' })
-    .refine((value) => graphVariation.includes(value), {
-      message: 'Variação inválida. Escolha outra variação.',
-    }),
+    .string({ message: 'Defina a variação desejada no gráfico.' }),
+
   tableVariation: z
-    .string({ message: 'Defina a variação desejada na tabela' })
-    .refine((value) => tableVariation.includes(value), {
-      message: 'Variação inválida. Escolha outra variação.',
-    }),
+    .string({ message: 'Defina a variação desejada na tabela' }),
+
   limit: z
     .union([z.number({ message: 'Defina um limite.' }), z.nan()])
     .optional(),
@@ -106,8 +95,14 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     control,
     formState: { isSubmitting, errors },
   } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
+  const { data, isLoading } = useQuery({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+  })
+
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
+
     await mutate({
       local: data.localChamber,
       graphVariation: data.graphVariation,
@@ -152,15 +147,17 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                     name="localChamber"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value}>
+                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
                         <SelectTrigger ref={ref} className="dark:bg-slate-900">
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Câmara 01">Câmara 01</SelectItem>
-                          <SelectItem value="Câmara 02">Câmara 02</SelectItem>
-                          <SelectItem value="Câmara 03">Câmara 03</SelectItem>
-                          <SelectItem value="Câmara 04">Câmara 04</SelectItem>
+                          {data?.map(item => {
+
+                            return (
+                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                            )
+                          })}
                         </SelectContent>
                       </Select>
                     )}
@@ -194,11 +191,11 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                           <SelectValue placeholder="Variação do gráfico" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="10 minutos">10 minutos</SelectItem>
-                          <SelectItem value="15 minutos">15 minutos</SelectItem>
-                          <SelectItem value="20 minutos">20 minutos</SelectItem>
-                          <SelectItem value="30 minutos">30 minutos</SelectItem>
-                          <SelectItem value="01 hora">01 hora</SelectItem>
+                          <SelectItem value="10">10 minutos</SelectItem>
+                          <SelectItem value="15">15 minutos</SelectItem>
+                          <SelectItem value="20">20 minutos</SelectItem>
+                          <SelectItem value="30">30 minutos</SelectItem>
+                          <SelectItem value="01">01 hora</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -231,12 +228,12 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                           <SelectValue placeholder="Variação da tabela" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="01 minuto">01 minuto</SelectItem>
-                          <SelectItem value="05 minutos">05 minutos</SelectItem>
-                          <SelectItem value="10 minutos">10 minutos</SelectItem>
-                          <SelectItem value="15 minutos">15 minutos</SelectItem>
-                          <SelectItem value="20 minutos">20 minutos</SelectItem>
-                          <SelectItem value="30 minutos">30 minutos</SelectItem>
+                          <SelectItem value="01">01 minuto</SelectItem>
+                          <SelectItem value="05">05 minutos</SelectItem>
+                          <SelectItem value="10">10 minutos</SelectItem>
+                          <SelectItem value="15">15 minutos</SelectItem>
+                          <SelectItem value="20">20 minutos</SelectItem>
+                          <SelectItem value="30">30 minutos</SelectItem>
                         </SelectContent>
                       </Select>
                     )}

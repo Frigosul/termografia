@@ -13,11 +13,11 @@ export type GenerateChartRequest = {
 }
 type TemperatureData = {
   time: Date
-  temp: number
+  temperature: number
 }
 export type GenerateChartResponse = {
   id: string
-  local: string
+  name: string
   chartType: 'temp' | 'press'
   dateClose: Date
   dateOpen: Date
@@ -43,7 +43,6 @@ export async function generateChart({
   endDate,
   description = '',
 }: GenerateChartRequest): Promise<GenerateChartResponse> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dataBody = {
     local,
     graphVariation,
@@ -55,9 +54,15 @@ export async function generateChart({
     maxValue,
     startDate,
     endDate,
-    description,
+
   }
-  const response = await fetch('http://localhost:3333/chart')
+  const response = await fetch('http://localhost:3000/api/instruments/generate-chart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dataBody)
+  })
   const data = await response.json()
 
   const dataAndValues = {
@@ -67,6 +72,7 @@ export async function generateChart({
     variationTemp,
     limit,
     detour,
+    description,
   }
 
   return dataAndValues
