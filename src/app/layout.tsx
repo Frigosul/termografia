@@ -1,5 +1,6 @@
 import { ToggleTheme } from '@/components/toggle-theme'
 import { Toaster } from '@/components/ui/sonner'
+import { AppearanceModeProvider } from '@/context/appearance-mode'
 import { cn } from '@/lib/utils'
 import { AuthProvider } from '@/providers/auth-provider'
 import { ReactQueryProvider } from '@/providers/react-query-provider'
@@ -27,21 +28,23 @@ export default async function RootLayout({
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <AuthProvider>
-        <body
-          suppressHydrationWarning={true}
-          className={cn(
-            'min-h-screen bg-background font-sans antialiased overflow-hidden',
-            fontSans.variable,
-          )}
-        >
-          <ReactQueryProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <ToggleTheme />
-              <Toaster />
-              {children}
-            </ThemeProvider>
-          </ReactQueryProvider>
-        </body>
+        <AppearanceModeProvider>
+          <body
+            suppressHydrationWarning={true}
+            className={cn(
+              'min-h-screen bg-background font-sans antialiased overflow-hidden',
+              fontSans.variable,
+            )}
+          >
+            <ReactQueryProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <ToggleTheme />
+                <Toaster />
+                {children}
+              </ThemeProvider>
+            </ReactQueryProvider>
+          </body>
+        </AppearanceModeProvider>
       </AuthProvider>
     </html>
   )

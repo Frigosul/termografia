@@ -1,8 +1,8 @@
 {
-  "name": "termografia",
+  "name": "sulterm",
   "version": "1.0.0",
   "type": "module",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "start": "next start",
