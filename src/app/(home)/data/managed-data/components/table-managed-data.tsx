@@ -149,10 +149,10 @@ export function TableManagedData() {
       prevData.map((item) =>
         item.id === rowId
           ? {
-              ...item,
-              [field]:
-                field === 'temperature' ? Number(inputValue) : inputValue,
-            }
+            ...item,
+            [field]:
+              field === 'temperature' ? Number(inputValue) : inputValue,
+          }
           : item,
       ),
     )
@@ -308,7 +308,7 @@ export function TableManagedData() {
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="overflow-y-scroll">
+        <TableBody className="overflow-y-auto">
           {data.map((row) => {
             return (
               <TableRow
@@ -322,7 +322,7 @@ export function TableManagedData() {
                   }
                 >
                   {editCell.rowId === row.id &&
-                  editCell.field === 'dateTime' ? (
+                    editCell.field === 'dateTime' ? (
                     <input
                       className="bg-transparent w-full"
                       type="text"
@@ -343,7 +343,7 @@ export function TableManagedData() {
                   }
                 >
                   {editCell.rowId === row.id &&
-                  editCell.field === 'temperature' ? (
+                    editCell.field === 'temperature' ? (
                     <input
                       className="bg-transparent w-full"
                       type="text"

@@ -7,7 +7,7 @@ export default function PageManagedEquipments() {
     <div className="flex-1 py-4 overflow-hidden">
       <Card className="w-4/5 max-w-6xl flex flex-col h-full mx-auto shadow-sm bg-muted dark:bg-slate-800 overflow-hidden">
         <CardHeader className="pb-1">
-          <CardTitle className="text-xl tracking-tight text-blue-600 dark:text-blue-500">
+          <CardTitle className="md:text-base xl:text-xl tracking-tight text-blue-600 dark:text-blue-500">
             Gerenciar Equipamentos
           </CardTitle>
         </CardHeader>

@@ -34,14 +34,12 @@ export default async function RootLayout({
             fontSans.variable,
           )}
         >
-
           <ReactQueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <ToggleTheme />
               <Toaster />
               {children}
             </ThemeProvider>
-
           </ReactQueryProvider>
         </body>
       </AuthProvider>

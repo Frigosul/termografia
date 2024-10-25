@@ -6,7 +6,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import {
   Table,
   TableBody,
@@ -267,114 +266,114 @@ export function TableManagedEquipments() {
           </Button>
         </form>
       </div>
-      <ScrollArea>
-        <ScrollBar className='bg-red-500' />
-        <Table className="border border-collapse">
-          <TableHeader className="bg-card sticky z-10 top-0 border-b">
-            <TableRow>
-              <TableHead className="border text-card-foreground  text-center ">
-                Id
-              </TableHead>
-              <TableHead className="border text-card-foreground  text-center ">
-                Equipamento
-              </TableHead>
-              <TableHead className="border text-card-foreground text-center w-60">
-                Nome de exibição
-              </TableHead>
-              <TableHead className="border text-card-foreground text-center w-40">
-                Tipo
-              </TableHead>
-              <TableHead className="border text-card-foreground text-center">
-                Ativo
-              </TableHead>
-              <TableHead className="border text-card-foreground ">
-                Order de exibição
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row) => {
-              return (
-                <TableRow
-                  key={row.id}
-                  className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
-                >
-                  <TableCell className="border text-center w-24">
-                    {row.id}
-                  </TableCell>
-                  <TableCell className="border text-center">
-                    {row.equipment}
-                  </TableCell>
-                  <TableCell
-                    className="border text-center w-60"
-                    onDoubleClick={() =>
-                      handleDoubleClick(row.id, 'name', row.name)
-                    }
-                  >
-                    {editCell.rowId === row.id && editCell.field === 'name' ? (
-                      <input
-                        className="bg-transparent"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onBlur={() => handleSave(row.id, 'name')}
-                        onKeyDown={(e) => handleKeyDown(e, row.id, 'name')}
-                        autoFocus
-                      />
-                    ) : (
-                      row.name
-                    )}
-                  </TableCell>
-                  <TableCell className=" text-center flex justify-between items-center w-40 px-4">
-                    {row.type}
-                    <Popover>
-                      <PopoverTrigger>
-                        <EllipsisVertical className="size-5" />
-                      </PopoverTrigger>
 
-                      <PopoverContent className="flex flex-col gap-4 w-40">
-                        <div className="flex items-center">
-                          <Checkbox value="temp" />
-                          <span className="text-sm ml-2 tracking-wider font-light">
-                            Temperatura
-                          </span>
-                        </div>
-                        <div className="flex items-center">
-                          <Checkbox value="press" />
-                          <span className="text-sm ml-2 tracking-wider font-light">
-                            Pressão
-                          </span>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </TableCell>
-                  <TableCell className="border text-center">
-                    <Checkbox defaultChecked={true} />
-                  </TableCell>
-                  <TableCell
-                    className="border text-center w-40 "
-                    onDoubleClick={() =>
-                      handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
-                    }
-                  >
-                    {editCell.rowId === row.id && editCell.field === 'displayOrder' ? (
-                      <input
-                        className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        type="number"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onBlur={() => handleSave(row.id, 'displayOrder')}
-                        onKeyDown={(e) => handleKeyDown(e, row.id, 'displayOrder')}
-                      />
-                    ) : (
-                      row.displayOrder
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </ScrollArea>
+
+      <Table className="border border-collapse">
+        <TableHeader className="bg-card sticky z-10 top-0 border-b">
+          <TableRow>
+            <TableHead className="border text-card-foreground  text-center">
+              Id
+            </TableHead>
+            <TableHead className="border text-card-foreground  text-center">
+              Equipamento
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-60">
+              Nome de exibição
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-36">
+              Tipo
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-8">
+              Ativo
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-40">
+              Order de exibição
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((row) => {
+            return (
+              <TableRow
+                key={row.id}
+                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
+              >
+                <TableCell className="border text-center w-24">
+                  {row.id}
+                </TableCell>
+                <TableCell className="border text-center">
+                  {row.equipment}
+                </TableCell>
+                <TableCell
+                  className="border text-center w-60"
+                  onDoubleClick={() =>
+                    handleDoubleClick(row.id, 'name', row.name)
+                  }
+                >
+                  {editCell.rowId === row.id && editCell.field === 'name' ? (
+                    <input
+                      className="bg-transparent"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onBlur={() => handleSave(row.id, 'name')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'name')}
+                      autoFocus
+                    />
+                  ) : (
+                    row.name
+                  )}
+                </TableCell>
+                <TableCell className=" text-center flex justify-between items-center w-40 px-4">
+                  {row.type}
+                  <Popover>
+                    <PopoverTrigger>
+                      <EllipsisVertical className="size-5" />
+                    </PopoverTrigger>
+
+                    <PopoverContent className="flex flex-col gap-4 w-40">
+                      <div className="flex items-center">
+                        <Checkbox value="temp" />
+                        <span className="text-sm ml-2 tracking-wider font-light">
+                          Temperatura
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <Checkbox value="press" />
+                        <span className="text-sm ml-2 tracking-wider font-light">
+                          Pressão
+                        </span>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </TableCell>
+                <TableCell className="border text-center min-w-8">
+                  <Checkbox defaultChecked={true} className='ml-[-10px]' />
+                </TableCell>
+                <TableCell
+                  className="border text-center w-40 "
+                  onDoubleClick={() =>
+                    handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
+                  }
+                >
+                  {editCell.rowId === row.id && editCell.field === 'displayOrder' ? (
+                    <input
+                      className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type="number"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onBlur={() => handleSave(row.id, 'displayOrder')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'displayOrder')}
+                    />
+                  ) : (
+                    row.displayOrder
+                  )}
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+
     </div>
   )
 }

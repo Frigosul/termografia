@@ -1,4 +1,5 @@
 'use client'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useQuery } from '@tanstack/react-query'
 import { getInstruments } from '../http/get-instruments'
 import { Chart } from './components/chart'
@@ -14,16 +15,18 @@ export default function Home() {
   })
 
   return (
-    <main className="flex-1 overflow-y-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-home px-2 justify-center gap-2 pt-3 ">
-        {isLoading
-          ? Array.from({ length: 12 }).map((_, index) => (
-            <SkeletonChart key={index} />
-          ))
-          : data?.map((instrument) => (
-            <Chart key={instrument.id} dataChart={instrument} />
-          ))}
-      </div>
-    </main>
+    <ScrollArea className='flex-1'>
+      <main>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-home px-2 justify-center gap-2 pt-3 ">
+          {isLoading
+            ? Array.from({ length: 12 }).map((_, index) => (
+              <SkeletonChart key={index} />
+            ))
+            : data?.map((instrument) => (
+              <Chart key={instrument.id} dataChart={instrument} />
+            ))}
+        </div>
+      </main>
+    </ScrollArea>
   )
 }

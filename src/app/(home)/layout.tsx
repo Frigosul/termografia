@@ -6,9 +6,9 @@ import { ReactNode } from 'react'
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex max-h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       <SideBar />
-      <div className="flex-1 flex flex-col">
+      <div className="w-full h-full flex flex-col">
         <DialogProvider>
           <Header />
           {children}

@@ -39,7 +39,7 @@ export function SheetSidebar() {
           <Menu size={28} />
         </Button>
       </SheetTrigger>
-      <SheetContent className="min-h-screen" side="left">
+      <SheetContent className="min-h-screen px-2" side="left">
         <SheetTitle className="m-4 text-center text-xl uppercase tracking-tight font-medium">
           Termografia
         </SheetTitle>
@@ -51,7 +51,7 @@ export function SheetSidebar() {
                 <Avatar className="size-9 flex items-center justify-center">
                   <AvatarImage
                     className="rounded-full"
-                    // src="https://github.com/joaoeduardodias.png"
+                  // src="https://github.com/joaoeduardodias.png"
                   />
                   <AvatarFallback className="flex items-center justify-center bg-slate-500/50 rounded-full size-9">
                     JD

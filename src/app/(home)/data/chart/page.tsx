@@ -1,6 +1,7 @@
 'use client'
 import { generateChart, GenerateChartResponse } from '@/app/http/generate-chart'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { Chart } from './components/chart'
@@ -27,7 +28,7 @@ export default function PageChart() {
   if (generateChartMutation.isError) return <p>Erro ao buscar dados</p>
 
   return (
-    <main className=" w-full h-full overflow-y-scroll">
+    <ScrollArea className="flex-1">
       <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
         <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 bg-muted  dark:bg-slate-800 shadow-sm">
           <CardHeader className="pb-2">
@@ -83,6 +84,7 @@ export default function PageChart() {
           </CardContent>
         </Card>
       </div>
-    </main>
+
+    </ScrollArea>
   )
 }
