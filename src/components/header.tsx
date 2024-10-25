@@ -23,6 +23,9 @@ export function Header() {
 
   return (
     <header className="flex justify-between items-center py-3 shadow-sm px-6 lg:justify-end border-b">
+      <p className="sr-only text-xl capitalize tracking-tight font-medium lg:not-sr-only lg:mr-auto">
+        SulTerm
+      </p>
       <SheetSidebar />
 
       <NavigationMenu className="mr-11 lg:mr-8 hidden md:flex">
@@ -32,7 +35,7 @@ export function Header() {
               <Avatar className="size-9 flex items-center justify-center">
                 <AvatarImage
                   className="rounded-full"
-                  // src="https://github.com/joaoeduardodias.png"
+                // src="https://github.com/joaoeduardodias.png"
                 />
                 <AvatarFallback className="flex items-center justify-center bg-slate-500/50 rounded-full size-9">
                   {getInitials(userName)}

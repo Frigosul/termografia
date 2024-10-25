@@ -2,6 +2,7 @@
 import Link, { LinkProps } from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
+import { Button } from './ui/button'
 
 interface NavLinkProps extends LinkProps {
   children: ReactNode
@@ -10,16 +11,25 @@ interface NavLinkProps extends LinkProps {
 export function NavLink({ children, href, ...props }: NavLinkProps) {
   const pathname = usePathname()
 
+
   return (
-    <Link
+    <Button
+      variant="ghost"
       data-current={pathname === href}
-      className="data-[current=true]:text-foreground "
-      href={href}
-      {...props}
+      className='flex justify-start data-[current=true]:bg-accent'
+      asChild
     >
-      <span className="flex items-center gap-4  font-medium text-muted-foreground hover:text-foreground">
-        {children}
-      </span>
-    </Link>
+      <Link
+        href={href}
+        {...props}
+        prefetch
+      >
+        <span
+          data-current={pathname === href}
+          className="flex items-center gap-4 font-medium text-muted-foreground data-[current=true]:text-primary hover:text-primary">
+          {children}
+        </span>
+      </Link>
+    </Button>
   )
 }

@@ -4,51 +4,56 @@ import {
   Database,
   House,
   LineChart,
+  PanelLeftClose,
+  PanelLeftOpen,
   ScrollText,
-  Users,
+  Users
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useState } from 'react'
 import { NavLink } from './nav-link'
+import { Button } from './ui/button'
 
 export function SideBar() {
+  const [isOpen, setIsOpen] = useState(false)
   const { data: session } = useSession()
 
   return (
-    <aside className="flex flex-col min-h-screen  border-r px-4 sr-only lg:not-sr-only">
-      <p className="m-4 text-center text-xl uppercase tracking-tight font-medium">
-        Menu
-      </p>
-      <nav className="flex flex-col space-y-4 mt-5 flex-1 p-5 min-w-64">
+    <aside className="flex flex-col min-h-screen border-r sr-only lg:not-sr-only">
+      <Button variant="ghost" onClick={() => setIsOpen(!isOpen)} className={`flex justify-start items-center ${!isOpen && "w-14"} mt-4`}>
+        {isOpen ? <PanelLeftClose className="size-6" strokeWidth={1} /> : <PanelLeftOpen className="size-6" strokeWidth={1} />}
+        <span className={`text-xl font-light pl-2 ${!isOpen && 'sr-only'}`}>
+          Menu
+        </span>
+      </Button>
+
+      <nav className={`flex flex-col space-y-3 mt-5 flex-1 transition-all duration-300  ${isOpen ? "w-64" : "w-14"}`}>
         <NavLink href="/">
           <House size={20} />
-          Home
+          {isOpen && 'Home'}
         </NavLink>
         {session?.role === 'adm' && (
           <>
             <NavLink href="/data/chart">
               <LineChart size={20} />
-              Gerar gráfico
+              {isOpen && 'Gerar gráfico'}
             </NavLink>
             <NavLink href="/data/managed-data">
               <Database size={20} />
-              Gerenciar dados
+              {isOpen && 'Gerenciar dados'}
             </NavLink>
             <NavLink href="/data/managed-standards">
               <ScrollText size={20} />
-              Gerenciar padrões
+              {isOpen && ' Gerenciar padrões'}
             </NavLink>
             <NavLink href="/data/managed-equipments">
               <BetweenHorizontalEnd size={20} />
-              Gerenciar equipamentos
+              {isOpen && 'Gerenciar equipamentos'}
             </NavLink>
             <NavLink href="/users">
               <Users size={20} />
-              Usuários
+              {isOpen && 'Usuários'}
             </NavLink>
-            {/* <NavLink href="/auth/reset-password">
-              <LockKeyhole size={20} />
-              Alterar senha
-            </NavLink> */}
           </>
         )}
 
@@ -56,7 +61,7 @@ export function SideBar() {
           <>
             <NavLink href="/data/chart">
               <LineChart size={20} />
-              Gerar gráfico
+              {isOpen && 'Gerar gráfico'}
             </NavLink>
           </>
         )}
