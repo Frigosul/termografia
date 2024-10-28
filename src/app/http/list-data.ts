@@ -1,7 +1,7 @@
-export type GenerateChartRequest = {
+export type ListDataRequest = {
   local: string
   graphVariation: string
-  tableVariation: string
+  tableVariation?: string
   limit?: number
   detour?: number
   variationTemp?: number
@@ -12,13 +12,15 @@ export type GenerateChartRequest = {
   description?: string
 }
 type TemperatureData = {
-  time: Date
+  id: string
+  userUpdatedAt: string | null
+  time: string
   temperature: number
 }
-export type GenerateChartResponse = {
+export type ListDataResponse = {
   id: string
   name: string
-  chartType: 'temp' | 'press'
+  chartType?: 'temp' | 'press'
   dateClose: Date
   dateOpen: Date
   minValue?: number
@@ -27,10 +29,10 @@ export type GenerateChartResponse = {
   limit?: number
   variationTemp?: number
   chartTemperature: TemperatureData[]
-  tableTemperatureRange: TemperatureData[]
+  tableTemperatureRange?: TemperatureData[]
 }
 
-export async function generateChart({
+export async function listData({
   local,
   graphVariation,
   tableVariation,
@@ -42,7 +44,7 @@ export async function generateChart({
   startDate,
   endDate,
   description = '',
-}: GenerateChartRequest): Promise<GenerateChartResponse> {
+}: ListDataRequest): Promise<ListDataResponse> {
   const dataBody = {
     local,
     graphVariation,
@@ -56,7 +58,7 @@ export async function generateChart({
     endDate,
 
   }
-  const response = await fetch('http://localhost:3000/api/instruments/generate-chart', {
+  const response = await fetch('http://localhost:3000/api/instruments/list-data', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

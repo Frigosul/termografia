@@ -14,7 +14,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
           {children}
         </DialogProvider>
         <footer className="border-t shadow-sm flex justify-center items-center text-xs lg:text-sm tracking-wide text-muted-foreground py-5 ">
-          Termografia | suporte2.apms@frigosul.com.br
+          SulTerm | suporte2.apms@frigosul.com.br
         </footer>
       </div>
     </div>

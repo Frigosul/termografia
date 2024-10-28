@@ -1,5 +1,5 @@
 'use client'
-import { generateChart, GenerateChartResponse } from '@/app/http/generate-chart'
+import { listData, ListDataResponse } from '@/app/http/list-data'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
@@ -9,11 +9,10 @@ import { FormGenerateChart } from './components/form-generate-chart'
 import { Table } from './components/table'
 
 export default function PageChart() {
-  const [dataChart, setDataChart] = useState<GenerateChartResponse>()
+  const [dataChart, setDataChart] = useState<ListDataResponse>()
   const generateChartMutation = useMutation({
-    mutationFn: generateChart,
+    mutationFn: listData,
     onSuccess: (data) => {
-      console.log(data)
       setDataChart(data)
     },
     onError: (error) => {
@@ -50,7 +49,7 @@ export default function PageChart() {
                 <Chart
                   maxValue={dataChart.maxValue}
                   minValue={dataChart.minValue}
-                  chartType={dataChart.chartType}
+                  chartType={dataChart.chartType!}
                   dateClose={dataChart.dateClose}
                   dateOpen={dataChart.dateOpen}
                   limit={dataChart.limit}
@@ -59,7 +58,7 @@ export default function PageChart() {
                   local={dataChart.name}
                   data={dataChart?.chartTemperature}
                 />
-                <Table data={dataChart?.tableTemperatureRange} />
+                <Table data={dataChart.tableTemperatureRange!} />
               </>
             )}
             <div className="flex gap-2 h-32 mt-4">

@@ -18,10 +18,9 @@ export function SideBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [hoverLinkOpen, setHoverLinkOpen] = useState(false)
   const { data: session } = useSession()
-  console.log(isOpen)
+
   return (
     <aside className="flex flex-col min-h-screen border-r sr-only lg:not-sr-only">
-      {/* <Button variant="ghost" onClick={() => setIsOpen(!isOpen)} className={`flex justify-start items-center ${!isOpen && !hoverLinkOpen && "w-14"} mt-4`}> */}
       <Button variant="ghost" onClick={() => setIsOpen(!isOpen)} className={`flex justify-start items-center mt-4`}>
         {isOpen || hoverLinkOpen ? <PanelLeftClose className="size-6" strokeWidth={1} /> : <PanelLeftOpen className="size-6" strokeWidth={1} />}
         <span className={`text-xl font-light pl-2 ${!isOpen && !hoverLinkOpen && 'sr-only'}`}>
@@ -40,7 +39,7 @@ export function SideBar() {
               <LineChart size={20} />
               Gerar gráfico
             </NavLink>
-            <NavLink setIsOpen={setHoverLinkOpen} href="/data/managed-data">
+            <NavLink setIsOpen={setHoverLinkOpen} href="/data/update-data">
               <Database size={20} />
               Gerenciar dados
             </NavLink>

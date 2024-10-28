@@ -1,4 +1,7 @@
 'use client'
+import { getInstruments } from '@/app/http/get-instruments'
+import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,44 +20,33 @@ import {
 } from '@/components/ui/tooltip'
 import { formattedDate } from '@/utils/formatted-date'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-const localChamber = [
-  'Câmara 01',
-  'Câmara 02',
-  'Câmara 03',
-  'Câmara 04',
-  'Câmara 05',
-]
-const variationChart = [
-  '10 minutos',
-  '15 minutos',
-  '20 minutos',
-  '30 minutos',
-  '01 hora',
-]
 
-const managedDataChart = z.object({
+const updatedDataChart = z.object({
   localChamber: z
-    .string({ message: 'Selecione o local desejado.' })
-    .refine((value) => localChamber.includes(value), {
-      message: 'Local inválido. Escolha outro local.',
-    }),
-  variationChart: z
-    .string({ message: 'Defina a variação desejada no gráfico.' })
-    .refine((value) => variationChart.includes(value), {
-      message: 'Variação inválida. Escolha outra variação.',
-    }),
+    .string({ message: 'Selecione o local desejado.' }),
+
+  graphVariation: z
+    .string({ message: 'Defina a variação desejada no gráfico.' }),
+
 
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
 })
 
-type ManagedDataChart = z.infer<typeof managedDataChart>
+type UpdatedDataChart = z.infer<typeof updatedDataChart>
 
-export function FormManagedData() {
+
+interface FormUpdateDataProps {
+  mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
+}
+
+export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
+
   const {
     register,
     handleSubmit,
@@ -62,12 +54,22 @@ export function FormManagedData() {
     setValue,
     control,
     formState: { isSubmitting, errors },
-  } = useForm<ManagedDataChart>({
-    resolver: zodResolver(managedDataChart),
+  } = useForm<UpdatedDataChart>({
+    resolver: zodResolver(updatedDataChart),
   })
 
-  function handleManagedDataChart(data: ManagedDataChart) {
-    console.log(data)
+  const { data, isLoading } = useQuery({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+  })
+
+  function handleUpdatedDataChart(data: UpdatedDataChart) {
+    mutate({
+      endDate: data.endDate,
+      startDate: data.startDate,
+      graphVariation: data.graphVariation,
+      local: data.localChamber
+    })
   }
   const startDateValue = watch('startDate')
 
@@ -83,8 +85,8 @@ export function FormManagedData() {
 
   return (
     <form
-      onSubmit={handleSubmit(handleManagedDataChart)}
-      className="gap-2  flex flex-col items-start"
+      onSubmit={handleSubmit(handleUpdatedDataChart)}
+      className="gap-2 flex flex-col items-start"
     >
       <TooltipProvider>
         <div className="flex w-full gap-3">
@@ -99,15 +101,16 @@ export function FormManagedData() {
                     name="localChamber"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value}>
+                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
                         <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Selecione o instrumento" />
+                          <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Câmara 01">Câmara 01</SelectItem>
-                          <SelectItem value="Câmara 02">Câmara 02</SelectItem>
-                          <SelectItem value="Câmara 03">Câmara 03</SelectItem>
-                          <SelectItem value="Câmara 04">Câmara 04</SelectItem>
+                          {data?.map(item => {
+                            return (
+                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                            )
+                          })}
                         </SelectContent>
                       </Select>
                     )}
@@ -133,7 +136,7 @@ export function FormManagedData() {
                     Variação gráfico
                   </Label>
                   <Controller
-                    name="variationChart"
+                    name="graphVariation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
@@ -141,11 +144,11 @@ export function FormManagedData() {
                           <SelectValue placeholder="Variação do gráfico" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="10 minutos">10 minutos</SelectItem>
-                          <SelectItem value="15 minutos">15 minutos</SelectItem>
-                          <SelectItem value="20 minutos">20 minutos</SelectItem>
-                          <SelectItem value="30 minutos">30 minutos</SelectItem>
-                          <SelectItem value="01 hora">01 hora</SelectItem>
+                          <SelectItem value="10">10 minutos</SelectItem>
+                          <SelectItem value="15">15 minutos</SelectItem>
+                          <SelectItem value="20">20 minutos</SelectItem>
+                          <SelectItem value="30">30 minutos</SelectItem>
+                          <SelectItem value="01">01 hora</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -157,9 +160,9 @@ export function FormManagedData() {
                 informações do instrumento.
               </TooltipContent>
             </Tooltip>
-            {errors.variationChart?.message && (
+            {errors.graphVariation?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.variationChart?.message}
+                {errors.graphVariation?.message}
               </p>
             )}
           </div>

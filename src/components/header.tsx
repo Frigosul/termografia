@@ -35,7 +35,7 @@ export function Header() {
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="flex items-center justify-center p-0 px-1 gap-2">
+              <NavigationMenuTrigger className="flex items-center justify-center p-0 px-1 gap-2 text-foreground">
                 <Avatar className="size-9 flex items-center justify-center">
                   <AvatarImage
                     className="rounded-full"
@@ -93,8 +93,8 @@ export function Header() {
           </NavigationMenuList>
         </NavigationMenu>
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <LayoutGrid />
+          <DropdownMenuTrigger >
+            <LayoutGrid strokeWidth={2} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className='text-center'>
             <DropdownMenuLabel>Modos de Exibição</DropdownMenuLabel>

@@ -1,11 +1,11 @@
-export function formattedDateTime(date: Date) {
-  const dateValue = new Date(date)
-  const formattedDate = dateValue.toLocaleDateString('pt-BR') // Formato dd/mm/aaaa
-  const formattedTime = dateValue.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false, // 24 horas
-  })
+import dayjs from "dayjs"
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
-  return `${formattedDate} - ${formattedTime}`
+
+export function formattedDateTime(date: string) {
+  const formattedDate = dayjs(date).utc().format("DD/MM/YYYY - HH:mm")
+  return formattedDate
 }

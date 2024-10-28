@@ -1,9 +1,7 @@
 'use client'
-import {
-  GenerateChartRequest,
-  GenerateChartResponse,
-} from '@/app/http/generate-chart'
+
 import { getInstruments } from '@/app/http/get-instruments'
+import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -29,22 +27,6 @@ import { RefObject, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-
-const graphVariation = [
-  '10 minutos',
-  '15 minutos',
-  '20 minutos',
-  '30 minutos',
-  '01 hora',
-]
-const tableVariation = [
-  '01 minuto',
-  '05 minutos',
-  '10 minutos',
-  '15 minutos',
-  '20 minutos',
-  '30 minutos',
-]
 
 const generateDataChart = z.object({
   localChamber: z
@@ -81,7 +63,7 @@ type GenerateDataChart = z.infer<typeof generateDataChart>
 
 interface FormGenerateChartProps {
   divRef: RefObject<HTMLDivElement>
-  mutate: (data: GenerateChartRequest) => Promise<GenerateChartResponse>
+  mutate: (data: ListDataRequest) => Promise<ListDataResponse>
 }
 
 export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {

@@ -21,7 +21,7 @@ export async function middleware(request: NextRequestWithAuth) {
   const roleBasedRoutes = {
     adm: [
       '/users',
-      '/data/managed-data',
+      '/data/update-data',
       '/data/managed-standards',
       '/data/managed-equipments',
       '/data/chart',
