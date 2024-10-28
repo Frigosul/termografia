@@ -6,17 +6,20 @@ import { Button } from './ui/button'
 
 interface NavLinkProps extends LinkProps {
   children: ReactNode
+  isOpen?: boolean
+  setIsOpen: (open: boolean) => void
 }
 
-export function NavLink({ children, href, ...props }: NavLinkProps) {
+export function NavLink({ children, href, isOpen, setIsOpen, ...props }: NavLinkProps) {
   const pathname = usePathname()
-
 
   return (
     <Button
       variant="ghost"
       data-current={pathname === href}
-      className='flex justify-start data-[current=true]:bg-accent'
+      className='flex py-2 justify-start data-[current=true]:bg-accent'
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
       asChild
     >
       <Link

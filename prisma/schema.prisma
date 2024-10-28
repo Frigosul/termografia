@@ -45,7 +45,7 @@ model Temperature {
 }
 
 model InstrumentsTemperature {
-  instruments    Instrument  @relation(fields: [instrument_id], references: [id])
+  instruments    Instrument  @relation(fields: [instrument_id], references: [id], onDelete: Cascade)
   instrument_id  String
   temperature    Temperature @relation(fields: [temperature_id], references: [id])
   temperature_id String

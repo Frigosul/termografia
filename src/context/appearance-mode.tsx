@@ -2,16 +2,16 @@
 import { createContext, ReactNode, useContext, useState } from 'react'
 
 interface AppearanceModeContextProps {
-  mode: "simple" | "complete"
-  onModeAppearance: (appearance: "simple" | "complete") => void
+  mode: "simple" | "graph"
+  onModeAppearance: (appearance: "simple" | "graph") => void
 }
 
 const AppearanceModeContext = createContext<AppearanceModeContextProps | undefined>(undefined)
 
 export function AppearanceModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<"simple" | "complete">("complete")
+  const [mode, setMode] = useState<"simple" | "graph">("graph")
 
-  function onModeAppearance(appearance: "simple" | "complete") {
+  function onModeAppearance(appearance: "simple" | "graph") {
     setMode(appearance)
   }
 

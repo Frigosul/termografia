@@ -97,19 +97,19 @@ export function Header() {
             <LayoutGrid />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className='text-center'>
-            <DropdownMenuLabel>Aparência</DropdownMenuLabel>
+            <DropdownMenuLabel>Modos de Exibição</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={mode === 'simple'}
               onCheckedChange={() => onModeAppearance("simple")}
             >
-              Simples
+              Simplificado
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
-              checked={mode === 'complete'}
-              onCheckedChange={() => onModeAppearance("complete")}
+              checked={mode === 'graph'}
+              onCheckedChange={() => onModeAppearance("graph")}
             >
-              Completo
+              Gráfico
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
