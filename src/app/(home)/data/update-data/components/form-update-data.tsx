@@ -18,9 +18,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { formattedDate } from '@/utils/formatted-date'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -75,12 +75,9 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
 
   useEffect(() => {
     if (!startDateValue) return
-    const convertInDate = new Date(startDateValue)
-    const addHoursToStartDate = new Date(
-      convertInDate.setHours(convertInDate.getHours() + 24),
-    )
-    const formattedEndDate = formattedDate(addHoursToStartDate)
-    setValue('endDate', formattedEndDate)
+    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDThh:mm')
+
+    setValue('endDate', endDate)
   }, [startDateValue, setValue])
 
   return (

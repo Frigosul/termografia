@@ -29,7 +29,7 @@ export function SideBar() {
       </Button>
 
       <nav className={`flex flex-col mt-5 flex-1 transition-all duration-300 overflow-hidden ${isOpen || hoverLinkOpen ? "w-64" : "w-12"}`}>
-        <NavLink setIsOpen={setHoverLinkOpen} href="/" isOpen={hoverLinkOpen}>
+        <NavLink setIsOpen={setHoverLinkOpen} href="/">
           <House size={20} />
           Home
         </NavLink>
@@ -41,7 +41,7 @@ export function SideBar() {
             </NavLink>
             <NavLink setIsOpen={setHoverLinkOpen} href="/data/update-data">
               <Database size={20} />
-              Gerenciar dados
+              Editar dados
             </NavLink>
             <NavLink setIsOpen={setHoverLinkOpen} href="/data/managed-standards">
               <ScrollText size={20} />

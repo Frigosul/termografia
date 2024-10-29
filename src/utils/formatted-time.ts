@@ -1,8 +1,9 @@
-export function formattedTime(date: Date) {
-  const time = date.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+import dayjs from "dayjs"
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
+dayjs.extend(timezone)
+export function formattedTime(date: string) {
+  const time = dayjs(date).utc().format('HH:mm')
   return time
 }

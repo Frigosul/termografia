@@ -5,7 +5,7 @@ interface TableProps {
   minValue?: number
   maxValue?: number
   data: {
-    time: Date
+    time: string
     temperature: number
   }[]
 }
@@ -43,7 +43,7 @@ export function Table({ minValue, maxValue, data }: TableProps) {
                 className="border-r border-dashed border-muted-foreground w-[9rem] h-6 px-4 flex items-center justify-between"
               >
                 <span className="text-xs tracking-wide dark:font-light ">
-                  {formattedTime(new Date(item.time))}
+                  {formattedTime(item.time)}
                 </span>
                 <span className="text-xs tracking-wide dark:font-light ">
                   {item.temperature}

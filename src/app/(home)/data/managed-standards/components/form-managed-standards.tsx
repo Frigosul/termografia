@@ -15,8 +15,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { formattedDate } from '@/utils/formatted-date'
 import { zodResolver } from '@hookform/resolvers/zod'
+import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -75,19 +75,11 @@ export function FormManagedStandards() {
 
   useEffect(() => {
     if (!startDateValue) return
-    const convertInDate = new Date(startDateValue)
-    const convertThawInDate = new Date(startDateValue)
+    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDThh:mm')
+    const addHoursToThaw = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDThh:mm')
 
-    const addHoursToThaw = new Date(
-      convertThawInDate.setHours(convertThawInDate.getHours() + 8),
-    )
-    const addHoursToStartDate = new Date(
-      convertInDate.setHours(convertInDate.getHours() + 24),
-    )
-    const formattedEndDate = formattedDate(addHoursToStartDate)
-    const formattedHoursThaw = formattedDate(addHoursToThaw)
-    setValue('endDate', formattedEndDate)
-    setValue('dateThaw', formattedHoursThaw)
+    setValue('endDate', endDate)
+    setValue('dateThaw', addHoursToThaw)
   }, [startDateValue, setValue])
 
   return (

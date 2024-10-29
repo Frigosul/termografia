@@ -21,8 +21,8 @@ export type ListDataResponse = {
   id: string
   name: string
   chartType?: 'temp' | 'press'
-  dateClose: Date
-  dateOpen: Date
+  dateClose: string
+  dateOpen: string
   minValue?: number
   detour?: number
   maxValue?: number

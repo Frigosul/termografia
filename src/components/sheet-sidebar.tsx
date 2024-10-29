@@ -79,7 +79,7 @@ export function SheetSidebar() {
           </NavigationMenuList>
         </NavigationMenu>
         <nav className="flex flex-col space-y-4 h-full pb-12">
-          <NavLink href="/">
+          <NavLink href="/" >
             <House size={20} />
             Home
           </NavLink>
@@ -89,9 +89,9 @@ export function SheetSidebar() {
                 <LineChart size={20} />
                 Gerar gráfico
               </NavLink>
-              <NavLink href="/data/managed-data">
+              <NavLink href="/data/update-data">
                 <Database size={20} />
-                Gerenciar dados
+                Editar dados
               </NavLink>
               <NavLink href="/data/managed-standards">
                 <ScrollText size={20} />
