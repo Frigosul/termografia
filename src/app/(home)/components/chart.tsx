@@ -22,7 +22,7 @@ export function Chart({ dataChart: { name, type, temperature, status } }: ChartP
 
   if (mode === 'graph') {
     return (
-      <div className="border rounded-md p-2">
+      <div className="border-2 rounded-md p-2">
         <div className="flex flex-col items-center justify-center py-2">
           <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize mb-2">
             <strong className="font-normal text-xl mb-4 capitalize">{name}</strong>
@@ -81,13 +81,13 @@ export function Chart({ dataChart: { name, type, temperature, status } }: ChartP
     )
   } else {
     return (
-      <div className="border  rounded-md p-2">
+      <div className="border-2  rounded-md p-2">
         <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize">
           <strong className="font-normal text-xl mb-4">{name}</strong>
         </div>
         <div className="flex items-center justify-center gap-2">
           <p className="text-center text-3xl text-primary">
-            {Number(temperature).toFixed(1)} {type === 'temp' ? '°C' : 'bar'}
+            {Number(temperature).toFixed(1)}
           </p>
           <div className="flex flex-col justify-between lg:p-2 flex-wrap">
             <span className="text-xs  w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">

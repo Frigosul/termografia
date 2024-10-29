@@ -73,7 +73,7 @@ const config = {
       gridTemplateColumns: {
         form: 'repeat(auto-fit, minmax(150px, 470px))',
         // home: 'repeat(auto-fit, minmax(330px, 340px))',
-        home: 'repeat(auto-fit, minmax(220px, 230px))'
+        home: 'repeat(auto-fit, minmax(200px, 215px))'
       },
     },
   },

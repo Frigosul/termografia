@@ -32,6 +32,7 @@ export function Header() {
       <SheetSidebar />
 
       <div className="flex justify-center items-center gap-1 mr-11 lg:mr-9">
+        <p className='text-base font-light'>Temp. em <span className='text-primary font-semibold'>ºC</span> </p>
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
