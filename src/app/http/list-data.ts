@@ -13,7 +13,8 @@ export type ListDataRequest = {
 }
 type TemperatureData = {
   id: string
-  userUpdatedAt: string | null
+  updatedUserAt: string | null
+  updatedAt: string
   time: string
   temperature: number
 }
@@ -66,6 +67,7 @@ export async function listData({
     body: JSON.stringify(dataBody)
   })
   const data = await response.json()
+
 
   const dataAndValues = {
     ...data,

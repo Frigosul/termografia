@@ -5,22 +5,20 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormUpdatedData } from './components/form-update-data'
-import { TableManagedData } from './components/table-managed-data'
+import { SkeletonTable } from './components/skeleton-table'
 export default function PageManagedData() {
   const [dataValue, setDataValue] = useState<ListDataResponse>()
   const updateDataMutation = useMutation({
     mutationFn: listData,
     onSuccess: (data) => {
       setDataValue(data)
+
     },
     onError: (error) => {
       console.error('Erro ao listar dados:', error)
       alert('Erro ao listar dados')
     },
   })
-
-  if (updateDataMutation.isPending) return <p>Carregando...</p>
-  if (updateDataMutation.isError) return <p>Erro ao buscar dados</p>
 
 
   return (
@@ -37,13 +35,15 @@ export default function PageManagedData() {
           </CardContent>
         </Card>
         <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 bg-muted  dark:bg-slate-800 shadow-sm p-4">
-          <CardTitle className="text-sm">
-            Correção de dados dos coletores
-          </CardTitle>
-          <CardContent className="bg-muted  dark:bg-slate-800 pt-4">
-            {dataValue?.chartTemperature && (
-              <TableManagedData data={dataValue.chartTemperature} />
-            )}
+
+          <CardContent className="bg-muted h-full dark:bg-slate-800 pt-4">
+            {/* {updateDataMutation.isPending ? <SkeletonTable />
+              : dataValue?.chartTemperature && (
+                <TableManagedData data={dataValue.chartTemperature} />
+              )
+
+            } */}
+            <SkeletonTable />
           </CardContent>
         </Card>
       </div>

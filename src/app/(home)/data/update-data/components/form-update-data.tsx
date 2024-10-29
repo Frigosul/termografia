@@ -32,15 +32,11 @@ const updatedDataChart = z.object({
 
   graphVariation: z
     .string({ message: 'Defina a variação desejada no gráfico.' }),
-
-
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
 })
 
 type UpdatedDataChart = z.infer<typeof updatedDataChart>
-
-
 interface FormUpdateDataProps {
   mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
 }

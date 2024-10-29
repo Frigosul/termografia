@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
   const formattedEndDate = dayjs(endDate).add(1, 'minute').format('YYYY-MM-DDTHH:mm:ss[Z]')
-  console.log(formattedEndDate, formattedStartDate)
+
 
   const data = await prisma.instrument.findUnique({
     where: {
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
               editValue: true,
               createdAt: true,
               userUpdatedAt: true,
+              updatedAt: true,
             }
           }
         },
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
       }
     }
   })
+
   if (!data) {
     return NextResponse.json({ message: "Data is not locale" }, { status: 400 })
   }
@@ -62,6 +64,7 @@ export async function POST(req: NextRequest) {
         editValue: number,
         createdAt: Date,
         userUpdatedAt: string | null
+        updatedAt: Date | null
       }
     }[],
     intervalMinutes: number
@@ -111,6 +114,7 @@ export async function POST(req: NextRequest) {
         time: temp.temperature.createdAt.toISOString(),
         temperature: temp.temperature.editValue,
 
+
       })),
       tableTemperatureRange: tableTemperatureRange.map(temp => ({
         id: temp.temperature.id,
@@ -133,6 +137,7 @@ export async function POST(req: NextRequest) {
         time: temp.temperature.createdAt.toISOString(),
         temperature: temp.temperature.editValue,
         updatedUserAt: temp.temperature.userUpdatedAt,
+        updatedAt: temp.temperature.updatedAt
       }))
     };
 

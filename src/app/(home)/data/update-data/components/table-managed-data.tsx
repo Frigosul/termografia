@@ -1,3 +1,4 @@
+import { updateData } from '@/app/http/update-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -17,15 +18,20 @@ import {
 } from '@/components/ui/table'
 import { formattedDateTime } from '@/utils/formatted-datetime'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Minus, Plus, Save, Search, X } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { CircleCheck, CircleX, Minus, Plus, Save, Search, X } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 interface TableRow {
   id: string;
   time: string;
-  userUpdatedAt: string | null
+  updatedUserAt: string | null;
+  updatedAt: string;
   temperature: number;
 }
 
@@ -47,16 +53,35 @@ const searchDataSchema = z.object({
 type SearchData = z.infer<typeof searchDataSchema>
 
 export function TableManagedData({ data }: TableProps) {
-  console.log(data)
+  const { data: session } = useSession()
+  const queryClient = useQueryClient()
+
+  const updatedDataMutation = useMutation({
+    mutationFn: updateData,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['list-data'] })
+      toast.success('Dados atualizados com sucesso', {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+    },
+    onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        richColors: true,
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+      console.log('error' + error)
+    },
+  })
+
+
+
   const { control, register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
-  const [editData, setEditData] = useState<TableProps | null>(null);
-  function handleSearchData(data: SearchData) {
-    console.log(editData)
-    console.log(data)
-  }
-
+  const [editData, setEditData] = useState<TableProps>({ data });
 
   const [editCell, setEditCell] = useState<{
     rowId: string | null;
@@ -68,7 +93,11 @@ export function TableManagedData({ data }: TableProps) {
 
   const [inputValue, setInputValue] = useState<string>('')
 
-  // Função para ativar a edição
+  function handleSearchData(data: SearchData) {
+    console.log(data)
+  }
+
+
   function handleDoubleClick(
     rowId: string,
     field: keyof TableRow,
@@ -80,37 +109,42 @@ export function TableManagedData({ data }: TableProps) {
 
   // Função para salvar a edição
   function handleSave(rowId: string, field: keyof TableRow) {
-    setEditData((prevData) => ({
-      data:
-        prevData?.data.map((item) =>
-          item.id === rowId
-            ? {
-              ...item,
-              [field]: field === 'temperature' ? Number(inputValue) : inputValue,
-            }
-            : item
-        ) || [],
-    }));
-
+    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || '';
+    if (inputValue !== '' && inputValue !== originalValue) {
+      setEditData((prevData) => ({
+        data:
+          prevData?.data.map((item) => {
+            return (
+              item.id === rowId
+                ? {
+                  ...item,
+                  [field]: field === 'temperature' ? Number(inputValue) : inputValue,
+                  userUpdatedAt: String(session?.user?.name),
+                  updatedAt: dayjs().format('DD/MM/YYYY - HH:mm')
+                }
+                : item
+            )
+          }) || [],
+      }));
+    }
     setEditCell({ rowId: null, field: null });
   }
 
   // Função para salvar a célula e mover para a próxima linha ou coluna
   function handleSaveAndMove(rowId: string, field: keyof TableRow) {
-    handleSave(rowId, field); // Salva a célula atual
-    const nextRowId = getNextRowId(rowId, 1); // Calcula o próximo ID de linha
+    handleSave(rowId, field);
+    const nextRowId = getNextRowId(rowId, 1);
 
     if (nextRowId !== null) {
-      moveToNextCell(nextRowId, field); // Move o foco para a célula abaixo
+      moveToNextCell(nextRowId, field);
     } else {
-      // Se for a última linha, mover para a próxima coluna
+
       const nextField = getNextField(field);
       if (nextField) {
-        moveToNextCell(data[0].id, nextField); // Move o foco para a primeira célula da próxima coluna
+        moveToNextCell(data[0].id, nextField);
       }
     }
   }
-
   // Função para navegar para cima ou para baixo
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -177,7 +211,11 @@ export function TableManagedData({ data }: TableProps) {
             <Minus className="size-4" />
             Apagar
           </Button>
-          <Button variant="ghost" className="flex gap-1 hover:bg-green-400/30">
+          <Button
+            variant="ghost"
+            className="flex gap-1 hover:bg-green-400/30"
+            disabled={updatedDataMutation.isPending}
+            onClick={() => updatedDataMutation.mutateAsync({ temperatures: editData.data })}>
             <Save className="size-4" />
             Salvar
           </Button>
@@ -245,8 +283,7 @@ export function TableManagedData({ data }: TableProps) {
           </TableRow>
         </TableHeader>
         <TableBody className="overflow-y-auto">
-          {data.map((row) => {
-
+          {editData.data.map((row) => {
             return (
               <TableRow
                 key={row.id}
@@ -276,7 +313,7 @@ export function TableManagedData({ data }: TableProps) {
                     `${row.temperature} ºC`
                   )}
                 </TableCell>
-                <TableCell className="border">{row.userUpdatedAt ? `Temperatura alterada por ${row.userUpdatedAt}` : `Temperatura integrada`}</TableCell>
+                <TableCell className="border">{row.updatedUserAt ? `Temperatura alterada por ${row.updatedUserAt} em ${formattedDateTime(row.updatedAt)}` : `Temperatura integrada`}</TableCell>
               </TableRow>
             )
           })}
