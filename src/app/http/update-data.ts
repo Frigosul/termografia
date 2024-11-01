@@ -5,6 +5,7 @@ type DataRequest = {
     temperature: number
     updatedAt: string
     updatedUserAt: string | null
+
   }[]
 }
 
@@ -16,7 +17,7 @@ export async function updateData({ temperatures }: DataRequest) {
     },
     body: JSON.stringify({ temperatures }),
   })
-  console.log(response)
+
 
   if (!response.ok) {
     throw new Error('Erro ao atualizar as temperaturas')

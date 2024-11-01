@@ -1,4 +1,5 @@
 'use client'
+import { getInstruments } from '@/app/http/get-instruments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,18 +17,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import utc from "dayjs/plugin/utc"
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+dayjs.extend(utc)
 
-const localChamber = [
-  'Câmara 01',
-  'Câmara 02',
-  'Câmara 03',
-  'Câmara 04',
-  'Câmara 05',
-]
+
+
 const variationChart = [
   '01 minuto',
   '05 minutos',
@@ -38,11 +37,9 @@ const variationChart = [
 ]
 
 const managedStandards = z.object({
-  localChamber: z
-    .string({ message: 'Selecione o local desejado.' })
-    .refine((value) => localChamber.includes(value), {
-      message: 'Local inválido. Escolha outro local.',
-    }),
+  local: z
+    .string({ message: 'Selecione o local desejado.' }),
+
   variationChart: z
     .string({ message: 'Defina a variação desejada no gráfico.' })
     .refine((value) => variationChart.includes(value), {
@@ -57,6 +54,10 @@ const managedStandards = z.object({
 type ManagedStandards = z.infer<typeof managedStandards>
 
 export function FormManagedStandards() {
+  const { data: local, isLoading } = useQuery({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+  })
   const {
     register,
     handleSubmit,
@@ -69,14 +70,17 @@ export function FormManagedStandards() {
   })
 
   function handleManagedStandards(data: ManagedStandards) {
-    console.log(data)
+    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
+    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
+
   }
+
   const startDateValue = watch('startDate')
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDThh:mm')
-    const addHoursToThaw = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDThh:mm')
+    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
+    const addHoursToThaw = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDTHH:mm')
 
     setValue('endDate', endDate)
     setValue('dateThaw', addHoursToThaw)
@@ -93,22 +97,23 @@ export function FormManagedStandards() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Local
                   </Label>
                   <Controller
-                    name="localChamber"
+                    name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value}>
+                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
                         <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Selecione o Local" />
+                          <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Câmara 01">Câmara 01</SelectItem>
-                          <SelectItem value="Câmara 02">Câmara 02</SelectItem>
-                          <SelectItem value="Câmara 03">Câmara 03</SelectItem>
-                          <SelectItem value="Câmara 04">Câmara 04</SelectItem>
+                          {local?.map(item => {
+                            return (
+                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                            )
+                          })}
                         </SelectContent>
                       </Select>
                     )}
@@ -120,9 +125,9 @@ export function FormManagedStandards() {
               </TooltipContent>
             </Tooltip>
 
-            {errors.localChamber?.message && (
+            {errors.local?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.localChamber?.message}
+                {errors.local?.message}
               </p>
             )}
           </div>
@@ -130,7 +135,7 @@ export function FormManagedStandards() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Variação do gráfico
                   </Label>
                   <Controller

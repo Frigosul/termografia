@@ -6,9 +6,13 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormUpdatedData } from './components/form-update-data'
 import { SkeletonTable } from './components/skeleton-table'
+import { TableManagedData } from './components/table-managed-data'
+
+
 export default function PageManagedData() {
   const [dataValue, setDataValue] = useState<ListDataResponse>()
   const updateDataMutation = useMutation({
+    mutationKey: ['update-data'],
     mutationFn: listData,
     onSuccess: (data) => {
       setDataValue(data)
@@ -19,7 +23,6 @@ export default function PageManagedData() {
       alert('Erro ao listar dados')
     },
   })
-
 
   return (
     <ScrollArea className='flex-1'>
@@ -34,16 +37,13 @@ export default function PageManagedData() {
             <FormUpdatedData mutate={updateDataMutation.mutateAsync} />
           </CardContent>
         </Card>
-        <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 bg-muted  dark:bg-slate-800 shadow-sm p-4">
 
-          <CardContent className="bg-muted h-full dark:bg-slate-800 pt-4">
-            {/* {updateDataMutation.isPending ? <SkeletonTable />
+        <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 shadow-sm p-4">
+          <CardContent className="h-full pt-4">
+            {updateDataMutation.isPending ? <SkeletonTable />
               : dataValue?.chartTemperature && (
                 <TableManagedData data={dataValue.chartTemperature} />
-              )
-
-            } */}
-            <SkeletonTable />
+              )}
           </CardContent>
         </Card>
       </div>

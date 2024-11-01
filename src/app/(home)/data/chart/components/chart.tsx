@@ -6,8 +6,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { formattedDateTime } from '@/utils/formatted-datetime'
 import { formattedTime } from '@/utils/formatted-time'
-import dayjs from 'dayjs'
 
 import Image from 'next/image'
 import {
@@ -88,8 +88,8 @@ export function Chart({
       temp: item.temperature,
     }
   })
-  const formattedDateClose = dayjs(dateClose).format("DD/MM/YYYY - HH:mm")
-  const formattedDateOpen = dayjs(dateOpen).format("DD/MM/YYYY - HH:mm")
+  const formattedDateClose = formattedDateTime(dateClose)
+  const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
     <div>

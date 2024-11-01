@@ -80,7 +80,7 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
       }
     },
     onError: (error) => {
-      console.log(error.message)
+
       if (error.message === 'Old password is incorrect') {
         toast.error('Senha atual inválida, verifique sua senha atual.', {
           richColors: true,

@@ -1,12 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
 import { NextRequest, NextResponse } from 'next/server'
-dayjs.extend(utc)
-dayjs.extend(timezone)
+
 
 export async function PUT(req: NextRequest) {
+
   const { temperatures } = await req.json()
   const prisma = new PrismaClient()
 
@@ -18,19 +16,18 @@ export async function PUT(req: NextRequest) {
   }
   try {
     const result = await Promise.all(
-      temperatures.map(async ({ id, temperature, userUpdatedAt }: { id: string, temperature: number, updatedAt: string, userUpdatedAt: string }) => {
-
+      temperatures.map(async ({ id, temperature, updatedUserAt, updatedAt }: { id: string, temperature: number, updatedAt: string, updatedUserAt: string }) => {
         const existTemperature = await prisma.temperature.findUnique({ where: { id } });
         if (!existTemperature) {
-          return { id, message: 'Temperature does not exist', status: 404 };
+          return { message: 'Temperature not exists', status: 400 };
         }
-        if (existTemperature.editValue !== temperature) {
+        else if (existTemperature.editValue !== temperature) {
           await prisma.temperature.update({
             where: { id },
             data: {
               editValue: temperature,
-              updatedAt: dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]'),
-              userUpdatedAt,
+              updatedAt: dayjs(updatedAt).toDate(),
+              userUpdatedAt: updatedUserAt,
             },
           });
         }

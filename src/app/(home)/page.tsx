@@ -1,13 +1,11 @@
 'use client'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useModeAppearance } from '@/context/appearance-mode'
 import { useQuery } from '@tanstack/react-query'
 import { getInstruments } from '../http/get-instruments'
 import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
 
 export default function Home() {
-  const { mode } = useModeAppearance()
   const { data, isLoading } = useQuery({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,

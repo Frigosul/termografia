@@ -46,25 +46,24 @@ export async function listData({
   endDate,
   description = '',
 }: ListDataRequest): Promise<ListDataResponse> {
-  const dataBody = {
-    local,
-    graphVariation,
-    tableVariation,
-    limit,
-    detour,
-    variationTemp,
-    minValue,
-    maxValue,
-    startDate,
-    endDate,
 
-  }
   const response = await fetch('http://localhost:3000/api/instruments/list-data', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(dataBody)
+    body: JSON.stringify({
+      local,
+      graphVariation,
+      tableVariation,
+      limit,
+      detour,
+      variationTemp,
+      minValue,
+      maxValue,
+      startDate,
+      endDate,
+    })
   })
   const data = await response.json()
 

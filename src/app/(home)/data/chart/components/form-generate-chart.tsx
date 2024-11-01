@@ -1,5 +1,4 @@
 'use client'
-
 import { getInstruments } from '@/app/http/get-instruments'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
@@ -23,9 +22,11 @@ import { useGeneratePDF } from '@/hooks/useGeneratorPdf'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import utc from "dayjs/plugin/utc"
 import { RefObject, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+dayjs.extend(utc)
 
 
 const generateDataChart = z.object({
@@ -77,13 +78,15 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     control,
     formState: { isSubmitting, errors },
   } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
-  const { data, isLoading } = useQuery({
+  const { data: local, isLoading } = useQuery({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
   })
 
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
+    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
+    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
 
     await mutate({
       local: data.localChamber,
@@ -94,8 +97,8 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
       variationTemp: data.variationTemp,
       minValue: data.minValue,
       maxValue: data.maxValue,
-      startDate: data.startDate,
-      endDate: data.endDate,
+      startDate: startDataUtc,
+      endDate: endDataUtc,
       description: data.description,
     })
   }
@@ -103,7 +106,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDThh:mm')
+    const endDate = dayjs(startDateValue).add(24, 'hours').format('YYYY-MM-DDTHH:mm')
 
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
@@ -131,7 +134,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {data?.map(item => {
+                          {local?.map(item => {
 
                             return (
                               <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>

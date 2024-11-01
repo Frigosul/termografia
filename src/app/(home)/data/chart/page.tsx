@@ -11,6 +11,7 @@ import { Table } from './components/table'
 export default function PageChart() {
   const [dataChart, setDataChart] = useState<ListDataResponse>()
   const generateChartMutation = useMutation({
+    mutationKey: ['generate-chart'],
     mutationFn: listData,
     onSuccess: (data) => {
       setDataChart(data)
@@ -22,9 +23,6 @@ export default function PageChart() {
   })
 
   const divPdfRef = useRef<HTMLDivElement>(null)
-
-  if (generateChartMutation.isPending) return <p>Carregando...</p>
-  if (generateChartMutation.isError) return <p>Erro ao buscar dados</p>
 
   return (
     <ScrollArea className="flex-1">
@@ -44,7 +42,7 @@ export default function PageChart() {
         </Card>
         <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 bg-muted dark:bg-slate-800 shadow-sm py-4">
           <CardContent ref={divPdfRef} className="dark:bg-slate-800 pt-4">
-            {dataChart && (
+            {generateChartMutation.isPending ? <p>Carregando...</p> : dataChart && (
               <>
                 <Chart
                   maxValue={dataChart.maxValue}

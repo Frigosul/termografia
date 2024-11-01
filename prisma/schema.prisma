@@ -35,7 +35,7 @@ model Instrument {
 model Temperature {
   id            String                   @id @default(uuid())
   value         Float
-  createdAt     DateTime
+  createdAt     DateTime                 @default(now())
   updatedAt     DateTime?
   userUpdatedAt String?
   editValue     Float

@@ -20,7 +20,7 @@ import { formattedDateTime } from '@/utils/formatted-datetime'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { CircleCheck, CircleX, Minus, Plus, Save, Search, X } from 'lucide-react'
+import { CircleCheck, CircleX, Save, Search, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -30,9 +30,9 @@ import { z } from 'zod'
 interface TableRow {
   id: string;
   time: string;
+  temperature: number;
   updatedUserAt: string | null;
   updatedAt: string;
-  temperature: number;
 }
 
 interface TableProps {
@@ -76,11 +76,10 @@ export function TableManagedData({ data }: TableProps) {
     },
   })
 
-
-
   const { control, register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
+
   const [editData, setEditData] = useState<TableProps>({ data });
 
   const [editCell, setEditCell] = useState<{
@@ -97,20 +96,30 @@ export function TableManagedData({ data }: TableProps) {
     console.log(data)
   }
 
-
   function handleDoubleClick(
     rowId: string,
     field: keyof TableRow,
     currentValue: string | number,
   ) {
     setEditCell({ rowId, field });
-    setInputValue(currentValue.toString());
+
+    const valueAsString = field === 'time'
+      ? dayjs(currentValue).format('YYYY-MM-DD HH:mm')
+      : currentValue.toString();
+
+    setInputValue(valueAsString);
   }
 
-  // Função para salvar a edição
+
   function handleSave(rowId: string, field: keyof TableRow) {
-    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || '';
-    if (inputValue !== '' && inputValue !== originalValue) {
+    const originalValue = data.find((row) => row.id === rowId);
+    const formattedValue = field === 'time' && originalValue
+      ? dayjs(originalValue[field]).format('YYYY-MM-DD HH:mm')
+      : originalValue?.[field]?.toString() || '';
+
+
+
+    if (inputValue !== '' && inputValue !== formattedValue) {
       setEditData((prevData) => ({
         data:
           prevData?.data.map((item) => {
@@ -119,8 +128,8 @@ export function TableManagedData({ data }: TableProps) {
                 ? {
                   ...item,
                   [field]: field === 'temperature' ? Number(inputValue) : inputValue,
-                  userUpdatedAt: String(session?.user?.name),
-                  updatedAt: dayjs().format('DD/MM/YYYY - HH:mm')
+                  updatedUserAt: String(session?.user?.name),
+                  updatedAt: dayjs().format('YYYY-MM-DDTHH:mm')
                 }
                 : item
             )
@@ -130,7 +139,6 @@ export function TableManagedData({ data }: TableProps) {
     setEditCell({ rowId: null, field: null });
   }
 
-  // Função para salvar a célula e mover para a próxima linha ou coluna
   function handleSaveAndMove(rowId: string, field: keyof TableRow) {
     handleSave(rowId, field);
     const nextRowId = getNextRowId(rowId, 1);
@@ -138,14 +146,13 @@ export function TableManagedData({ data }: TableProps) {
     if (nextRowId !== null) {
       moveToNextCell(nextRowId, field);
     } else {
-
       const nextField = getNextField(field);
       if (nextField) {
         moveToNextCell(data[0].id, nextField);
       }
     }
   }
-  // Função para navegar para cima ou para baixo
+
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
     rowId: string,
@@ -166,51 +173,38 @@ export function TableManagedData({ data }: TableProps) {
       }
     }
   }
-  // Função para obter a próxima coluna (campo) da tabela
+
   function getNextField(currentField: keyof TableRow): keyof TableRow | null {
     const fields: (keyof TableRow)[] = ['time', 'temperature'];
     const currentIndex = fields.indexOf(currentField);
     const nextIndex = currentIndex + 1;
-    if (nextIndex < fields.length) {
-      return fields[nextIndex];
-    }
-    return null;
+    return nextIndex < fields.length ? fields[nextIndex] : null;
   }
-  // Função para mover o foco para a célula selecionada
+
   function moveToNextCell(nextRowId: string, field: keyof TableRow) {
     const nextRow = data.find((row) => row.id === nextRowId);
-    if (nextRow) {
+    if (nextRow && nextRow[field]) {
       setEditCell({ rowId: nextRowId, field });
-      if (nextRow[field]) {
-        setInputValue(nextRow[field].toString());
-      }
+
+      const valueAsString = field === 'time'
+        ? dayjs(nextRow[field]).format('YYYY-MM-DD HH:mm')
+        : nextRow[field]?.toString() || '';
+
+      setInputValue(valueAsString);
+
     }
   }
 
-  // Função para obter o próximo rowId (navegação com setas)
   function getNextRowId(currentId: string, direction: number): string | null {
     const currentIndex = data.findIndex((row) => row.id === currentId);
     const nextIndex = currentIndex + direction;
-
-    if (nextIndex >= 0 && nextIndex < data.length) {
-      return data[nextIndex].id;
-    }
-
-    return null;
+    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
   }
 
   return (
     <div className="flex flex-col w-full items-center justify-start border border-card-foreground rounded-md h-[30rem] overflow-hidden relative">
       <div className="flex justify-between w-full border-b border-card-foreground">
         <div className="flex gap-1">
-          <Button variant="ghost" className="flex gap-1 hover:bg-blue-600/40">
-            <Plus className="size-4" />
-            Adicionar
-          </Button>
-          <Button variant="ghost" className="flex gap-1 hover:bg-yellow-400/30">
-            <Minus className="size-4" />
-            Apagar
-          </Button>
           <Button
             variant="ghost"
             className="flex gap-1 hover:bg-green-400/30"
@@ -287,7 +281,7 @@ export function TableManagedData({ data }: TableProps) {
             return (
               <TableRow
                 key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 "
+                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
               >
                 <TableCell className="border text-center">
                   {formattedDateTime(row.time)}

@@ -14,7 +14,7 @@ const fontSans = FontSans({
   variable: '--font-sans',
 })
 export const metadata: Metadata = {
-  title: 'Termografia',
+  title: 'SulTerm',
   description: 'Project of collect data with control temperature.',
 }
 

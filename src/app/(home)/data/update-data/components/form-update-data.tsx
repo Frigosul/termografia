@@ -1,7 +1,6 @@
 'use client'
 import { getInstruments } from '@/app/http/get-instruments'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,21 +20,19 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import utc from "dayjs/plugin/utc"
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+dayjs.extend(utc)
 
 
 const updatedDataChart = z.object({
-  localChamber: z
-    .string({ message: 'Selecione o local desejado.' }),
-
-  graphVariation: z
-    .string({ message: 'Defina a variação desejada no gráfico.' }),
+  local: z.string({ message: 'Selecione o local desejado.' }),
+  graphVariation: z.string({ message: 'Defina a variação desejada no gráfico.' }),
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
 })
-
 type UpdatedDataChart = z.infer<typeof updatedDataChart>
 interface FormUpdateDataProps {
   mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
@@ -54,25 +51,27 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
     resolver: zodResolver(updatedDataChart),
   })
 
-  const { data, isLoading } = useQuery({
+  const { data: local, isLoading } = useQuery({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
   })
 
   function handleUpdatedDataChart(data: UpdatedDataChart) {
+    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
+    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
+
     mutate({
-      endDate: data.endDate,
-      startDate: data.startDate,
+      endDate: endDataUtc,
+      startDate: startDataUtc,
       graphVariation: data.graphVariation,
-      local: data.localChamber
+      local: data.local
     })
   }
   const startDateValue = watch('startDate')
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDThh:mm')
-
+    const endDate = dayjs(startDateValue).add(24, 'hours').format('YYYY-MM-DDTHH:mm')
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
 
@@ -87,11 +86,11 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Local
                   </Label>
                   <Controller
-                    name="localChamber"
+                    name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
@@ -99,7 +98,7 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {data?.map(item => {
+                          {local?.map(item => {
                             return (
                               <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
                             )
@@ -115,9 +114,9 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
               </TooltipContent>
             </Tooltip>
 
-            {errors.localChamber?.message && (
+            {errors.local?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.localChamber?.message}
+                {errors.local?.message}
               </p>
             )}
           </div>
@@ -125,8 +124,8 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
-                    Variação gráfico
+                  <Label className="font-light text-sm" htmlFor="graphVariation">
+                    Variação
                   </Label>
                   <Controller
                     name="graphVariation"
@@ -137,11 +136,13 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
                           <SelectValue placeholder="Variação do gráfico" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="01">01 minuto</SelectItem>
+                          <SelectItem value="05">05 minutos</SelectItem>
                           <SelectItem value="10">10 minutos</SelectItem>
                           <SelectItem value="15">15 minutos</SelectItem>
                           <SelectItem value="20">20 minutos</SelectItem>
                           <SelectItem value="30">30 minutos</SelectItem>
-                          <SelectItem value="01">01 hora</SelectItem>
+                          <SelectItem value="60">01 hora</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
