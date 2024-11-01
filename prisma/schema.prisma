@@ -24,9 +24,12 @@ model Instrument {
   type          String
   status        String
   isSensorError Boolean                  @default(false)
-  displayOrder  Int                      @default(autoincrement())
   createdAt     DateTime                 @default(now())
   updatedAt     DateTime                 @default(now())
+  displayOrder  Int                      @default(autoincrement())
+  error         String?
+  minValue      Float                    @default(-20)
+  maxValue      Float                    @default(20)
   temperatures  InstrumentsTemperature[]
 
   @@map("instruments")
@@ -36,19 +39,19 @@ model Temperature {
   id            String                   @id @default(uuid())
   value         Float
   createdAt     DateTime                 @default(now())
+  editValue     Float
   updatedAt     DateTime?
   userUpdatedAt String?
-  editValue     Float
   instruments   InstrumentsTemperature[]
 
   @@map("temperatures")
 }
 
 model InstrumentsTemperature {
-  instruments    Instrument  @relation(fields: [instrument_id], references: [id], onDelete: Cascade)
   instrument_id  String
-  temperature    Temperature @relation(fields: [temperature_id], references: [id])
   temperature_id String
+  instruments    Instrument  @relation(fields: [instrument_id], references: [id], onDelete: Cascade)
+  temperature    Temperature @relation(fields: [temperature_id], references: [id])
 
   @@id([instrument_id, temperature_id])
   @@map("temperature_instrument")

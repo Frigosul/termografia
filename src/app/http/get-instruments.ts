@@ -6,6 +6,9 @@ type InstrumentsResponse = {
   status: 'deg' | 'resf' | 'vent' | 'port'
   isSensorError: boolean
   temperature: number
+  error: string | null
+  maxValue: number
+  minValue: number
 }[]
 
 

@@ -10,6 +10,9 @@ export async function GET() {
       name: true,
       type: true,
       status: true,
+      error: true,
+      minValue: true,
+      maxValue: true,
       isSensorError: true,
       temperatures: {
         select: {
@@ -41,9 +44,11 @@ export async function GET() {
     type: instrument.type,
     status: instrument.status,
     isSensorError: instrument.isSensorError,
-    temperature: instrument.temperatures?.[0]?.temperature?.editValue ?? null
+    temperature: instrument.temperatures?.[0]?.temperature?.editValue ?? null,
+    error: instrument.error,
+    maxValue: instrument.maxValue,
+    minValue: instrument.minValue,
   }));
-
 
   return NextResponse.json(formattedInstruments, { status: 200 })
 }
