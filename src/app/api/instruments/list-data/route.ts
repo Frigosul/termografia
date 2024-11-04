@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
 
   const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
   const formattedEndDate = dayjs(endDate).add(1, 'minute').format('YYYY-MM-DDTHH:mm:ss[Z]')
+  const formattedEndDateNotAdd = dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
 
 
   const data = await prisma.instrument.findUnique({
@@ -107,8 +108,8 @@ export async function POST(req: NextRequest) {
       id: data?.id,
       name: data?.name,
       chartType: 'temp',
-      dateClose: startDate,
-      dateOpen: endDate,
+      dateClose: formattedStartDate,
+      dateOpen: formattedEndDateNotAdd,
       chartTemperature: chartTemperature.map(temp => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),
@@ -130,8 +131,8 @@ export async function POST(req: NextRequest) {
       id: data?.id,
       name: data?.name,
       chartType: 'temp',
-      dateClose: startDate,
-      dateOpen: endDate,
+      dateClose: formattedStartDate,
+      dateOpen: formattedEndDateNotAdd,
       chartTemperature: chartTemperature.map(temp => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),

@@ -276,6 +276,7 @@ export function TableManagedData({ data }: TableProps) {
         </TableHeader>
         <TableBody className="overflow-y-auto">
           {editData.data.map((row) => {
+
             return (
               <TableRow
                 key={row.id}

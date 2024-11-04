@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/chart'
 import { formattedDateTime } from '@/utils/formatted-datetime'
 import { formattedTime } from '@/utils/formatted-time'
+import dayjs from 'dayjs'
 
 import Image from 'next/image'
 import {
@@ -83,12 +84,15 @@ export function Chart({
   )
 
   const formattedData = data.map((item) => {
+    console.log(item.time)
+    console.log(dateClose)
     return {
       time: formattedTime(item.time),
       temp: item.temperature,
     }
   })
-  const formattedDateClose = formattedDateTime(dateClose)
+
+  const formattedDateClose = dayjs(dateClose).format("DD/MM/YYYY - HH:mm")
   const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
