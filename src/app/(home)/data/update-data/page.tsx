@@ -1,11 +1,11 @@
 'use client'
 import { listData, ListDataResponse } from '@/app/http/list-data'
+import { SkeletonTable } from '@/components/skeleton-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormUpdatedData } from './components/form-update-data'
-import { SkeletonTable } from './components/skeleton-table'
 import { TableManagedData } from './components/table-managed-data'
 
 

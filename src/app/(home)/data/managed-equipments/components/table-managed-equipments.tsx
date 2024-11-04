@@ -21,12 +21,17 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface RowData {
-  id: number
-  equipment: string
+  id: string
   name: string
-  active: boolean
-  type: 'temp' | 'press' | 'temp/press'
-  displayOrder: number
+  type: 'temp' | 'press'
+  maxValue: number
+  minValue: number
+  createdAt: string
+  isActive: boolean,
+  displayOrder: number,
+}
+interface TableProps {
+  value: RowData[]
 }
 
 const searchDataSchema = z.object({
@@ -35,7 +40,9 @@ const searchDataSchema = z.object({
 
 type SearchData = z.infer<typeof searchDataSchema>
 
-export function TableManagedEquipments() {
+export function TableManagedEquipments({ value }: TableProps) {
+  const [data, setData] = useState<RowData[]>(value)
+
   const { register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
@@ -44,194 +51,95 @@ export function TableManagedEquipments() {
     console.log(data)
   }
 
-  //dados estão aqui
-  const [data, setData] = useState<RowData[]>([
-    {
-      id: 1,
-      equipment: 'Câmara 01',
-      name: 'Câmara 01',
-      type: 'temp/press',
-      active: true,
-      displayOrder: 1,
-    },
-    {
-      id: 2,
-      equipment: 'Câmara 02',
-      name: 'Câmara 02',
-      type: 'temp',
-      active: true,
-      displayOrder: 2,
-    },
-    {
-      id: 3,
-      equipment: 'Câmara 03',
-      name: 'Câmara 03',
-      type: 'temp/press',
-      active: true,
-      displayOrder: 3,
-    },
-    {
-      id: 4,
-      equipment: 'Câmara 04',
-      name: 'Câmara 04',
-      type: 'temp',
-      active: true,
-      displayOrder: 4,
-    },
-    {
-      id: 5,
-      equipment: 'Câmara 05',
-      name: 'Câmara 05',
-      type: 'press',
-      active: true,
-      displayOrder: 5,
-    },
-    {
-      id: 6,
-      equipment: 'Câmara 06',
-      name: 'Câmara 06',
-      type: 'temp',
-      active: true,
-      displayOrder: 6,
-    },
-    {
-      id: 7,
-      equipment: 'Câmara 07',
-      name: 'Câmara 07',
-      type: 'temp',
-      active: true,
-      displayOrder: 7,
-    },
-    {
-      id: 8,
-      equipment: 'Câmara 08',
-      name: 'Câmara 08',
-      type: 'temp',
-      active: true,
-      displayOrder: 8,
-    },
-    {
-      id: 9,
-      equipment: 'Câmara 09',
-      name: 'Câmara 09',
-      type: 'temp',
-      active: true,
-      displayOrder: 9,
-    },
-    {
-      id: 10,
-      equipment: 'Câmara 10',
-      name: 'Câmara 10',
-      type: 'temp',
-      active: true,
-      displayOrder: 10,
-    },
-  ])
-
   const [editCell, setEditCell] = useState<{
-    rowId: number | null
-    field: keyof RowData | null
+    rowId: string | null;
+    field: keyof RowData | null;
   }>({
     rowId: null,
     field: null,
-  })
+  });
 
   const [inputValue, setInputValue] = useState<string>('')
 
-  // Função para ativar a edição
   function handleDoubleClick(
-    rowId: number,
+    rowId: string,
     field: keyof RowData,
     currentValue: string | number,
   ) {
-    setEditCell({ rowId, field })
-    setInputValue(currentValue.toString())
+    setEditCell({ rowId, field });
+    setInputValue(currentValue.toString());
   }
 
-  // Função para salvar a edição
-  function handleSave(rowId: number, field: keyof RowData) {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.id === rowId
-          ? {
-            ...item,
-            [field]: field === 'equipment' ? Number(inputValue) : inputValue,
-          }
-          : item,
-      ),
-    )
+
+  function handleSave(rowId: string, field: keyof RowData) {
+    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || ''
+
+    if (inputValue !== '' && inputValue !== originalValue) {
+      setData((prevData) =>
+        prevData.map((item) =>
+          item.id === rowId ? { ...item, [field]: inputValue } : item,
+        ),
+      )
+    }
     setEditCell({ rowId: null, field: null })
   }
 
-  // Função para salvar a célula e mover para a próxima linha ou coluna
-  function handleSaveAndMove(rowId: number, field: keyof RowData) {
-    handleSave(rowId, field) // Salva a célula atual
-    const nextRowId = getNextRowId(rowId, 1) // Calcula o próximo ID de linha
+  function handleSaveAndMove(rowId: string, field: keyof RowData) {
+    handleSave(rowId, field)
+    const nextRowId = getNextRowId(rowId, 1)
 
     if (nextRowId !== null) {
-      moveToNextCell(nextRowId, field) // Move o foco para a célula abaixo
+      moveToNextCell(nextRowId, field)
     } else {
-      // Se for a última linha, mover para a próxima coluna
       const nextField = getNextField(field)
       if (nextField) {
-        moveToNextCell(data[0].id, nextField) // Move o foco para a primeira célula da próxima coluna
+        moveToNextCell(data[0].id, nextField)
       }
     }
   }
 
-  // Função para navegar para cima ou para baixo
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
-    rowId: number,
+    rowId: string,
     field: keyof RowData,
   ) {
     if (e.key === 'Enter') {
-      handleSaveAndMove(rowId, field)
+      handleSaveAndMove(rowId, field);
     }
     if (e.key === 'ArrowDown') {
-      const nextRowId = getNextRowId(rowId, 1)
+      const nextRowId = getNextRowId(rowId, 1);
       if (nextRowId !== null) {
-        moveToNextCell(nextRowId, field)
+        moveToNextCell(nextRowId, field);
       }
     } else if (e.key === 'ArrowUp') {
-      const prevRowId = getNextRowId(rowId, -1)
+      const prevRowId = getNextRowId(rowId, -1);
       if (prevRowId !== null) {
-        moveToNextCell(prevRowId, field)
+        moveToNextCell(prevRowId, field);
       }
     }
   }
-  // Função para obter a próxima coluna (campo) da tabela
+
   function getNextField(currentField: keyof RowData): keyof RowData | null {
-    const fields: (keyof RowData)[] = ['equipment', 'name']
+    const fields: (keyof RowData)[] = ['name', 'displayOrder']
     const currentIndex = fields.indexOf(currentField)
     const nextIndex = currentIndex + 1
-    if (nextIndex < fields.length) {
-      return fields[nextIndex]
-    }
-    return null
+    return nextIndex < fields.length ? fields[nextIndex] : null
   }
-  // Função para mover o foco para a célula selecionada
-  function moveToNextCell(nextRowId: number, field: keyof RowData) {
+
+  function moveToNextCell(nextRowId: string, field: keyof RowData) {
     const nextRow = data.find((row) => row.id === nextRowId)
-    if (nextRow) {
+    if (nextRow && nextRow[field] !== undefined) {
       setEditCell({ rowId: nextRowId, field })
-      if (nextRow[field]) {
-        setInputValue(nextRow[field].toString())
-      }
+      setInputValue(nextRow[field]?.toString() || '')
     }
   }
 
-  // Função para obter o próximo rowId (navegação com setas)
-  function getNextRowId(currentId: number, direction: number): number | null {
-    const currentIndex = data.findIndex((row) => row.id === currentId)
-    const nextIndex = currentIndex + direction
-
-    if (nextIndex >= 0 && nextIndex < data.length) {
-      return data[nextIndex].id
-    }
-
-    return null
+  function getNextRowId(currentId: string, direction: number): string | null {
+    const currentIndex = data.findIndex((row) => row.id === currentId);
+    const nextIndex = currentIndex + direction;
+    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
   }
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden border border-card-foreground rounded-md">
@@ -271,39 +179,35 @@ export function TableManagedEquipments() {
       <Table className="border border-collapse">
         <TableHeader className="bg-card sticky z-10 top-0 border-b">
           <TableRow>
-            <TableHead className="border text-card-foreground  text-center">
-              Id
+            <TableHead className="border text-card-foreground text-center min-w-96">
+              Nome
             </TableHead>
-            <TableHead className="border text-card-foreground  text-center">
-              Equipamento
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-60">
-              Nome de exibição
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-36">
+            <TableHead className="border text-card-foreground text-center  w-40">
               Tipo
             </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-8">
-              Ativo
+            <TableHead className="border text-card-foreground text-center min-w-20">
+              Valor Mínimo
+            </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-20">
+              Valor Máximo
             </TableHead>
             <TableHead className="border text-card-foreground text-center min-w-40">
               Order de exibição
             </TableHead>
+            <TableHead className="border text-card-foreground text-center min-w-8">
+              Ativo
+            </TableHead>
+
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((row) => {
+
             return (
               <TableRow
                 key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
+                className={`odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 ${!row.isActive && 'opacity-35 '}`}
               >
-                <TableCell className="border text-center w-24">
-                  {row.id}
-                </TableCell>
-                <TableCell className="border text-center">
-                  {row.equipment}
-                </TableCell>
                 <TableCell
                   className="border text-center w-60"
                   onDoubleClick={() =>
@@ -323,22 +227,44 @@ export function TableManagedEquipments() {
                     row.name
                   )}
                 </TableCell>
-                <TableCell className=" text-center flex justify-between items-center w-40 px-4">
+                <TableCell className=" text-center flex justify-between items-center min-w-40 px-4">
                   {row.type}
                   <Popover>
                     <PopoverTrigger>
                       <EllipsisVertical className="size-5" />
                     </PopoverTrigger>
-
                     <PopoverContent className="flex flex-col gap-4 w-40">
                       <div className="flex items-center">
-                        <Checkbox value="temp" />
+                        <Checkbox
+                          value="temp"
+                          defaultChecked={row.type === 'temp'}
+                          onCheckedChange={(checked: boolean) => {
+                            setData((prevData) =>
+                              prevData.map((item) =>
+                                item.id === row.id ? { ...item, type: checked ? 'temp' : item.type } : item
+                              )
+                            );
+                          }
+                          }
+                        />
                         <span className="text-sm ml-2 tracking-wider font-light">
                           Temperatura
                         </span>
                       </div>
                       <div className="flex items-center">
-                        <Checkbox value="press" />
+                        <Checkbox
+                          value="press"
+                          defaultChecked={row.type === 'press'}
+                          onCheckedChange={(checked: boolean) => {
+                            setData((prevData) =>
+                              prevData.map((item) =>
+                                item.id === row.id ? { ...item, type: checked ? 'press' : item.type } : item
+                              )
+                            );
+                          }
+                          }
+
+                        />
                         <span className="text-sm ml-2 tracking-wider font-light">
                           Pressão
                         </span>
@@ -346,11 +272,50 @@ export function TableManagedEquipments() {
                     </PopoverContent>
                   </Popover>
                 </TableCell>
-                <TableCell className="border text-center min-w-8">
-                  <Checkbox defaultChecked={true} className='ml-[-10px]' />
+
+
+                <TableCell
+                  className="border text-center w-32"
+                  onDoubleClick={() =>
+                    handleDoubleClick(row.id, 'minValue', row.minValue)
+                  }
+                >
+                  {editCell.rowId === row.id && editCell.field === 'minValue' ? (
+                    <input
+                      className="bg-transparent"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onBlur={() => handleSave(row.id, 'minValue')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'minValue')}
+                      autoFocus
+                    />
+                  ) : (
+                    row.minValue
+                  )}
                 </TableCell>
                 <TableCell
-                  className="border text-center w-40 "
+                  className="border text-center w-32"
+                  onDoubleClick={() =>
+                    handleDoubleClick(row.id, 'maxValue', row.maxValue)
+                  }
+                >
+                  {editCell.rowId === row.id && editCell.field === 'maxValue' ? (
+                    <input
+                      className="bg-transparent"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onBlur={() => handleSave(row.id, 'maxValue')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'maxValue')}
+                      autoFocus
+                    />
+                  ) : (
+                    row.maxValue
+                  )}
+                </TableCell>
+
+
+                <TableCell
+                  className="border text-center w-40"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
                   }
@@ -367,6 +332,20 @@ export function TableManagedEquipments() {
                   ) : (
                     row.displayOrder
                   )}
+                </TableCell>
+                <TableCell className="border text-center w-10">
+                  <Checkbox
+                    defaultChecked={row.isActive}
+                    className='ml-[-10px]'
+                    onCheckedChange={(checked: boolean) => {
+                      setData((prevData) =>
+                        prevData.map((item) =>
+                          item.id === row.id ? { ...item, isActive: checked } : item
+                        )
+                      );
+                    }
+                    }
+                  />
                 </TableCell>
               </TableRow>
             )

@@ -1,15 +1,13 @@
 
-type InstrumentsResponse = {
+export type InstrumentsResponse = {
   id: string
   name: string
   type: 'temp' | 'press'
-  status: 'deg' | 'resf' | 'vent' | 'port'
-  isSensorError: boolean
-  temperature: number
-  error: string | null
   maxValue: number
   minValue: number
   createdAt: string
+  isActive: boolean,
+  displayOrder: number,
 }[]
 
 

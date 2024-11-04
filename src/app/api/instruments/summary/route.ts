@@ -11,7 +11,7 @@ export async function GET() {
       type: true,
       minValue: true,
       maxValue: true,
-      isActiive: true,
+      isActive: true,
       displayOrder: true,
 
     },

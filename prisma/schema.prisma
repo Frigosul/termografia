@@ -30,7 +30,7 @@ model Instrument {
   error         String?
   minValue      Float                    @default(-20)
   maxValue      Float                    @default(20)
-  isActiive     Boolean                  @default(false)
+  isActive      Boolean                  @default(true)
   temperatures  InstrumentsTemperature[]
 
   @@map("instruments")
