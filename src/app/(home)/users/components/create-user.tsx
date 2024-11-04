@@ -81,7 +81,6 @@ export function CreateUser() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['list-users'] })
       toast.success('Usuário cadastrado com sucesso', {
-        richColors: true,
         position: 'top-right',
         icon: <CircleCheck />,
       })
@@ -89,7 +88,6 @@ export function CreateUser() {
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-        richColors: true,
         position: 'top-right',
         icon: <CircleX />,
       })

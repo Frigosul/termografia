@@ -39,7 +39,7 @@ export default async function RootLayout({
             <ReactQueryProvider>
               <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 <ToggleTheme />
-                <Toaster />
+                <Toaster richColors expand visibleToasts={20} />
                 {children}
               </ThemeProvider>
             </ReactQueryProvider>

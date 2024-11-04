@@ -28,14 +28,12 @@ export function DeleteUser({ userId }: DeleteUserProps) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['list-users'] })
       toast.success('Usuário deletado com sucesso', {
-        richColors: true,
         position: 'top-right',
         icon: <CircleCheck />,
       })
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-        richColors: true,
         position: 'top-right',
         icon: <CircleX />,
       })

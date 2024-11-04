@@ -84,7 +84,6 @@ export function UpdateUser({ id, email, name, userRole }: User) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['list-users'] })
       toast.success('Usuário atualizado com sucesso', {
-        richColors: true,
         position: 'top-right',
         icon: <CircleCheck />,
       })
@@ -92,7 +91,6 @@ export function UpdateUser({ id, email, name, userRole }: User) {
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-        richColors: true,
         position: 'top-right',
         icon: <CircleX />,
       })

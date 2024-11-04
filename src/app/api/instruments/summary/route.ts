@@ -19,7 +19,7 @@ export async function GET() {
           temperature: {
             select: {
               editValue: true,
-              updatedAt: true,
+              createdAt: true,
             }
 
           },
@@ -45,6 +45,7 @@ export async function GET() {
     status: instrument.status,
     isSensorError: instrument.isSensorError,
     temperature: instrument.temperatures?.[0]?.temperature?.editValue ?? null,
+    createdAt: instrument.temperatures?.[0].temperature.createdAt,
     error: instrument.error,
     maxValue: instrument.maxValue,
     minValue: instrument.minValue,

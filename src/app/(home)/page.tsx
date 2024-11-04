@@ -1,23 +1,19 @@
 'use client'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useQuery } from '@tanstack/react-query'
-import { getInstruments } from '../http/get-instruments'
+import { useWebSocket } from '@/hooks/useWebSocket'
+import { AlertError } from './components/alert'
 import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
 
+
 export default function Home() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['list-instruments'],
-    queryFn: getInstruments,
-    staleTime: 1000 * 10, // 10 seconds
-    refetchInterval: 1000 * 10, // 10 seconds
-  })
+  const { data, error, isLoading } = useWebSocket('ws://localhost:8080')
 
   return (
     <ScrollArea className='flex-1'>
       <main>
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-home px-2 justify-center gap-2 pt-3 `}>
-          {isLoading
+          {error ? <AlertError /> : isLoading
             ? Array.from({ length: 12 }).map((_, index) => (
               <SkeletonChart key={index} />
             ))

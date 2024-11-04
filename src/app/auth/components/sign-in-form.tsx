@@ -42,7 +42,6 @@ export function SignInForm() {
 
       if (!result || result.error) {
         toast.error('Usuário ou senha inválidos. Tente novamente.', {
-          richColors: true,
           position: 'top-right',
           icon: <CircleX />,
         })
@@ -50,9 +49,8 @@ export function SignInForm() {
         router.push('/')
       }
     } catch (error) {
-      // Trata erros inesperados e mostra toast com a mensagem de erro
+
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-        richColors: true,
         position: 'top-right',
         icon: <CircleX />,
       })

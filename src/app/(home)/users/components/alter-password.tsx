@@ -66,13 +66,11 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
     onSuccess: async (data) => {
       if (data.error) {
         toast.error('Senha atual inválida, verifique sua senha atual.', {
-          richColors: true,
           position: 'top-right',
           icon: <CircleX />,
         })
       } else {
         toast.success('Senha atualizada com sucesso', {
-          richColors: true,
           position: 'top-right',
           icon: <CircleCheck />,
         })
@@ -83,13 +81,11 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
 
       if (error.message === 'Old password is incorrect') {
         toast.error('Senha atual inválida, verifique sua senha atual.', {
-          richColors: true,
           position: 'top-right',
           icon: <CircleX />,
         })
       } else {
         toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-          richColors: true,
           position: 'top-right',
           icon: <CircleX />,
         })

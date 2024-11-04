@@ -9,6 +9,7 @@ type InstrumentsResponse = {
   error: string | null
   maxValue: number
   minValue: number
+  createdAt: string
 }[]
 
 
