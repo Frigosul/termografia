@@ -93,7 +93,7 @@ export function SheetSidebar() {
                 <Database size={20} />
                 Editar dados
               </NavLink>
-              <NavLink href="/data/managed-standards">
+              <NavLink href="/data/generate-standards">
                 <ScrollText size={20} />
                 Gerenciar padrões
               </NavLink>

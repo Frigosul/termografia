@@ -43,9 +43,9 @@ export function SideBar() {
               <Database size={20} />
               Editar dados
             </NavLink>
-            <NavLink setIsOpen={setHoverLinkOpen} href="/data/managed-standards">
+            <NavLink setIsOpen={setHoverLinkOpen} href="/data/generate-standards">
               <ScrollText size={20} />
-              Gerenciar padrões
+              Gerar padrões
             </NavLink>
             <NavLink setIsOpen={setHoverLinkOpen} href="/data/managed-equipments">
               <BetweenHorizontalEnd size={20} />

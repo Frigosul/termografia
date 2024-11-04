@@ -22,7 +22,7 @@ export async function middleware(request: NextRequestWithAuth) {
     adm: [
       '/users',
       '/data/update-data',
-      '/data/managed-standards',
+      '/data/generate-standards',
       '/data/managed-equipments',
       '/data/chart',
       '/',

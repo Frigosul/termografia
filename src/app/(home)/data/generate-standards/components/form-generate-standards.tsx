@@ -1,5 +1,6 @@
 'use client'
 import { getInstruments } from '@/app/http/get-instruments'
+import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,34 +27,21 @@ import { z } from 'zod'
 dayjs.extend(utc)
 
 
-
-const variationChart = [
-  '01 minuto',
-  '05 minutos',
-  '10 minutos',
-  '15 minutos',
-  '20 minutos',
-  '30 minutos',
-]
-
-const managedStandards = z.object({
-  local: z
-    .string({ message: 'Selecione o local desejado.' }),
-
-  variationChart: z
-    .string({ message: 'Defina a variação desejada no gráfico.' })
-    .refine((value) => variationChart.includes(value), {
-      message: 'Variação inválida. Escolha outra variação.',
-    }),
-
+const generateStandards = z.object({
+  local: z.string({ message: 'Selecione o local desejado.' }),
+  variation: z.string({ message: 'Defina a variação desejada no gráfico.' }),
   startDate: z.string({ message: 'Defina a data de fechamento.' }),
   dateThaw: z.string(),
   endDate: z.string({ message: 'Defina a data de abertura.' }),
 })
 
-type ManagedStandards = z.infer<typeof managedStandards>
+type GenerateStandards = z.infer<typeof generateStandards>
+interface FormGenerateDataProps {
+  mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
+}
 
-export function FormManagedStandards() {
+
+export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
   const { data: local, isLoading } = useQuery({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
@@ -65,14 +53,19 @@ export function FormManagedStandards() {
     setValue,
     control,
     formState: { isSubmitting, errors },
-  } = useForm<ManagedStandards>({
-    resolver: zodResolver(managedStandards),
+  } = useForm<GenerateStandards>({
+    resolver: zodResolver(generateStandards),
   })
 
-  function handleManagedStandards(data: ManagedStandards) {
+  function handleGenerateStandards(data: GenerateStandards) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
     const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
-
+    mutate({
+      endDate: endDataUtc,
+      startDate: startDataUtc,
+      graphVariation: data.variation,
+      local: data.local
+    })
   }
 
   const startDateValue = watch('startDate')
@@ -88,7 +81,7 @@ export function FormManagedStandards() {
 
   return (
     <form
-      onSubmit={handleSubmit(handleManagedStandards)}
+      onSubmit={handleSubmit(handleGenerateStandards)}
       className="gap-2  flex flex-col items-start"
     >
       <TooltipProvider>
@@ -136,23 +129,24 @@ export function FormManagedStandards() {
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-sm" htmlFor="local">
-                    Variação do gráfico
+                    Variação
                   </Label>
                   <Controller
-                    name="variationChart"
+                    name="variation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
                         <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Variação do gráfico" />
+                          <SelectValue placeholder="Variação" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="01 minuto">01 minuto</SelectItem>
-                          <SelectItem value="05 minutos">05 minutos</SelectItem>
-                          <SelectItem value="10 minutos">10 minutos</SelectItem>
-                          <SelectItem value="15 minutos">15 minutos</SelectItem>
-                          <SelectItem value="20 minutos">20 minutos</SelectItem>
-                          <SelectItem value="30 minutos">30 minutos</SelectItem>
+                          <SelectItem value="01">01 minuto</SelectItem>
+                          <SelectItem value="05">05 minutos</SelectItem>
+                          <SelectItem value="10">10 minutos</SelectItem>
+                          <SelectItem value="15">15 minutos</SelectItem>
+                          <SelectItem value="20">20 minutos</SelectItem>
+                          <SelectItem value="30">30 minutos</SelectItem>
+                          <SelectItem value="60">01 hora</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -164,9 +158,9 @@ export function FormManagedStandards() {
                 informações do instrumento.
               </TooltipContent>
             </Tooltip>
-            {errors.variationChart?.message && (
+            {errors.variation?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.variationChart?.message}
+                {errors.variation?.message}
               </p>
             )}
           </div>
