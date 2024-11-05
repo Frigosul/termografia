@@ -1,6 +1,7 @@
 
 export type InstrumentsResponse = {
   id: string
+  idSitrad: number
   name: string
   type: 'temp' | 'press'
   maxValue: number

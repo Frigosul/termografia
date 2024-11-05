@@ -5,7 +5,6 @@ import { AlertError } from './components/alert'
 import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
 
-
 export default function Home() {
   const { data, error, isLoading } = useWebSocket('ws://localhost:8080')
 

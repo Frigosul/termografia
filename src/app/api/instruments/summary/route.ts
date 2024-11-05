@@ -7,6 +7,7 @@ export async function GET() {
   const instruments = await prisma.instrument.findMany({
     select: {
       id: true,
+      idSitrad: true,
       name: true,
       type: true,
       minValue: true,

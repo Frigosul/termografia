@@ -1,0 +1,31 @@
+
+type DataRequest = {
+  instruments: {
+    id: string
+    idSitrad: number
+    name: string
+    type: 'temp' | 'press'
+    maxValue: number
+    minValue: number
+    isActive: boolean,
+    displayOrder: number,
+
+  }[]
+}
+
+export async function updateInstruments({ instruments }: DataRequest) {
+  const response = await fetch(`/api/instruments/update-instruments`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ instruments }),
+  })
+
+
+  if (!response.ok) {
+    throw new Error('Erro ao atualizar os instrumentos')
+  }
+  const data = await response.json()
+  return data
+}

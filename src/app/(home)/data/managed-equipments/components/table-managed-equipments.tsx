@@ -1,11 +1,14 @@
+import { updateInstruments } from '@/app/http/update-instruments'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Table,
   TableBody,
@@ -14,19 +17,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import queryClient from '@/lib/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { EllipsisVertical, Save, Search, X } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import { CircleCheck, CircleX, EllipsisVertical, Save, Search, X } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 interface RowData {
   id: string
+  idSitrad: number
   name: string
   type: 'temp' | 'press'
   maxValue: number
   minValue: number
-  createdAt: string
   isActive: boolean,
   displayOrder: number,
 }
@@ -43,12 +49,32 @@ type SearchData = z.infer<typeof searchDataSchema>
 export function TableManagedEquipments({ value }: TableProps) {
   const [data, setData] = useState<RowData[]>(value)
 
+  const updatedInstrumentsMutation = useMutation({
+    mutationFn: updateInstruments,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['list-instruments'] })
+      toast.success('Dados atualizados com sucesso', {
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+    },
+    onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+      console.log('error' + error)
+    },
+  })
+
+
   const { register, handleSubmit } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
 
   function handleSearchData(data: SearchData) {
     console.log(data)
+
   }
 
   const [editCell, setEditCell] = useState<{
@@ -59,39 +85,49 @@ export function TableManagedEquipments({ value }: TableProps) {
     field: null,
   });
 
-  const [inputValue, setInputValue] = useState<string>('')
+
+  const [inputValue, setInputValue] = useState<string | number>('')
 
   function handleDoubleClick(
     rowId: string,
     field: keyof RowData,
     currentValue: string | number,
   ) {
+
     setEditCell({ rowId, field });
     setInputValue(currentValue.toString());
   }
 
 
   function handleSave(rowId: string, field: keyof RowData) {
-    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || ''
+    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || '';
 
     if (inputValue !== '' && inputValue !== originalValue) {
       setData((prevData) =>
-        prevData.map((item) =>
-          item.id === rowId ? { ...item, [field]: inputValue } : item,
+        prevData.map((item) => {
+          if (item.id === rowId) {
+            const updatedValue = ['minValue', 'maxValue', 'displayOrder'].includes(field)
+              ? Number(inputValue)
+              : inputValue;
+
+            return { ...item, [field]: updatedValue };
+          }
+          return item;
+        }
         ),
-      )
+      );
     }
-    setEditCell({ rowId: null, field: null })
+    setEditCell({ rowId: null, field: null });
   }
 
   function handleSaveAndMove(rowId: string, field: keyof RowData) {
     handleSave(rowId, field)
     const nextRowId = getNextRowId(rowId, 1)
-
     if (nextRowId !== null) {
       moveToNextCell(nextRowId, field)
     } else {
       const nextField = getNextField(field)
+
       if (nextField) {
         moveToNextCell(data[0].id, nextField)
       }
@@ -120,7 +156,7 @@ export function TableManagedEquipments({ value }: TableProps) {
   }
 
   function getNextField(currentField: keyof RowData): keyof RowData | null {
-    const fields: (keyof RowData)[] = ['name', 'displayOrder']
+    const fields: (keyof RowData)[] = ['name', 'minValue', 'maxValue', 'displayOrder']
     const currentIndex = fields.indexOf(currentField)
     const nextIndex = currentIndex + 1
     return nextIndex < fields.length ? fields[nextIndex] : null
@@ -146,11 +182,22 @@ export function TableManagedEquipments({ value }: TableProps) {
       {/* div form de busca */}
       <div className="flex justify-between w-full border-b border-card-foreground">
         <div className="flex gap-1">
-          <Button variant="ghost" className="flex gap-1 hover:bg-green-400/30">
+          <Button
+            variant="ghost"
+            className="flex gap-1 hover:bg-green-400/30"
+            disabled={updatedInstrumentsMutation.isPending}
+            onClick={() => updatedInstrumentsMutation.mutateAsync({
+              instruments: data
+            })}
+          >
             <Save className="size-4" />
             Salvar
           </Button>
-          <Button variant="ghost" className="flex gap-1 hover:bg-red-400/30">
+          <Button
+            variant="ghost"
+            className="flex gap-1 hover:bg-red-400/30"
+            disabled={updatedInstrumentsMutation.isPending}
+          >
             <X className="size-4" />
             Cancelar
           </Button>
@@ -179,44 +226,44 @@ export function TableManagedEquipments({ value }: TableProps) {
       <Table className="border border-collapse">
         <TableHeader className="bg-card sticky z-10 top-0 border-b">
           <TableRow>
-            <TableHead className="border text-card-foreground text-center min-w-96">
+            <TableHead className="border text-card-foreground text-center min-w-60">
               Nome
             </TableHead>
-            <TableHead className="border text-card-foreground text-center  w-40">
-              Tipo
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-20">
+            <TableHead className="border text-card-foreground text-center w-32">
               Valor Mínimo
             </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-20">
+            <TableHead className="border text-card-foreground text-center w-32">
               Valor Máximo
             </TableHead>
             <TableHead className="border text-card-foreground text-center min-w-40">
               Order de exibição
             </TableHead>
+            <TableHead className="border text-card-foreground text-center w-24">
+              Tipo
+            </TableHead>
             <TableHead className="border text-card-foreground text-center min-w-8">
               Ativo
             </TableHead>
-
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((row) => {
 
+
             return (
               <TableRow
                 key={row.id}
-                className={`odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 ${!row.isActive && 'opacity-35 '}`}
+                className={`odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 ${!row.isActive && 'opacity-30'}`}
               >
                 <TableCell
-                  className="border text-center w-60"
+                  className="border text-center min-w-60 p-0 h-2"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'name', row.name)
                   }
                 >
                   {editCell.rowId === row.id && editCell.field === 'name' ? (
                     <input
-                      className="bg-transparent"
+                      className="bg-transparent w-full h-full  text-center m-0"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'name')}
@@ -227,62 +274,17 @@ export function TableManagedEquipments({ value }: TableProps) {
                     row.name
                   )}
                 </TableCell>
-                <TableCell className=" text-center flex justify-between items-center min-w-40 px-4">
-                  {row.type}
-                  <Popover>
-                    <PopoverTrigger>
-                      <EllipsisVertical className="size-5" />
-                    </PopoverTrigger>
-                    <PopoverContent className="flex flex-col gap-4 w-40">
-                      <div className="flex items-center">
-                        <Checkbox
-                          value="temp"
-                          defaultChecked={row.type === 'temp'}
-                          onCheckedChange={(checked: boolean) => {
-                            setData((prevData) =>
-                              prevData.map((item) =>
-                                item.id === row.id ? { ...item, type: checked ? 'temp' : item.type } : item
-                              )
-                            );
-                          }
-                          }
-                        />
-                        <span className="text-sm ml-2 tracking-wider font-light">
-                          Temperatura
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <Checkbox
-                          value="press"
-                          defaultChecked={row.type === 'press'}
-                          onCheckedChange={(checked: boolean) => {
-                            setData((prevData) =>
-                              prevData.map((item) =>
-                                item.id === row.id ? { ...item, type: checked ? 'press' : item.type } : item
-                              )
-                            );
-                          }
-                          }
-
-                        />
-                        <span className="text-sm ml-2 tracking-wider font-light">
-                          Pressão
-                        </span>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TableCell>
-
 
                 <TableCell
-                  className="border text-center w-32"
+                  className="border text-center w-32 p-0 h-4"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'minValue', row.minValue)
                   }
                 >
                   {editCell.rowId === row.id && editCell.field === 'minValue' ? (
                     <input
-                      className="bg-transparent"
+                      className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type='text'
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'minValue')}
@@ -291,17 +293,19 @@ export function TableManagedEquipments({ value }: TableProps) {
                     />
                   ) : (
                     row.minValue
-                  )}
+                  )
+                  }
                 </TableCell>
                 <TableCell
-                  className="border text-center w-32"
+                  className="border text-center w-32 p-0 h-4"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'maxValue', row.maxValue)
                   }
                 >
                   {editCell.rowId === row.id && editCell.field === 'maxValue' ? (
                     <input
-                      className="bg-transparent"
+                      className="bg-transparent w-full h-full  text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type='text'
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'maxValue')}
@@ -310,28 +314,68 @@ export function TableManagedEquipments({ value }: TableProps) {
                     />
                   ) : (
                     row.maxValue
-                  )}
+                  )
+                  }
                 </TableCell>
 
-
                 <TableCell
-                  className="border text-center w-40"
+                  className="border text-center w-40 p-0 h-4"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
                   }
                 >
                   {editCell.rowId === row.id && editCell.field === 'displayOrder' ? (
                     <input
-                      className="bg-transparent [appearance:textfield] w-full text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      type="number"
+                      className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'displayOrder')}
                       onKeyDown={(e) => handleKeyDown(e, row.id, 'displayOrder')}
+                      autoFocus
                     />
                   ) : (
                     row.displayOrder
                   )}
+                </TableCell>
+                <TableCell className="text-center flex justify-between items-center px-2">
+                  {row.type}
+                  <Popover>
+                    <PopoverTrigger>
+                      <EllipsisVertical className="size-5" />
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-4 w-40">
+                      <RadioGroup
+                        defaultValue={row.type}
+                        onValueChange={(value: "temp" | "press") => {
+                          setData((prevData) =>
+                            prevData.map((item) =>
+                              item.id === row.id ? { ...item, type: value } : item
+                            )
+                          );
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <RadioGroupItem
+                            value="temp"
+                            id='temp'
+                          />
+                          <Label htmlFor='temp' className="text-sm ml-2 tracking-wider font-light">
+                            Temperatura
+                          </Label>
+                        </div>
+                        <div className="flex items-center">
+                          <RadioGroupItem
+                            value="press"
+                            id='press'
+                          />
+                          <Label htmlFor='press' className="text-sm ml-2 tracking-wider font-light">
+                            Pressão
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </PopoverContent>
+                  </Popover>
                 </TableCell>
                 <TableCell className="border text-center w-10">
                   <Checkbox
