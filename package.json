@@ -60,7 +60,8 @@
     "uuid": "^11.0.2",
     "vaul": "^0.9.1",
     "ws": "^8.18.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@snaplet/copycat": "^5.0.0",

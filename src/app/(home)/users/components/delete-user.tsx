@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useModal } from '@/context/open-dialog'
+import { useModalStore } from '@/context/useModalStore'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { CircleCheck, CircleX, Trash2 } from 'lucide-react'
@@ -21,7 +21,7 @@ interface DeleteUserProps {
 }
 
 export function DeleteUser({ userId }: DeleteUserProps) {
-  const { modals, closeModal } = useModal()
+  const { modals, closeModal } = useModalStore()
   const queryClient = useQueryClient()
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useModal } from '@/context/open-dialog'
+import { useModalStore } from '@/stores/useModalStore'
 import { User } from '@/types/user'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -60,7 +60,7 @@ const updateUserSchema = z
 type UpdateUserForm = z.infer<typeof updateUserSchema>
 
 export function UpdateUser({ id, email, name, userRole }: User) {
-  const { modals, closeModal } = useModal()
+  const { modals, closeModal } = useModalStore()
 
   const {
     register,

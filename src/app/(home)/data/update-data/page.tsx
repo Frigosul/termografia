@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FormUpdatedData } from './components/form-update-data'
-import { TableManagedData } from './components/table-managed-data'
+import { TableUpdateData } from './components/table-update-data'
 
 
 export default function PageManagedData() {
@@ -42,7 +42,7 @@ export default function PageManagedData() {
           <CardContent className="h-full pt-4">
             {updateDataMutation.isPending ? <SkeletonTable />
               : dataValue?.chartTemperature && (
-                <TableManagedData data={dataValue.chartTemperature} />
+                <TableUpdateData data={dataValue.chartTemperature} />
               )}
           </CardContent>
         </Card>

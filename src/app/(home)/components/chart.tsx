@@ -1,4 +1,5 @@
-import { useModeAppearance } from '@/context/appearance-mode'
+
+import { useApperanceStore } from '@/stores/useAppearanceStore'
 import { memo, useMemo, useRef } from 'react'
 import { Cell, Pie, PieChart } from 'recharts'
 import { toast } from 'sonner'
@@ -17,7 +18,8 @@ interface ChartProps {
 }
 
 const Chart = memo(function Chart({ dataChart: { name, type, temperature, status, isSensorError, error, minValue, maxValue } }: ChartProps) {
-  const { mode } = useModeAppearance()
+
+  const { appearanceMode } = useApperanceStore()
   const temperatureInPercent = Math.min((temperature / maxValue) * 100, 100);
   const colorInPercent = temperatureInPercent >= 90 ? 'text-red-600' : temperatureInPercent >= 60 ? 'text-yellow-600' : 'text-primary'
 
@@ -52,7 +54,7 @@ const Chart = memo(function Chart({ dataChart: { name, type, temperature, status
   }, [temperatureInPercent, name]);
 
 
-  if (mode === 'graph') {
+  if (appearanceMode === 'graph') {
     return (
       <div className={`border-2 rounded-md  ${isSensorError || error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20'}`}>
         <div className="flex flex-col items-center justify-center">

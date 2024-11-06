@@ -2,8 +2,8 @@
 import { AlterPassword } from '@/app/(home)/users/components/alter-password'
 import { UpdateUser } from '@/app/(home)/users/components/update-user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useModeAppearance } from '@/context/appearance-mode'
-import { useModal } from '@/context/open-dialog'
+import { useApperanceStore } from '@/stores/useAppearanceStore'
+import { useModalStore } from '@/stores/useModalStore'
 import { getInitials } from '@/utils/return-initials'
 import { LayoutGrid, LockKeyhole, LogOut, UserPen } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
@@ -19,8 +19,8 @@ import {
 } from './ui/navigation-menu'
 
 export function Header() {
-  const { openModal } = useModal()
-  const { mode, onModeAppearance } = useModeAppearance()
+  const { openModal } = useModalStore()
+  const { appearanceMode, onModeAppearance } = useApperanceStore()
   const { data: session } = useSession()
   const userName = session?.user?.name ?? ''
 
@@ -101,13 +101,13 @@ export function Header() {
             <DropdownMenuLabel>Modos de Exibição</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
-              checked={mode === 'simple'}
+              checked={appearanceMode === 'simple'}
               onCheckedChange={() => onModeAppearance("simple")}
             >
               Simplificado
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
-              checked={mode === 'graph'}
+              checked={appearanceMode === 'graph'}
               onCheckedChange={() => onModeAppearance("graph")}
             >
               Gráfico

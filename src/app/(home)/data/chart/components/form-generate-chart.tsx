@@ -1,5 +1,4 @@
 'use client'
-import { getInstruments } from '@/app/http/get-instruments'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,8 +18,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useGeneratePDF } from '@/hooks/useGeneratorPdf'
+import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { RefObject, useEffect } from 'react'
@@ -30,7 +29,7 @@ dayjs.extend(utc)
 
 
 const generateDataChart = z.object({
-  localChamber: z
+  local: z
     .string({ message: 'Selecione o local desejado.' }),
   graphVariation: z
     .string({ message: 'Defina a variação desejada no gráfico.' }),
@@ -78,10 +77,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     control,
     formState: { isSubmitting, errors },
   } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
-  const { data: local, isLoading } = useQuery({
-    queryKey: ['list-instruments'],
-    queryFn: getInstruments,
-  })
+
+  const { instrumentList, isLoading } = useInstrumentsStore();
+
 
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
@@ -89,7 +87,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
 
     await mutate({
-      local: data.localChamber,
+      local: data.local,
       graphVariation: data.graphVariation,
       tableVariation: data.tableVariation,
       limit: data.limit,
@@ -122,11 +120,11 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Local
                   </Label>
                   <Controller
-                    name="localChamber"
+                    name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
@@ -134,7 +132,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {local?.map(item => {
+                          {instrumentList?.map(item => {
 
                             return (
                               <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
@@ -151,9 +149,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </TooltipContent>
             </Tooltip>
 
-            {errors.localChamber?.message && (
+            {errors.local?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.localChamber?.message}
+                {errors.local?.message}
               </p>
             )}
           </div>
@@ -161,7 +159,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Variação gráfico
                   </Label>
                   <Controller
@@ -198,7 +196,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="localChamber">
+                  <Label className="font-light text-sm" htmlFor="local">
                     Variação tabela
                   </Label>
                   <Controller

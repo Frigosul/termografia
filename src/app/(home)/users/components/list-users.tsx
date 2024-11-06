@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useModal } from '@/context/open-dialog'
+import { useModalStore } from '@/context/useModalStore'
 import { userRoles } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
 import { EllipsisVertical, NotebookPen, Trash2 } from 'lucide-react'
@@ -23,7 +23,7 @@ import { DeleteUser } from './delete-user'
 import { UpdateUser } from './update-user'
 
 export function ListUsers() {
-  const { openModal } = useModal()
+  const { openModal } = useModalStore()
   const {
     data: users,
     error,

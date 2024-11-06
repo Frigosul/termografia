@@ -2,10 +2,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { listData, ListDataResponse } from '@/app/http/list-data'
+import { SkeletonTable } from '@/components/skeleton-table'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { SkeletonTable } from '../update-data/components/skeleton-table'
 import { FormGenerateStandards } from './components/form-generate-standards'
 import { TableGenerateStandards } from './components/table-generate-standards'
 export default function PageManagedStandards() {

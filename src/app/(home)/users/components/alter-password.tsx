@@ -11,7 +11,7 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useModal } from '@/context/open-dialog'
+import { useModalStore } from '@/stores/useModalStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { CircleCheck, CircleX } from 'lucide-react'
@@ -49,7 +49,7 @@ interface UpdatePasswordProps {
 }
 
 export function AlterPassword({ id }: UpdatePasswordProps) {
-  const { modals, closeModal } = useModal()
+  const { modals, closeModal } = useModalStore()
 
   const {
     register,
@@ -113,7 +113,7 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
       </DialogDescription>
 
       <DialogContent
-      //  className="w-11/12 rounded-md md:max-w-3xl lg:max-w-screen"
+
       >
         <DialogHeader>
           <DialogTitle className="text-sm lg:text-base text-left">
@@ -122,7 +122,6 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
         </DialogHeader>
         <form
           onSubmit={handleSubmit(handleUpdateUser)}
-          // className="gap-2 grid grid-cols-form md:grid-cols-2 justify-center lg:justify-between gap-x-4"
           className="flex flex-col w-full gap-2"
         >
           <div className="space-y-2 ">

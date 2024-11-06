@@ -1,5 +1,4 @@
 'use client'
-import { getInstruments } from '@/app/http/get-instruments'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,8 +16,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { useEffect } from 'react'
@@ -42,10 +41,7 @@ interface FormGenerateDataProps {
 
 
 export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
-  const { data: local, isLoading } = useQuery({
-    queryKey: ['list-instruments'],
-    queryFn: getInstruments,
-  })
+  const { instrumentList, isLoading } = useInstrumentsStore();
   const {
     register,
     handleSubmit,
@@ -102,7 +98,7 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {local?.map(item => {
+                          {instrumentList?.map(item => {
                             return (
                               <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
                             )
