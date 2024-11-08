@@ -1,12 +1,12 @@
 'use client'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
+import { useWebSocket } from '@/hooks/useWebSocket'
 import { AlertError } from './components/alert'
 import { Chart } from './components/chart'
 import { SkeletonChart } from './components/skeleton-chart'
 
 export default function Home() {
-  const { instrumentList, isLoading, error } = useInstrumentsStore();
+  const { data, isLoading, error } = useWebSocket("ws://localhost:8080");
 
   return (
     <ScrollArea className='flex-1'>
@@ -16,7 +16,7 @@ export default function Home() {
             ? Array.from({ length: 12 }).map((_, index) => (
               <SkeletonChart key={index} />
             ))
-            : instrumentList?.map((instrument) => (
+            : data?.map((instrument) => (
               <Chart key={instrument.id} dataChart={instrument} />
             ))}
         </div>

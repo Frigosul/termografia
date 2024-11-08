@@ -33,9 +33,12 @@ export async function updateUser({
       password,
     }),
   })
-
   if (!response.ok) {
-    throw new Error('Erro ao atualizar o usuário')
+    const error = await response.json()
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
   }
   const data = await response.json()
   return data

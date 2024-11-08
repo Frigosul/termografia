@@ -52,7 +52,7 @@ const searchDataSchema = z.object({
 
 type SearchData = z.infer<typeof searchDataSchema>
 
-export function TableGenerateStandards({ data }: TableProps) {
+export function TableGenerateData({ data }: TableProps) {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
 
@@ -66,11 +66,11 @@ export function TableGenerateStandards({ data }: TableProps) {
       })
     },
     onError: (error) => {
-      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+      toast.error('Erro encontrado, por favor tente novamente', {
         position: 'top-right',
         icon: <CircleX />,
       })
-      console.log('error' + error)
+      console.error(error)
     },
   })
 
@@ -286,7 +286,7 @@ export function TableGenerateStandards({ data }: TableProps) {
                   {formattedDateTime(row.time)}
                 </TableCell>
                 <TableCell
-                  className="border text-center"
+                  className="border text-center p-0 h-4"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'temperature', row.temperature)
                   }
@@ -294,7 +294,7 @@ export function TableGenerateStandards({ data }: TableProps) {
                   {editCell.rowId === row.id &&
                     editCell.field === 'temperature' ? (
                     <input
-                      className="bg-transparent w-full"
+                      className="bg-transparent w-full h-full  text-center m-0"
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}

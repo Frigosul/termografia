@@ -31,6 +31,7 @@ export type ListDataResponse = {
   variationTemp?: number
   chartTemperature: TemperatureData[]
   tableTemperatureRange?: TemperatureData[]
+  error?: string
 }
 
 export async function listData({
@@ -65,9 +66,15 @@ export async function listData({
       endDate,
     })
   })
+
+  if (!response.ok) {
+    const error = await response.json()
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
+  }
   const data = await response.json()
-
-
   const dataAndValues = {
     ...data,
     minValue,
@@ -77,6 +84,7 @@ export async function listData({
     detour,
     description,
   }
-
   return dataAndValues
 }
+
+

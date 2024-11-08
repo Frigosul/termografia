@@ -22,9 +22,12 @@ export async function updateInstruments({ instruments }: DataRequest) {
     body: JSON.stringify({ instruments }),
   })
 
-
   if (!response.ok) {
-    throw new Error('Erro ao atualizar os instrumentos')
+    const error = await response.json()
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
   }
   const data = await response.json()
   return data

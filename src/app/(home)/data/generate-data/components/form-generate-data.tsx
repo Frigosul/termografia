@@ -1,5 +1,5 @@
 'use client'
-import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
+import { GenerateDataRequest, GenerateDataResponse } from '@/app/http/generate-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,28 +20,34 @@ import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
-import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 dayjs.extend(utc)
-
 
 const generateStandards = z.object({
   local: z.string({ message: 'Selecione o local desejado.' }),
   variation: z.string({ message: 'Defina a variação desejada no gráfico.' }),
   startDate: z.string({ message: 'Defina a data de fechamento.' }),
-  dateThaw: z.string(),
+  defrostDate: z.string({ message: 'Defina a data de degelo.' }),
   endDate: z.string({ message: 'Defina a data de abertura.' }),
 })
 
 type GenerateStandards = z.infer<typeof generateStandards>
+
 interface FormGenerateDataProps {
-  mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
+  mutate: (dataUpdate: GenerateDataRequest) => Promise<GenerateDataResponse>
 }
+export function FormGenerateData({ mutate }: FormGenerateDataProps) {
 
+  const { data: session } = useSession()
+  const [initialDate, setInitialDate] = useState<string | Date>('')
+  const [minDefrostDate, setMinDefrostDate] = useState<string | Date>('')
+  const [minEndDate, setMinEndDate] = useState<string | Date>('')
 
-export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
   const { instrumentList, isLoading } = useInstrumentsStore();
+
   const {
     register,
     handleSubmit,
@@ -56,23 +62,36 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
   function handleGenerateStandards(data: GenerateStandards) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
     const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
+    const defrostDataUtc = dayjs(data.defrostDate).utc().format('YYYY-MM-DDTHH:mm')
     mutate({
       endDate: endDataUtc,
       startDate: startDataUtc,
-      graphVariation: data.variation,
-      local: data.local
+      variation: Number(data.variation),
+      defrostDate: defrostDataUtc,
+      instrumentId: data.local,
+      userName: session?.user?.name!
     })
   }
 
   const startDateValue = watch('startDate')
+  const instrumendSelectedId = watch('local')
+
+  useEffect(() => {
+    if (!instrumendSelectedId) return
+    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+
+  }, [instrumendSelectedId])
+
 
   useEffect(() => {
     if (!startDateValue) return
     const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
-    const addHoursToThaw = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDTHH:mm')
-
+    const addHoursDefrost = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDTHH:mm')
+    setMinDefrostDate(startDateValue)
+    setMinEndDate(startDateValue)
     setValue('endDate', endDate)
-    setValue('dateThaw', addHoursToThaw)
+    setValue('defrostDate', addHoursDefrost)
   }, [startDateValue, setValue])
 
   return (
@@ -100,7 +119,7 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
                         <SelectContent>
                           {instrumentList?.map(item => {
                             return (
-                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -173,7 +192,8 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
                   <Input
                     id="startDate"
                     type="datetime-local"
-                    min="2000-01-01T00:00"
+                    disabled={!instrumendSelectedId}
+                    min={String(initialDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900"
                     {...register('startDate')}
@@ -194,24 +214,25 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="dateThaw">
+                  <Label className="font-light text-sm" htmlFor="defrostDate">
                     Variação Degelo
                   </Label>
                   <Input
-                    id="dateThaw"
+                    id="defrostDate"
                     type="datetime-local"
-                    min="2000-01-01T00:00"
+                    disabled={!instrumendSelectedId}
+                    min={String(minDefrostDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900"
-                    {...register('dateThaw')}
+                    {...register('defrostDate')}
                   />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">Variação de degelo.</TooltipContent>
             </Tooltip>
-            {errors.endDate?.message && (
+            {errors.defrostDate?.message && (
               <p className="text-red-500 text-sm font-light">
-                {errors.endDate?.message}
+                {errors.defrostDate?.message}
               </p>
             )}
           </div>
@@ -225,7 +246,8 @@ export function FormGenerateStandards({ mutate }: FormGenerateDataProps) {
                   <Input
                     id="endDate"
                     type="datetime-local"
-                    min="2000-01-01T00:00"
+                    disabled={!instrumendSelectedId}
+                    min={String(minEndDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900"
                     {...register('endDate')}

@@ -9,4 +9,5 @@ export interface Instrument {
   error: string | null
   maxValue: number
   minValue: number
+  instrumentCreatedAt: Date
 }

@@ -84,8 +84,7 @@ export function Chart({
   )
 
   const formattedData = data.map((item) => {
-    console.log(item.time)
-    console.log(dateClose)
+
     return {
       time: formattedTime(item.time),
       temp: item.temperature,

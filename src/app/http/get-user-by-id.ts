@@ -14,8 +14,13 @@ export async function getUserById({
 }: UserRequest): Promise<UserResponse> {
   const response = await fetch(`http://localhost:3333/users/${userId}`)
   if (!response.ok) {
-    throw new Error('Erro ao carregar o usuário')
+    const error = await response.json()
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
   }
   const data = await response.json()
   return data
 }
+

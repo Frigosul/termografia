@@ -6,13 +6,13 @@ export async function deleteUser({ userId }: DeleteUserRequest): Promise<void> {
   const response = await fetch(`/api/users/delete-user?userId=${userId}`, {
     method: 'DELETE',
   })
-  if (response.ok) {
-    const data = await response.json()
-
-    return data
-  } else {
+  if (!response.ok) {
     const error = await response.json()
-    console.error('Error:', error.message)
-    return error
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
   }
+  const data = await response.json()
+  return data
 }

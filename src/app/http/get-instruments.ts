@@ -15,6 +15,15 @@ export type InstrumentsResponse = {
 export async function getInstruments(): Promise<InstrumentsResponse> {
 
   const response = await fetch('http://localhost:3000/api/instruments/summary')
+
+  if (!response.ok) {
+    const error = await response.json()
+    return Promise.reject({
+      status: response.status,
+      message: error.message || "Error api",
+    })
+  }
   const data = await response.json()
   return data
 }
+

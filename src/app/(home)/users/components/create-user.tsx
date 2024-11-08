@@ -20,12 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useModalStore } from '@/stores/useModalStore'
 
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CircleCheck, CircleX, Plus } from 'lucide-react'
-import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -73,9 +73,9 @@ const signUpForm = z
 
 type SignUpForm = z.infer<typeof signUpForm>
 export function CreateUser() {
-  const [open, setIsOpen] = useState<boolean>(false)
-
+  const { modals, closeModal, toggleModal } = useModalStore()
   const queryClient = useQueryClient()
+
   const createUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: async () => {
@@ -84,14 +84,23 @@ export function CreateUser() {
         position: 'top-right',
         icon: <CircleCheck />,
       })
-      setIsOpen(false)
+      closeModal('create-user')
     },
     onError: (error) => {
-      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
-        position: 'top-right',
-        icon: <CircleX />,
-      })
-      console.log('error' + error)
+      if (error.message === 'User already exists') {
+        toast.error("Usuário já existe, por favor tente novamente.", {
+          position: 'top-right',
+          icon: <CircleX />,
+        })
+        console.error(error)
+      } else {
+        toast.error('Erro encontrado, por favor tente novamente. ', {
+          position: 'top-right',
+          icon: <CircleX />,
+        })
+        console.error(error)
+      }
+
     },
   })
 
@@ -110,18 +119,17 @@ export function CreateUser() {
       userRole: data.userRole,
       password: data.password,
     })
-
     reset()
   }
 
   return (
-    <Dialog open={open} onOpenChange={setIsOpen}>
+    <Dialog open={modals['create-user']} onOpenChange={() => toggleModal('create-user')}>
       <DialogDescription className="sr-only">
         Criação de usuários.
       </DialogDescription>
       <DialogTrigger asChild>
         <Button>
-          <span className="max-w-0 overflow-hidden  lg:max-w-xs ">
+          <span className="max-w-0 overflow-hidden  lg:max-w-xs">
             Adicionar usuário <span className="pr-2"></span>
           </span>
           <Plus className="size-5" />
@@ -236,7 +244,7 @@ export function CreateUser() {
             )}
           </div>
 
-          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2">
+          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:gap-4 md:col-start-2 lg:mt-2">
             <DialogClose asChild>
               <Button
                 variant="outline"

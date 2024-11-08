@@ -15,11 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useModalStore } from '@/context/useModalStore'
+import { useModalStore } from '@/stores/useModalStore'
 import { userRoles } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
 import { EllipsisVertical, NotebookPen, Trash2 } from 'lucide-react'
 import { DeleteUser } from './delete-user'
+import { SkeletonTable } from './skeleton-table'
 import { UpdateUser } from './update-user'
 
 export function ListUsers() {
@@ -33,10 +34,6 @@ export function ListUsers() {
     queryFn: getUsers,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
-  if (isLoading) return <p>Carregando...</p>
-  if (error) return <p>Erro ao buscar dados</p>
-  if (!users) return null
-
 
   return (
     <ScrollArea>
@@ -52,7 +49,7 @@ export function ListUsers() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => {
+          {isLoading ? <SkeletonTable /> : error ? <h2>Erro encontrado, tente novamente.</h2> : users?.map((user) => {
             return (
               <TableRow
                 key={user.id}
@@ -76,22 +73,16 @@ export function ListUsers() {
                       <Button
                         variant="ghost"
                         className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
-                        onClick={() => openModal('update-modal')}
+                        onClick={() => openModal('update-modal', { id: user.id, email: user.email, name: user.name, password: '', role: user.userRole })}
                       >
                         <NotebookPen size={19} />
                         Editar
                       </Button>
-                      <UpdateUser
-                        id={user.id}
-                        email={user.email}
-                        name={user.name}
-                        password={user.password}
-                        userRole={user.userRole}
-                      />
+                      <UpdateUser />
                       <Button
                         variant="ghost"
                         className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
-                        onClick={() => openModal('delete-modal')}
+                        onClick={() => openModal('delete-modal', { id: user.id })}
                       >
                         <Trash2 size={20} />
                         Excluir

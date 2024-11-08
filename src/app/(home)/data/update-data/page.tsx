@@ -4,23 +4,28 @@ import { SkeletonTable } from '@/components/skeleton-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
+import { CircleX } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { FormUpdatedData } from './components/form-update-data'
 import { TableUpdateData } from './components/table-update-data'
 
 
 export default function PageManagedData() {
+
   const [dataValue, setDataValue] = useState<ListDataResponse>()
   const updateDataMutation = useMutation({
     mutationKey: ['update-data'],
     mutationFn: listData,
     onSuccess: (data) => {
       setDataValue(data)
-
     },
     onError: (error) => {
-      console.error('Erro ao listar dados:', error)
-      alert('Erro ao listar dados')
+      console.error(error)
+      toast.error('Erro ao listar os dados, por favor tente novamente.', {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
     },
   })
 

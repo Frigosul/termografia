@@ -5,18 +5,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useApperanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
 import { getInitials } from '@/utils/return-initials'
-import { LayoutGrid, LockKeyhole, LogOut, UserPen } from 'lucide-react'
+import { UserRolesType } from '@/utils/user-roles'
+import { ChevronDown, LayoutGrid, LockKeyhole, LogOut, UserPen } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { SheetSidebar } from './sheet-sidebar'
-import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from './ui/navigation-menu'
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 export function Header() {
   const { openModal } = useModalStore()
@@ -33,66 +26,43 @@ export function Header() {
 
       <div className="flex justify-center items-center gap-1 mr-11 lg:mr-9">
         <p className='text-base font-light'>Temp. em <span className='text-primary font-semibold'>ºC</span> </p>
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="flex items-center justify-center p-0 px-1 gap-2 text-foreground">
-                <Avatar className="size-9 flex items-center justify-center">
-                  <AvatarImage
-                    className="rounded-full"
-                  // src="https://github.com/joaoeduardodias.png"
-                  />
-                  <AvatarFallback className="flex items-center justify-center bg-slate-500/50 rounded-full size-9">
-                    {getInitials(userName)}
-                  </AvatarFallback>
-                </Avatar>
-                {userName}
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuList className="flex flex-col items-start space-x-0">
-                  <NavigationMenuItem>
-                    <Button
-                      variant="ghost"
-                      className="flex  gap-2 items-start justify-start  hover:bg-transparent text-sm font-light"
-                      onClick={() => openModal('update-modal')}
-                    >
-                      <UserPen size={18} />
-                      Alterar Perfil
-                    </Button>
-                    <UpdateUser
-                      id={String(session?.id)}
-                      name={String(session?.user?.name)}
-                      userRole={session?.role as 'adm' | 'level1' | 'level2'}
-                      email={String(session?.user?.email)}
-                      password=""
-                    />
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Button
-                      variant="ghost"
-                      className="flex  gap-2   items-start hover:bg-transparent text-sm font-light"
-                      onClick={() => openModal('alter-password')}
-                    >
-                      <LockKeyhole size={16} />
-                      Alterar Senha
-                    </Button>
-                    <AlterPassword id={String(session?.id)} />
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Button
-                      variant="ghost"
-                      onClick={() => signOut()}
-                      className="flex  gap-2  items-start hover:bg-transparent text-sm font-light"
-                    >
-                      <LogOut size={16} className="rotate-180" />
-                      Sair
-                    </Button>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="hidden md:flex items-center justify-center mx-2 gap-1">
+            <Avatar className="size-9 flex items-center justify-center">
+              <AvatarImage
+                className="rounded-full"
+              // src="https://github.com/joaoeduardodias.png"
+              />
+              <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
+                {getInitials(userName)}
+              </AvatarFallback>
+            </Avatar>
+            {userName}
+            <ChevronDown className='size-4' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel className='text-center'>Minha conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+              openModal('update-modal', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
+            }}>
+              <UserPen size={18} />
+              Alterar Perfil
+            </DropdownMenuItem>
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+              openModal('alter-password', { id: String(session?.id) })
+            }}>
+              <LockKeyhole size={16} />
+              Alterar Senha
+            </DropdownMenuItem>
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
+              <LogOut size={16} className="rotate-180" />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <AlterPassword />
+        <UpdateUser />
         <DropdownMenu>
           <DropdownMenuTrigger >
             <LayoutGrid strokeWidth={2} />

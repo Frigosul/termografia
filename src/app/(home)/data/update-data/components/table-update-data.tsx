@@ -66,11 +66,11 @@ export function TableUpdateData({ data }: TableProps) {
       })
     },
     onError: (error) => {
-      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+      toast.error('Erro encontrado, por favor tente novamente', {
         position: 'top-right',
         icon: <CircleX />,
       })
-      console.log('error' + error)
+      console.error(error)
     },
   })
 

@@ -19,11 +19,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useModalStore } from '@/stores/useModalStore'
-import { User } from '@/types/user'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CircleCheck, CircleX } from 'lucide-react'
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -59,9 +59,8 @@ const updateUserSchema = z
 
 type UpdateUserForm = z.infer<typeof updateUserSchema>
 
-export function UpdateUser({ id, email, name, userRole }: User) {
-  const { modals, closeModal } = useModalStore()
-
+export function UpdateUser() {
+  const { modals, closeModal, userData } = useModalStore()
   const {
     register,
     reset,
@@ -71,12 +70,22 @@ export function UpdateUser({ id, email, name, userRole }: User) {
   } = useForm<UpdateUserForm>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      name,
-      email,
-      confirm_email: email,
-      userRole,
+      name: userData?.name,
+      email: userData?.email,
+      confirm_email: userData?.email,
+      userRole: userData?.role,
     },
   })
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.name,
+        email: userData.email,
+        confirm_email: userData.email,
+        userRole: userData.role,
+      });
+    }
+  }, [userData, reset]);
 
   const queryClient = useQueryClient()
   const updateUserMutation = useMutation({
@@ -90,17 +99,17 @@ export function UpdateUser({ id, email, name, userRole }: User) {
       closeModal('update-modal')
     },
     onError: (error) => {
-      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+      toast.error('Erro encontrado, por favor tente novamente.', {
         position: 'top-right',
         icon: <CircleX />,
       })
-      console.log('error' + error)
+      console.error(error)
     },
   })
 
   function handleUpdateUser(data: UpdateUserForm) {
     updateUserMutation.mutateAsync({
-      userId: id,
+      userId: String(userData?.id),
       email: data.email,
       name: data.name,
       userRole: data.userRole,
@@ -111,7 +120,7 @@ export function UpdateUser({ id, email, name, userRole }: User) {
   return (
     <Dialog
       open={modals['update-modal']}
-      onOpenChange={(open) => (open ? null : closeModal('update-modal'))}
+      onOpenChange={() => closeModal('update-modal')}
     >
       <DialogDescription className="sr-only">
         Modal de edição de usuário
@@ -146,7 +155,7 @@ export function UpdateUser({ id, email, name, userRole }: User) {
             <Controller
               name="userRole"
               control={control}
-              defaultValue={userRole}
+              defaultValue={userData?.role}
               render={({ field: { onChange, value, ref } }) => (
                 <Select onValueChange={onChange} value={value} name="userRole">
                   <SelectTrigger ref={ref}>

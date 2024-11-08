@@ -44,18 +44,13 @@ const updatePasswordSchema = z
 
 type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>
 
-interface UpdatePasswordProps {
-  id: string
-}
-
-export function AlterPassword({ id }: UpdatePasswordProps) {
-  const { modals, closeModal } = useModalStore()
+export function AlterPassword() {
+  const { modals, closeModal, userData } = useModalStore()
 
   const {
     register,
     reset,
     handleSubmit,
-
     formState: { errors },
   } = useForm<UpdatePasswordSchema>({
     resolver: zodResolver(updatePasswordSchema),
@@ -63,19 +58,12 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
 
   const updatePasswordMutation = useMutation({
     mutationFn: updatePasswordUser,
-    onSuccess: async (data) => {
-      if (data.error) {
-        toast.error('Senha atual inválida, verifique sua senha atual.', {
-          position: 'top-right',
-          icon: <CircleX />,
-        })
-      } else {
-        toast.success('Senha atualizada com sucesso', {
-          position: 'top-right',
-          icon: <CircleCheck />,
-        })
-        closeModal('alter-password')
-      }
+    onSuccess: () => {
+      toast.success('Senha atualizada com sucesso.', {
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+      closeModal('alter-password')
     },
     onError: (error) => {
 
@@ -89,32 +77,29 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
           position: 'top-right',
           icon: <CircleX />,
         })
-        console.log('error' + error)
+        console.error(error)
       }
     },
   })
 
   function handleUpdateUser(data: UpdatePasswordSchema) {
     updatePasswordMutation.mutateAsync({
-      userId: id,
+      userId: userData?.id!,
       oldPassword: data.old_password,
       newPassword: data.new_password,
     })
-    reset()
   }
 
   return (
     <Dialog
       open={modals['alter-password']}
-      onOpenChange={(open) => (open ? null : closeModal('alter-password'))}
+      onOpenChange={() => closeModal('alter-password')}
     >
       <DialogDescription className="sr-only">
         Modal de alteração de senha
       </DialogDescription>
 
-      <DialogContent
-
-      >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-sm lg:text-base text-left">
             Alterar senha
@@ -196,3 +181,5 @@ export function AlterPassword({ id }: UpdatePasswordProps) {
     </Dialog>
   )
 }
+
+

@@ -87,7 +87,7 @@ const Chart = memo(function Chart({ dataChart: { name, type, temperature, status
               {!isSensorError && !error && Number(temperature).toFixed(1)} {!isSensorError && !error ? (type === 'temp' ? '°C' : 'bar') : <span className='flex w-28 text-base text-red-700 dark:text-red-500 flex-wrap'>{isSensorError ? 'Erro de sensor' : error && 'Falha de comunicação'}</span>}
             </p>
           </div>
-          <div className='w-full flex justify-between items-center text-xs tracking-tighter leading-4 px-1 pr-2 text-muted-foreground'>
+          <div className='w-full max-w-[210px] flex justify-between items-center text-xs tracking-tighter leading-4 px-1 pr-2 text-muted-foreground'>
             <span>{minValue}</span>
             <span>{maxValue}</span>
           </div>

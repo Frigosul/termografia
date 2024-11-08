@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useModalStore } from '@/context/useModalStore'
+import { useModalStore } from '@/stores/useModalStore'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { CircleCheck, CircleX, Trash2 } from 'lucide-react'
@@ -27,18 +27,17 @@ export function DeleteUser({ userId }: DeleteUserProps) {
     mutationFn: deleteUser,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['list-users'] })
-      toast.success('Usuário deletado com sucesso', {
+      toast.success('Usuário deletado com sucesso.', {
         position: 'top-right',
         icon: <CircleCheck />,
       })
     },
     onError: (error) => {
-      toast.error('Erro encontrado, por favor tente novamente: ' + error, {
+      toast.error('Erro encontrado, por favor tente novamente.', {
         position: 'top-right',
         icon: <CircleX />,
       })
-
-      console.log('error' + error)
+      console.error(error)
     },
   })
 

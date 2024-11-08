@@ -3,7 +3,9 @@ import { listData, ListDataResponse } from '@/app/http/list-data'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
+import { CircleX } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { Chart } from './components/chart'
 import { FormGenerateChart } from './components/form-generate-chart'
 import { Table } from './components/table'
@@ -17,8 +19,11 @@ export default function PageChart() {
       setDataChart(data)
     },
     onError: (error) => {
-      console.error('Error ao gerar gráfico:', error)
-      alert('Erro ao gerar gráfico')
+      console.error(error)
+      toast.error('Erro ao gerar gráfico, por favor tente novamente', {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
     },
   })
 
