@@ -6,6 +6,7 @@ import { ReactNode } from 'react'
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
+
       <SideBar />
       <div className="w-full h-full flex flex-col">
         <Header />
@@ -14,6 +15,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
           SulTerm | suporte2.apms@frigosul.com.br
         </footer>
       </div>
+
     </div>
   )
 }
