@@ -83,6 +83,7 @@ export function Chart({
     (Math.abs(Number(maxValue) - Number(minValue)) + 1).toFixed(0),
   )
 
+
   const formattedData = data.map((item) => {
 
     return {
@@ -151,11 +152,12 @@ export function Chart({
             />
             <XAxis
               dataKey="time"
+              interval={0}
               stroke="hsl(var(--card-foreground))"
               label={{
                 value: 'Horário',
                 position: 'bottom',
-                offset: -10,
+                offset: -5,
                 style: {
                   textAnchor: 'middle',
                   fontSize: 12,

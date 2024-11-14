@@ -2,22 +2,19 @@
 import { NavLink } from '@/components/nav-link'
 import { Button } from '@/components/ui/button'
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
-import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { useModalStore } from '@/stores/useModalStore'
+import { getInitials } from '@/utils/return-initials'
+import { UserRolesType } from '@/utils/user-roles'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import {
   BetweenHorizontalEnd,
+  ChevronDown,
   Database,
   House,
   LineChart,
@@ -28,9 +25,12 @@ import {
   UserPen,
   Users,
 } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 export function SheetSidebar() {
   const { data: session } = useSession()
+  const { openModal } = useModalStore()
+  const userName = session?.user?.name ?? ''
 
   return (
     <Sheet>
@@ -44,41 +44,42 @@ export function SheetSidebar() {
           Termografia
         </SheetTitle>
         <SheetDescription className="sr-only">Menu</SheetDescription>
-        <NavigationMenu className="my-4 flex items-center justify-center px-0 md:hidden">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="flex items-center justify-center gap-2">
-                <Avatar className="size-9 flex items-center justify-center">
-                  <AvatarImage
-                    className="rounded-full"
-                  // src="https://github.com/joaoeduardodias.png"
-                  />
-                  <AvatarFallback className="flex items-center justify-center bg-slate-500/50 rounded-full size-9">
-                    JD
-                  </AvatarFallback>
-                </Avatar>
-                João Dias
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuList className="flex flex-col w-40 gap-3 p-2 items-start justify-center text-sm font-light">
-                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2 ml-1">
-                    <UserPen size={18} />
-                    Alterar Perfil
-                  </NavigationMenuItem>
-                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2">
-                    <LockKeyhole size={16} />
-                    Alterar Senha
-                  </NavigationMenuItem>
-                  <NavigationMenuItem className="cursor-pointer flex items-center justify-center gap-2">
-                    <LogOut size={16} className="rotate-180" />
-                    Sair
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-        <nav className="flex flex-col space-y-4 h-full pb-12">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center justify-center mx-2 gap-1">
+            <Avatar className="size-9 flex items-center justify-center">
+              <AvatarImage
+                className="rounded-full"
+              // src="https://github.com/joaoeduardodias.png"
+              />
+              <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
+                {getInitials(userName)}
+              </AvatarFallback>
+            </Avatar>
+            {userName}
+            <ChevronDown className='size-4' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel className='text-center'>Minha conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+              openModal('update-modal', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
+            }}>
+              <UserPen size={18} />
+              Alterar Perfil
+            </DropdownMenuItem>
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+              openModal('alter-password', { id: String(session?.id) })
+            }}>
+              <LockKeyhole size={16} />
+              Alterar Senha
+            </DropdownMenuItem>
+            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
+              <LogOut size={16} className="rotate-180" />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <nav className="flex flex-col h-full pb-12">
           <NavLink href="/" >
             <House size={20} />
             Home

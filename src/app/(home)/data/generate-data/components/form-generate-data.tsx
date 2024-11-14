@@ -181,7 +181,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
           </div>
         </div>
 
-        <div className="flex w-full items-end gap-2">
+        <div className="flex w-full  items-end gap-2">
           <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -236,6 +236,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </p>
             )}
           </div>
+
           <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -271,6 +272,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               Gerar dados
             </Button>
           </div>
+
         </div>
       </TooltipProvider>
     </form>

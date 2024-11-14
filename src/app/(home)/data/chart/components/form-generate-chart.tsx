@@ -174,7 +174,7 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                           <SelectItem value="15">15 minutos</SelectItem>
                           <SelectItem value="20">20 minutos</SelectItem>
                           <SelectItem value="30">30 minutos</SelectItem>
-                          <SelectItem value="01">01 hora</SelectItem>
+                          <SelectItem value="60">01 hora</SelectItem>
                         </SelectContent>
                       </Select>
                     )}

@@ -33,6 +33,7 @@ model Instrument {
   isActive      Boolean                  @default(true)
   idSitrad      Int                      @default(0)
   temperatures  InstrumentsTemperature[]
+  pressures     InstrumentsPressure[]
 
   @@map("instruments")
 }
@@ -57,4 +58,26 @@ model InstrumentsTemperature {
 
   @@id([instrument_id, temperature_id])
   @@map("temperature_instrument")
+}
+
+model Pressure {
+  id            String                @id @default(uuid())
+  value         Float
+  createdAt     DateTime              @default(now())
+  editValue     Float
+  updatedAt     DateTime?
+  userUpdatedAt String?
+  instruments   InstrumentsPressure[]
+
+  @@map("pressures")
+}
+
+model InstrumentsPressure {
+  instrument_id String
+  pressure_id   String
+  instruments   Instrument @relation(fields: [instrument_id], references: [id], onDelete: Cascade)
+  pressure      Pressure   @relation(fields: [pressure_id], references: [id])
+
+  @@id([instrument_id, pressure_id])
+  @@map("pressure_instrument")
 }

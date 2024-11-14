@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     const data: TemperatureData[] = [];
     let currentDate = dayjs(formattedStartDate);
-    let temperature = 15; // initial temp
+    let temperature = 35; // initial temp
 
 
     while (currentDate.isBefore(dayjs(formattedEndDate))) {

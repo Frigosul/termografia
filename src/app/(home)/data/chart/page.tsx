@@ -66,19 +66,19 @@ export default function PageChart() {
             )}
             <div className="flex gap-2 h-32 mt-4">
               <Card className="bg-transparent flex-1">
-                <CardContent className="border border-card-foreground rounded-md px-1 h-full">
+                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
                   <span className="text-xs">
                     Ocorrências / Medidas Corretivas:
                   </span>
                 </CardContent>
               </Card>
               <Card className="bg-transparent flex-2 w-80">
-                <CardContent className="border border-card-foreground rounded-md px-1 h-full">
+                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
                   <span className="text-xs">Assinatura:</span>
                 </CardContent>
               </Card>
               <Card className="bg-transparent flex-2  w-80">
-                <CardContent className="border border-card-foreground rounded-md px-1 h-full">
+                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
                   <span className="text-xs">Assinatura:</span>
                 </CardContent>
               </Card>
