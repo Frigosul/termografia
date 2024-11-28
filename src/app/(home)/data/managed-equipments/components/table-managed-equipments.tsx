@@ -1,7 +1,6 @@
 import { updateInstruments } from '@/app/http/update-instruments'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Popover,
@@ -17,14 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { CircleCheck, CircleX, EllipsisVertical, Save, Search, X } from 'lucide-react'
+import { CircleCheck, CircleX, EllipsisVertical, Search } from 'lucide-react'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 interface RowData {
   id: string
@@ -40,14 +37,23 @@ interface TableProps {
   value: RowData[]
 }
 
-const searchDataSchema = z.object({
-  search: z.string(),
-})
 
-type SearchData = z.infer<typeof searchDataSchema>
 
 export function TableManagedEquipments({ value }: TableProps) {
   const [data, setData] = useState<RowData[]>(value)
+
+  const [search, setSearch] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<RowData[]>([]);
+
+  // DeBounce Function
+  useDebounce(() => {
+    setFilteredData(
+      data.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+    );
+  }, [data, search], 100
+  );
+
+
 
   const updatedInstrumentsMutation = useMutation({
     mutationFn: updateInstruments,
@@ -67,16 +73,6 @@ export function TableManagedEquipments({ value }: TableProps) {
     },
   })
 
-
-  const { register, handleSubmit } = useForm<SearchData>({
-    resolver: zodResolver(searchDataSchema),
-  })
-
-  function handleSearchData(data: SearchData) {
-    console.log(data)
-
-  }
-
   const [editCell, setEditCell] = useState<{
     rowId: string | null;
     field: keyof RowData | null;
@@ -84,7 +80,6 @@ export function TableManagedEquipments({ value }: TableProps) {
     rowId: null,
     field: null,
   });
-
 
   const [inputValue, setInputValue] = useState<string | number>('')
 
@@ -179,47 +174,37 @@ export function TableManagedEquipments({ value }: TableProps) {
 
   return (
     <div className="flex-grow flex flex-col max-h-[70vh] max-w-screen-2xl overflow-hidden">
-      {/* div form de busca */}
-      <div className="flex justify-between w-full overflow-hidden items-center h-12 border rounded-t-md">
-        <div className="flex gap-1">
+
+      <div className="flex w-full overflow-hidden items-center gap-2 p-1 h-11 border rounded-t-md">
+        <div className=" flex border rounded-md">
           <Button
             variant="ghost"
-            className="flex gap-1 hover:bg-green-400/30"
+            className='h-8 flex items-center justify-center text-sm'
             disabled={updatedInstrumentsMutation.isPending}
             onClick={() => updatedInstrumentsMutation.mutateAsync({
               instruments: data
             })}
           >
-            <Save className="size-4" />
             Salvar
           </Button>
           <Button
             variant="ghost"
-            className="flex gap-1 hover:bg-red-400/30"
+            className='h-8 flex items-center justify-center text-sm'
             disabled={updatedInstrumentsMutation.isPending}
           >
-            <X className="size-4" />
             Cancelar
           </Button>
         </div>
-        <form
-          className="flex items-center justify-center gap-2"
-          onSubmit={handleSubmit(handleSearchData)}
-        >
-          <Input
-            {...register('search')}
-            placeholder="Digite o nome..."
-            type="text"
-            className="w-22"
-          />
 
-          <Button
-            variant="default"
-            className="flex items-center justify-center rounded-none hover:bg-slate-300"
-          >
-            <Search />
-          </Button>
-        </form>
+        <div className='h-8 flex items-center justify-center px-2 gap-1 w-full max-w-2xl border rounded-md overflow-hidden focus-within:outline-none focus-within:ring-1 hover:border hover:border-primary focus-within:ring-ring '>
+          <Search className='size-5 text-muted-foreground' />
+          <input
+            placeholder="Pesquisar"
+            className='w-full h-full text-sm ml-1 bg-transparent placeholder:text-sm focus-visible:outline-none focus-visible:ring-0'
+            type="text"
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
       </div>
 
       <Table className='border border-collapse'>
@@ -246,7 +231,7 @@ export function TableManagedEquipments({ value }: TableProps) {
           </TableRow>
         </TableHeader>
         <TableBody className='overflow-y-auto'>
-          {data.map((row) => {
+          {filteredData.map((row) => {
             return (
               <TableRow
                 key={row.id}
