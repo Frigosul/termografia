@@ -1,3 +1,4 @@
+import { GenerateDataModeType } from "@/types/generate-data-mode";
 
 export interface GenerateDataRequest {
   startDate: string;
@@ -6,6 +7,9 @@ export interface GenerateDataRequest {
   instrumentId: string;
   variation: number;
   userName: string
+  initialTemp?: number
+  averageTemp?: number
+  generateMode?: GenerateDataModeType
 }
 
 export interface GenerateDataResponse {
@@ -19,19 +23,19 @@ export interface GenerateDataResponse {
   error?: string
 }
 
-export async function generateData({ instrumentId, variation, defrostDate, endDate, startDate, userName }: GenerateDataRequest): Promise<GenerateDataResponse> {
+export async function generateData({ instrumentId, variation, defrostDate, endDate, startDate, averageTemp, generateMode, initialTemp, userName }: GenerateDataRequest): Promise<GenerateDataResponse> {
   const response = await fetch(`/api/instruments/generate-data`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ instrumentId, variation, defrostDate, endDate, startDate, userName }),
+    body: JSON.stringify({ instrumentId, variation, defrostDate, endDate, startDate, userName, averageTemp, generateMode, initialTemp }),
   })
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({
       status: response.status,
-      message: error.message || "Error api",
+      message: error.message,
     })
   }
   const data = await response.json()

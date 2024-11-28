@@ -1,7 +1,7 @@
 'use client'
 import { generateData, GenerateDataResponse } from '@/app/http/generate-data'
 import { SkeletonTable } from '@/components/skeleton-table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useMutation } from '@tanstack/react-query'
 import { CircleCheck, CircleX } from 'lucide-react'
@@ -23,7 +23,7 @@ export default function PageManagedData() {
       setDataValue(data)
     },
     onError: (error) => {
-      console.error(error)
+      console.error(error.message)
       toast.error('Erro encontrado, por favor tente novamente.', {
         position: 'top-right',
         icon: <CircleX />,
@@ -34,17 +34,14 @@ export default function PageManagedData() {
   return (
     <ScrollArea className='flex-1'>
       <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
-        <Card className="w-4/5 max-w-6xl mx-auto mt-4 bg-muted dark:bg-slate-800 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl tracking-tight text-blue-600 dark:text-blue-500">
-              Gerar Dados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormGenerateData mutate={generateDataMutation.mutateAsync} />
-          </CardContent>
-        </Card>
-        <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 shadow-sm p-4">
+
+        <div className="p-3 max-w-screen-2xl">
+          <h1 className='text-xl mb-2 underline'>Gerar Dados</h1>
+          <FormGenerateData mutate={generateDataMutation.mutateAsync} />
+        </div>
+
+
+        <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
           <CardContent className=" pt-4">
             {generateDataMutation.isPending ? <SkeletonTable />
               : dataValue?.data && (
@@ -52,7 +49,7 @@ export default function PageManagedData() {
               )
             }
           </CardContent>
-        </Card>
+        </div>
 
       </div>
     </ScrollArea>

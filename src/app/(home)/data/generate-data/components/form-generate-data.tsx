@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
+import { generateDataMode } from '@/types/generate-data-mode'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
@@ -32,6 +33,9 @@ const generateStandards = z.object({
   startDate: z.string({ message: 'Defina a data de fechamento.' }),
   defrostDate: z.string({ message: 'Defina a data de degelo.' }),
   endDate: z.string({ message: 'Defina a data de abertura.' }),
+  generateMode: z.string({ message: 'Defina o modo de geração, o padrão é nível 01.' }),
+  initialTemp: z.union([z.number({ message: 'Defina a temperatura inicial.' }), z.nan()]).optional(),
+  averageTemp: z.union([z.number({ message: 'Defina a média de temperatura' }), z.nan()]).optional(),
 })
 
 type GenerateStandards = z.infer<typeof generateStandards>
@@ -80,9 +84,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
     if (!instrumendSelectedId) return
     const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
     setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
-
   }, [instrumendSelectedId])
-
 
   useEffect(() => {
     if (!startDateValue) return
@@ -179,9 +181,98 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </p>
             )}
           </div>
+          <div className="space-y-2 flex-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-sm" htmlFor="generateMode">
+                    Modo  de geração
+                  </Label>
+                  <Controller
+                    name="generateMode"
+                    control={control}
+                    render={({ field: { onChange, value, ref } }) => (
+                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
+                          <SelectValue placeholder="Selecione o modo de geração" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(generateDataMode).map(([value, name]) => {
+                            return (
+                              <SelectItem value={value} key={value} >{name}</SelectItem>
+                            )
+                          })}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Modo que será gerado os dados
+              </TooltipContent>
+            </Tooltip>
+
+            {errors.generateMode?.message && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.generateMode?.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2 min-w-40">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-sm" htmlFor="initialTemp">
+                    Valor inicial
+                  </Label>
+                  <Input
+                    id="initialTemp"
+                    type="number"
+                    className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    {...register('initialTemp', { valueAsNumber: true })}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Valor inicial
+              </TooltipContent>
+            </Tooltip>
+            {errors.initialTemp?.message && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.initialTemp?.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2 min-w-40">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-sm" htmlFor="averageTemp">
+                    Valor médio
+                  </Label>
+                  <Input
+                    id="averageTemp"
+                    type="number"
+                    className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    {...register('averageTemp', { valueAsNumber: true })}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Valor médio
+              </TooltipContent>
+            </Tooltip>
+            {errors.averageTemp?.message && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.averageTemp?.message}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="flex w-full  items-end gap-2">
+        <div className="flex w-full items-end gap-2">
           <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -236,7 +327,6 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </p>
             )}
           </div>
-
           <div className="space-y-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -263,7 +353,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </p>
             )}
           </div>
-          <div className="flex w-full gap-3 justify-end">
+          <div className="flex w-full gap-3 ">
             <Button
               disabled={isSubmitting}
               type="submit"
@@ -272,7 +362,6 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               Gerar dados
             </Button>
           </div>
-
         </div>
       </TooltipProvider>
     </form>

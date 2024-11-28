@@ -1,3 +1,4 @@
+import { GenerateDataModeType } from '@/types/generate-data-mode';
 import { PrismaClient } from '@prisma/client';
 import dayjs from 'dayjs';
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,12 +18,15 @@ interface GenerateTemperatureRequest {
   endDate: string;
   instrumentId: string;
   variation: number;
+  initialTemp?: number
+  averageTemp?: number
+  generateMode?: GenerateDataModeType
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateTemperatureRequest = await request.json();
-    const { startDate, defrostDate, endDate, instrumentId, variation } = body;
+    const { startDate, defrostDate, endDate, instrumentId, variation, averageTemp, initialTemp, generateMode = 'n1' } = body;
 
     if (!startDate || !defrostDate || !endDate || !instrumentId || !variation) {
       return NextResponse.json({ error: 'Missing data.' }, { status: 400 });
@@ -44,35 +48,57 @@ export async function POST(request: NextRequest) {
     })
 
 
-    const avgTemperature = historicalData.length
-      ? historicalData.reduce((sum, record) => sum + record.value, 0) / historicalData.length
-      : 10;
+    const avgTemperature = averageTemp !== undefined
+      ? averageTemp
+      : (historicalData.length
+        ? historicalData.reduce((sum, record) => sum + record.value, 0) / historicalData.length
+        : 10);
 
 
     const data: TemperatureData[] = [];
+    const variationData: TemperatureData[] = [];
     let currentDate = dayjs(formattedStartDate);
-    let temperature = 35; // initial temp
+    let temperature = initialTemp ? initialTemp : 20;
 
 
     while (currentDate.isBefore(dayjs(formattedEndDate))) {
-      if (currentDate.isBefore(dayjs(formattedStartDate).add(5, 'hour'))) {
-        temperature -= Math.random() * 0.7; // Diminui gradualmente.
-      } else {
-        temperature = avgTemperature + (Math.random() * 4 - 2); // Variação de ±2 graus.
+      if (generateMode === 'n1') {
+        if (currentDate.isBefore(dayjs(formattedStartDate).add(3, 'hour'))) {
+          temperature -= Math.random() * 0.7; // Diminui gradualmente.
+        } else {
+          temperature = avgTemperature + (Math.random() * 4 - 2); // Variação de ±2 graus.
+        }
+      } else if (generateMode === 'n2') {
+        if (currentDate.isBefore(dayjs(formattedStartDate).add(3, 'hour'))) {
+          temperature -= Math.random() * 0.7; // Diminui gradualmente.
+        } else {
+          temperature = avgTemperature + (Math.random() * 4 - 2); // Variação de ±2 graus.
+        }
+      } else if (generateMode === 'n3') {
+        if (currentDate.isBefore(dayjs(formattedStartDate).add(3, 'hour'))) {
+          temperature -= Math.random() * 0.7; // Diminui gradualmente.
+        } else {
+          temperature = avgTemperature + (Math.random() * 4 - 2); // Variação de ±2 graus.
+        }
       }
 
       if (currentDate.isAfter(formattedDefrostDate)) {
         temperature += Math.random() * 3; // Aumenta em até 3 graus durante o degelo.
       }
-
-      data.push({
+      const itemData: TemperatureData = {
         id: uuidv4(),
         time: currentDate.format('YYYY-MM-DDTHH:mm'),
         temperature: Number(temperature.toFixed(1)),
-        updatedAt: currentDate.format('YYYY-MM-DDTHH:mm'),
-      });
+        updatedAt: currentDate.format('YYYY-MM-DDTHH:mm')
+      }
 
-      currentDate = currentDate.add(variation, 'minute');
+      data.push(itemData);
+
+      if (currentDate.diff(dayjs(formattedStartDate), 'minute') % variation === 0) {
+        variationData.push(itemData);
+      }
+
+      currentDate = currentDate.add(10, 'seconds');
     }
     const existingRecords = await prisma.temperature.findMany({
       where: {
