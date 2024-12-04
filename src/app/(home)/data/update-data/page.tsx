@@ -1,14 +1,12 @@
 'use client'
 import { listData, ListDataResponse } from '@/app/http/list-data'
 import { SkeletonTable } from '@/components/skeleton-table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { TableEditValues } from '@/components/table-edit-values'
 import { useMutation } from '@tanstack/react-query'
 import { CircleX } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { FormUpdatedData } from './components/form-update-data'
-import { TableUpdateData } from './components/table-update-data'
 
 
 export default function PageManagedData() {
@@ -30,28 +28,23 @@ export default function PageManagedData() {
   })
 
   return (
-    <ScrollArea className='flex-1'>
-      <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
-        <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 bg-muted  dark:bg-slate-800 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl tracking-tight text-blue-600 dark:text-blue-500 underline">
-              Editar Dados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormUpdatedData mutate={updateDataMutation.mutateAsync} />
-          </CardContent>
-        </Card>
 
-        <Card className="lg:w-4/5 lg:max-w-6xl lg:mx-auto md:mt-4 shadow-sm p-4">
-          <CardContent className="h-full pt-4">
-            {updateDataMutation.isPending ? <SkeletonTable />
-              : dataValue?.chartTemperature && (
-                <TableUpdateData data={dataValue.chartTemperature} />
-              )}
-          </CardContent>
-        </Card>
+    <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
+      <div className="w-full max-w-screen-2xl">
+        <h2 className="font-normal tracking-tight text-foreground mb-2 text-sm md:text-base">
+          Editar dados
+        </h2>
+        <FormUpdatedData isPending={updateDataMutation.isPending} mutate={updateDataMutation.mutateAsync} />
+
       </div>
-    </ScrollArea>
+
+
+      {updateDataMutation.isPending ? <SkeletonTable />
+        : dataValue?.chartTemperature && (
+          <TableEditValues data={dataValue.chartTemperature} />
+        )}
+
+    </main>
+
   )
 }

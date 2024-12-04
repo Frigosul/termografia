@@ -17,10 +17,9 @@ export async function POST(req: NextRequest) {
   const formattedEndDate = dayjs(endDate).add(1, 'minute').format('YYYY-MM-DDTHH:mm:ss[Z]')
   const formattedEndDateNotAdd = dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
 
-
   const data = await prisma.instrument.findUnique({
     where: {
-      name: local,
+      id: local,
     },
     select: {
       id: true,

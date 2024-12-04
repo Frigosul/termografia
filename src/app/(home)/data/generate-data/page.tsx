@@ -1,14 +1,12 @@
 'use client'
 import { generateData, GenerateDataResponse } from '@/app/http/generate-data'
 import { SkeletonTable } from '@/components/skeleton-table'
-import { CardContent } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { TableEditValues } from '@/components/table-edit-values'
 import { useMutation } from '@tanstack/react-query'
 import { CircleCheck, CircleX } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { FormGenerateData } from './components/form-generate-data'
-import { TableGenerateData } from './components/table-generate-data'
 
 export default function PageManagedData() {
   const [dataValue, setDataValue] = useState<GenerateDataResponse>()
@@ -32,26 +30,20 @@ export default function PageManagedData() {
   })
 
   return (
-    <ScrollArea className='flex-1'>
-      <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
-
-        <div className="p-3 max-w-screen-2xl">
-          <h1 className='text-xl mb-2 underline'>Gerar Dados</h1>
-          <FormGenerateData mutate={generateDataMutation.mutateAsync} />
-        </div>
-
-
-        <div className="grid grid-cols-1 mx-auto px-2 gap-2 py-3">
-          <CardContent className=" pt-4">
-            {generateDataMutation.isPending ? <SkeletonTable />
-              : dataValue?.data && (
-                <TableGenerateData data={dataValue?.data} />
-              )
-            }
-          </CardContent>
-        </div>
-
+    <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
+      <div className="w-full max-w-screen-2xl">
+        <h2 className="font-normal tracking-tight text-foreground mb-2 text-sm md:text-base">
+          Gerar dados
+        </h2>
+        <FormGenerateData isPending={generateDataMutation.isPending} mutate={generateDataMutation.mutateAsync} />
       </div>
-    </ScrollArea>
+      <div className="w-full my-2 max-w-screen-2xl">
+        {generateDataMutation.isPending ? <SkeletonTable />
+          : dataValue?.data && (
+            <TableEditValues data={dataValue?.data} />
+          )
+        }
+      </div>
+    </main>
   )
 }

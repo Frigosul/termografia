@@ -175,8 +175,8 @@ export function TableManagedEquipments({ value }: TableProps) {
   return (
     <div className="flex-grow flex flex-col max-h-[70vh] max-w-screen-2xl overflow-hidden">
 
-      <div className="flex w-full overflow-hidden items-center gap-2 p-1 h-11 border rounded-t-md">
-        <div className=" flex border rounded-md">
+      <div className="flex w-full items-center gap-2 p-1 h-11 border rounded-t-md">
+        <div className="flex border rounded-md">
           <Button
             variant="ghost"
             className='h-8 flex items-center justify-center text-sm'

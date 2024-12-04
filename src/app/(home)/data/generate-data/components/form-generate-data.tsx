@@ -29,21 +29,22 @@ dayjs.extend(utc)
 
 const generateStandards = z.object({
   local: z.string({ message: 'Selecione o local desejado.' }),
-  variation: z.string({ message: 'Defina a variação desejada no gráfico.' }),
-  startDate: z.string({ message: 'Defina a data de fechamento.' }),
-  defrostDate: z.string({ message: 'Defina a data de degelo.' }),
-  endDate: z.string({ message: 'Defina a data de abertura.' }),
-  generateMode: z.string({ message: 'Defina o modo de geração, o padrão é nível 01.' }),
-  initialTemp: z.union([z.number({ message: 'Defina a temperatura inicial.' }), z.nan()]).optional(),
-  averageTemp: z.union([z.number({ message: 'Defina a média de temperatura' }), z.nan()]).optional(),
+  variation: z.string({ message: 'Defina a variação.' }),
+  startDate: z.string({ message: 'Defina data de fechamento.' }),
+  defrostDate: z.string({ message: 'Defina data de degelo.' }),
+  endDate: z.string({ message: 'Defina data de abertura.' }),
+  generateMode: z.string({ message: 'Defina o modo.' }).optional(),
+  initialTemp: z.union([z.number({ message: 'Defina a temperatura.' }), z.nan()]).optional(),
+  averageTemp: z.union([z.number({ message: 'Defina a média.' }), z.nan()]).optional(),
 })
 
 type GenerateStandards = z.infer<typeof generateStandards>
 
 interface FormGenerateDataProps {
   mutate: (dataUpdate: GenerateDataRequest) => Promise<GenerateDataResponse>
+  isPending: boolean
 }
-export function FormGenerateData({ mutate }: FormGenerateDataProps) {
+export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
 
   const { data: session } = useSession()
   const [initialDate, setInitialDate] = useState<string | Date>('')
@@ -58,7 +59,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
     watch,
     setValue,
     control,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useForm<GenerateStandards>({
     resolver: zodResolver(generateStandards),
   })
@@ -97,17 +98,14 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
   }, [startDateValue, setValue])
 
   return (
-    <form
-      onSubmit={handleSubmit(handleGenerateStandards)}
-      className="gap-2  flex flex-col items-start"
-    >
+    <form onSubmit={handleSubmit(handleGenerateStandards)}>
       <TooltipProvider>
-        <div className="flex w-full gap-3">
-          <div className="space-y-2 flex-1">
+        <div className="flex gap-x-2 items-start flex-wrap">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
+                  <Label className="font-light text-xs ml-1" htmlFor="local">
                     Local
                   </Label>
                   <Controller
@@ -115,7 +113,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
@@ -136,16 +134,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
             </Tooltip>
 
             {errors.local?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.local?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
+                  <Label className="font-light text-xs" htmlFor="variation">
                     Variação
                   </Label>
                   <Controller
@@ -153,7 +151,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
                           <SelectValue placeholder="Variação" />
                         </SelectTrigger>
                         <SelectContent>
@@ -176,16 +174,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </TooltipContent>
             </Tooltip>
             {errors.variation?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.variation?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="generateMode">
+                  <Label className="font-light text-xs" htmlFor="generateMode">
                     Modo  de geração
                   </Label>
                   <Controller
@@ -193,13 +191,13 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Selecione o modo de geração" />
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                          <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
                           {Object.entries(generateDataMode).map(([value, name]) => {
                             return (
-                              <SelectItem value={value} key={value} >{name}</SelectItem>
+                              <SelectItem value={value} key={value}>{name}</SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -214,23 +212,22 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
             </Tooltip>
 
             {errors.generateMode?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.generateMode?.message}
               </p>
             )}
           </div>
-
-          <div className="space-y-2 min-w-40">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="initialTemp">
+                  <Label className="font-light text-xs" htmlFor="initialTemp">
                     Valor inicial
                   </Label>
                   <Input
                     id="initialTemp"
                     type="number"
-                    className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="[appearance:textfield]  w-24 h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('initialTemp', { valueAsNumber: true })}
                   />
                 </div>
@@ -240,22 +237,22 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </TooltipContent>
             </Tooltip>
             {errors.initialTemp?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.initialTemp?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 min-w-40">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="averageTemp">
+                  <Label className="font-light text-xs" htmlFor="averageTemp">
                     Valor médio
                   </Label>
                   <Input
                     id="averageTemp"
                     type="number"
-                    className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="[appearance:textfield] w-24 h-8  dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('averageTemp', { valueAsNumber: true })}
                   />
                 </div>
@@ -265,19 +262,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </TooltipContent>
             </Tooltip>
             {errors.averageTemp?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.averageTemp?.message}
               </p>
             )}
           </div>
-        </div>
-
-        <div className="flex w-full items-end gap-2">
-          <div className="space-y-2">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="startDate">
+                  <Label className="font-light text-xs" htmlFor="startDate">
                     Data Fechamento
                   </Label>
                   <Input
@@ -286,7 +280,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     disabled={!instrumendSelectedId}
                     min={String(initialDate)}
                     max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
+                    className="dark:bg-slate-900 h-8"
                     {...register('startDate')}
                   />
                 </div>
@@ -296,16 +290,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               </TooltipContent>
             </Tooltip>
             {errors.startDate?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.startDate?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="defrostDate">
+                  <Label className="font-light text-xs" htmlFor="defrostDate">
                     Variação Degelo
                   </Label>
                   <Input
@@ -314,7 +308,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     disabled={!instrumendSelectedId}
                     min={String(minDefrostDate)}
                     max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
+                    className="dark:bg-slate-900 h-8"
                     {...register('defrostDate')}
                   />
                 </div>
@@ -322,16 +316,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               <TooltipContent side="bottom">Variação de degelo.</TooltipContent>
             </Tooltip>
             {errors.defrostDate?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.defrostDate?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="endDate">
+                  <Label className="font-light text-xs" htmlFor="endDate">
                     Data Abertura
                   </Label>
                   <Input
@@ -340,7 +334,7 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
                     disabled={!instrumendSelectedId}
                     min={String(minEndDate)}
                     max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
+                    className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
                   />
                 </div>
@@ -348,16 +342,16 @@ export function FormGenerateData({ mutate }: FormGenerateDataProps) {
               <TooltipContent side="bottom">Data e hora final.</TooltipContent>
             </Tooltip>
             {errors.endDate?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.endDate?.message}
               </p>
             )}
           </div>
-          <div className="flex w-full gap-3 ">
+          <div className="h-[4.5rem] flex items-end">
             <Button
-              disabled={isSubmitting}
+              disabled={isPending}
               type="submit"
-              className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground"
+              className="h-8 mb-4"
             >
               Gerar dados
             </Button>

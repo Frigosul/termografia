@@ -1,6 +1,8 @@
+"use client"
 import { updateData } from '@/app/http/update-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination'
 import {
   Select,
   SelectContent,
@@ -11,21 +13,22 @@ import {
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from '@/components/ui/table'
-import { formattedDateTime } from '@/utils/formatted-datetime'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { CircleCheck, CircleX, Save, Search, X } from 'lucide-react'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CircleCheck, CircleX, Search } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { TableRowEdit } from './table-row-edit'
+dayjs.extend(customParseFormat)
 
 interface TableRow {
   id: string;
@@ -39,22 +42,75 @@ interface TableProps {
   data: TableRow[];
 }
 
-const searchParams = ['igual à', 'menor ou igual à', 'maior ou igual à']
-
 const searchDataSchema = z.object({
-  hour: z.string(),
-  searchParams: z.string().refine((value) => searchParams.includes(value), {
-    message:
-      'Parâmetro de pesquisa inválido. Escolha um dos valores disponíveis.',
-  }),
-  temperature: z.string(),
+  search: z.string(),
+  searchParams: z.string()
 })
 
 type SearchData = z.infer<typeof searchDataSchema>
 
-export function TableGenerateData({ data }: TableProps) {
+const ITEMS_PER_PAGE = 50
+
+export function TableEditValues({ data }: TableProps) {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
+  const [editData, setEditData] = useState<TableProps>({ data });
+  const [filteredData, setFilteredData] = useState<TableRow[]>(data);
+  const [paginatedData, setPaginatedData] = useState<TableRow[]>([]);
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE)
+
+
+  useEffect(() => {
+    setPaginatedData(
+      filteredData.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+      )
+    );
+  }, [filteredData, currentPage]);
+
+
+  function handleSearchData(searchData: SearchData) {
+    const { search, searchParams } = searchData
+    const searchDate = dayjs(search, "DD/MM/YYYY - HH:mm", true)
+    const searchTemp = parseFloat(search)
+    const filtered = editData.data.filter((row) => {
+      const rowDate = dayjs(row.time)
+      const temperatureValue = row.temperature
+
+      if (searchDate.isValid()) {
+        switch (searchParams) {
+          case 'equal':
+            return rowDate.isSame(searchDate, 'minute');
+          case 'lessOrEqual':
+            return rowDate.isBefore(searchDate, 'minute') || rowDate.isSame(searchDate, 'minute');
+          case 'greaterOrEqual':
+            return rowDate.isAfter(searchDate, 'minute') || rowDate.isSame(searchDate, 'minute');
+          default:
+            return true
+        }
+
+      } else if (!isNaN(searchTemp)) {
+        switch (searchParams) {
+          case 'equal':
+            return temperatureValue === searchTemp
+          case 'lessOrEqual':
+            return temperatureValue <= searchTemp
+          case 'greaterOrEqual':
+            return temperatureValue >= searchTemp
+          default:
+            return true
+        }
+      }
+      return true
+    })
+
+    setFilteredData(filtered)
+    setCurrentPage(1)
+  }
+
+
 
   const updatedDataMutation = useMutation({
     mutationFn: updateData,
@@ -78,7 +134,6 @@ export function TableGenerateData({ data }: TableProps) {
     resolver: zodResolver(searchDataSchema),
   })
 
-  const [editData, setEditData] = useState<TableProps>({ data });
 
   const [editCell, setEditCell] = useState<{
     rowId: string | null;
@@ -89,10 +144,6 @@ export function TableGenerateData({ data }: TableProps) {
   });
 
   const [inputValue, setInputValue] = useState<string>('')
-
-  function handleSearchData(data: SearchData) {
-    console.log(data)
-  }
 
   function handleDoubleClick(
     rowId: string,
@@ -115,24 +166,24 @@ export function TableGenerateData({ data }: TableProps) {
       ? dayjs(originalValue[field]).format('YYYY-MM-DD HH:mm')
       : originalValue?.[field]?.toString() || '';
 
-
-
     if (inputValue !== '' && inputValue !== formattedValue) {
-      setEditData((prevData) => ({
-        data:
-          prevData?.data.map((item) => {
-            return (
-              item.id === rowId
-                ? {
-                  ...item,
-                  [field]: field === 'temperature' ? Number(inputValue) : inputValue,
-                  updatedUserAt: String(session?.user?.name),
-                  updatedAt: dayjs().format('YYYY-MM-DDTHH:mm')
-                }
-                : item
-            )
+      setEditData((prevData) => {
+        const newData = {
+          data: prevData?.data.map((item) => {
+            if (item.id === rowId) {
+              return {
+                ...item,
+                [field]: field === 'temperature' ? Number(inputValue) : inputValue,
+                updatedUserAt: String(session?.user?.name),
+                updatedAt: dayjs().format('YYYY-MM-DDTHH:mm')
+              }
+            }
+            return item
           }) || [],
-      }));
+        }
+        setFilteredData(newData.data)
+        return newData
+      })
     }
     setEditCell({ rowId: null, field: null });
   }
@@ -200,19 +251,17 @@ export function TableGenerateData({ data }: TableProps) {
   }
 
   return (
-    <div className="flex flex-col w-full items-center justify-start border border-card-foreground rounded-md h-[30rem] overflow-hidden relative">
-      <div className="flex justify-between w-full border-b border-card-foreground">
-        <div className="flex gap-1">
+    <div className="flex-grow flex flex-col max-h-[55vh] max-w-screen-2xl overflow-hidden">
+      <div className="flex w-full items-center gap-2 p-1 h-11 border rounded-t-md justify-between">
+        <div className="flex border rounded-md">
           <Button
             variant="ghost"
-            className="flex gap-1 hover:bg-green-400/30"
+            className="h-8 flex items-center justify-center text-sm"
             disabled={updatedDataMutation.isPending}
             onClick={() => updatedDataMutation.mutateAsync({ temperatures: editData.data })}>
-            <Save className="size-4" />
             Salvar
           </Button>
-          <Button variant="ghost" className="flex gap-1 hover:bg-red-400/30">
-            <X className="size-4" />
+          <Button variant="ghost" className="h-8 flex items-center justify-center text-sm">
             Cancelar
           </Button>
         </div>
@@ -220,12 +269,6 @@ export function TableGenerateData({ data }: TableProps) {
           className="flex items-center justify-center gap-2"
           onSubmit={handleSubmit(handleSearchData)}
         >
-          <Input
-            {...register('hour')}
-            placeholder="Hora"
-            type="time"
-            className="w-22"
-          />
           <Controller
             name="searchParams"
             control={control}
@@ -233,7 +276,7 @@ export function TableGenerateData({ data }: TableProps) {
               <Select onValueChange={onChange} value={value}>
                 <SelectTrigger
                   ref={ref}
-                  className="dark:bg-slate-900 w-[20rem]"
+                  className="dark:bg-slate-900 w-48 h-8"
                 >
                   <SelectValue placeholder="Igual à" />
                 </SelectTrigger>
@@ -248,20 +291,20 @@ export function TableGenerateData({ data }: TableProps) {
             )}
           />
           <Input
-            {...register('temperature')}
-            placeholder="ºC"
-            className="w-20"
+            {...register('search')}
+            placeholder="Pesquisar"
+            className="w-48 h-8"
           />
           <Button
-            variant="default"
-            className="flex items-center justify-center rounded-none hover:bg-slate-300"
+            type='submit'
+            className="h-8"
           >
-            <Search />
+            <Search className='size-5' />
           </Button>
         </form>
       </div>
-      <Table className="border border-collapse rounded-md">
-        <TableHeader className="bg-card sticky z-10 top-0 border-b">
+      <Table className="border-collapse">
+        <TableHeader className="bg-card  sticky z-10 top-0 border-b">
           <TableRow>
             <TableHead className="border text-card-foreground w-64 text-center ">
               Data - Hora
@@ -275,43 +318,55 @@ export function TableGenerateData({ data }: TableProps) {
           </TableRow>
         </TableHeader>
         <TableBody className="overflow-y-auto">
-          {editData.data.map((row) => {
-
-            return (
-              <TableRow
-                key={row.id}
-                className="odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900"
-              >
-                <TableCell className="border text-center">
-                  {formattedDateTime(row.time)}
-                </TableCell>
-                <TableCell
-                  className="border text-center p-0 h-4"
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'temperature', row.temperature)
-                  }
-                >
-                  {editCell.rowId === row.id &&
-                    editCell.field === 'temperature' ? (
-                    <input
-                      className="bg-transparent w-full h-full  text-center m-0"
-                      type="text"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'temperature')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'temperature')}
-                      autoFocus
-                    />
-                  ) : (
-                    `${row.temperature} ºC`
-                  )}
-                </TableCell>
-                <TableCell className="border">{row.updatedUserAt ? `Temperatura alterada por ${row.updatedUserAt} em ${formattedDateTime(row.updatedAt)}` : `Temperatura integrada`}</TableCell>
-              </TableRow>
-            )
-          })}
+          {paginatedData.map((row) => (
+            <TableRowEdit
+              key={row.id}
+              row={row}
+              editCell={editCell}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              handleDoubleClick={handleDoubleClick}
+              handleSave={handleSave}
+              handleKeyDown={handleKeyDown}
+            />
+          )
+          )}
         </TableBody>
       </Table>
+      <div className="text-sm border rounded-b-md flex items-center px-2 justify-between">
+        <span className='w-44 text-muted-foreground'>Total de páginas - {totalPages}</span>
+        <Pagination className='w-56 m-0'>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink onClick={() => setCurrentPage(1)}>
+                <ChevronsLeft strokeWidth={1} />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              >
+                <ChevronLeft strokeWidth={1} />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              {currentPage}
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              >
+                <ChevronRight strokeWidth={1} />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                <ChevronsRight strokeWidth={1} />
+              </PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   )
 }

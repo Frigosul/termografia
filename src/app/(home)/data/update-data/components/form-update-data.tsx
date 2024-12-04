@@ -20,37 +20,39 @@ import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 dayjs.extend(utc)
 
 const updatedDataChart = z.object({
   local: z.string({ message: 'Selecione o local desejado.' }),
-  graphVariation: z.string({ message: 'Defina a variação desejada no gráfico.' }),
+  variation: z.string({ message: 'Defina a variação.' }),
   startDate: z.string({ message: 'Defina a data de início.' }),
   endDate: z.string({ message: 'Defina a data final.' }),
 })
+
 type UpdatedDataChart = z.infer<typeof updatedDataChart>
+
 interface FormUpdateDataProps {
   mutate: (dataUpdate: ListDataRequest) => Promise<ListDataResponse>
+  isPending: boolean
 }
 
-export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
-
+export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
+  const [initialDate, setInitialDate] = useState<string | Date>('')
+  const [minEndDate, setMinEndDate] = useState<string | Date>('')
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     control,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useForm<UpdatedDataChart>({
     resolver: zodResolver(updatedDataChart),
   })
-
   const { instrumentList, isLoading } = useInstrumentsStore();
-
 
   function handleUpdatedDataChart(data: UpdatedDataChart) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
@@ -59,15 +61,23 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
     mutate({
       endDate: endDataUtc,
       startDate: startDataUtc,
-      graphVariation: data.graphVariation,
+      graphVariation: data.variation,
       local: data.local
     })
   }
   const startDateValue = watch('startDate')
+  const instrumendSelectedId = watch('local')
+
+  useEffect(() => {
+    if (!instrumendSelectedId) return
+    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+  }, [instrumendSelectedId])
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(24, 'hours').format('YYYY-MM-DDTHH:mm')
+    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
+    setMinEndDate(startDateValue)
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
 
@@ -77,12 +87,12 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
       className="gap-2 flex flex-col items-start"
     >
       <TooltipProvider>
-        <div className="flex w-full gap-3">
-          <div className="space-y-2 flex-1">
+        <div className="flex gap-x-2 items-start flex-wrap">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
+                  <Label className="font-light text-xs ml-1" htmlFor="local">
                     Local
                   </Label>
                   <Controller
@@ -90,13 +100,13 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
                           {instrumentList?.map(item => {
                             return (
-                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -106,30 +116,30 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                Instrumento que será alterado ou utilizado para cópia de dados
+                Local que será gerado os dados
               </TooltipContent>
             </Tooltip>
 
             {errors.local?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.local?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="graphVariation">
+                  <Label className="font-light text-xs" htmlFor="local">
                     Variação
                   </Label>
                   <Controller
-                    name="graphVariation"
+                    name="variation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Variação do gráfico" />
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                          <SelectValue placeholder="Variação" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="01">01 minuto</SelectItem>
@@ -150,28 +160,26 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
                 informações do instrumento.
               </TooltipContent>
             </Tooltip>
-            {errors.graphVariation?.message && (
-              <p className="text-red-500 text-sm font-light">
-                {errors.graphVariation?.message}
+            {errors.variation?.message && (
+              <p className="text-red-500 text-xs font-light w-40">
+                {errors.variation?.message}
               </p>
             )}
           </div>
-        </div>
-
-        <div className="flex w-full items-end gap-2">
-          <div className="space-y-2">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="startDate">
+                  <Label className="font-light text-xs" htmlFor="startDate">
                     Data Inicial
                   </Label>
                   <Input
                     id="startDate"
                     type="datetime-local"
-                    min="2000-01-01T00:00"
+                    disabled={!instrumendSelectedId}
+                    min={String(initialDate)}
                     max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
+                    className="dark:bg-slate-900 h-8"
                     {...register('startDate')}
                   />
                 </div>
@@ -181,24 +189,25 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
               </TooltipContent>
             </Tooltip>
             {errors.startDate?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.startDate?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="endDate">
+                  <Label className="font-light text-xs" htmlFor="endDate">
                     Data Final
                   </Label>
                   <Input
                     id="endDate"
                     type="datetime-local"
-                    min="2000-01-01T00:00"
+                    disabled={!instrumendSelectedId}
+                    min={String(minEndDate)}
                     max="9999-12-31T23:59"
-                    className="dark:bg-slate-900"
+                    className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
                   />
                 </div>
@@ -206,18 +215,18 @@ export function FormUpdatedData({ mutate }: FormUpdateDataProps) {
               <TooltipContent side="bottom">Data e hora final.</TooltipContent>
             </Tooltip>
             {errors.endDate?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.endDate?.message}
               </p>
             )}
           </div>
-          <div className="flex w-full gap-3 justify-end">
+          <div className="h-[4.5rem] flex items-end">
             <Button
-              disabled={isSubmitting}
+              disabled={isPending}
               type="submit"
-              className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground"
+              className="h-8 mb-4"
             >
-              Gerar dados
+              Editar dados
             </Button>
           </div>
         </div>
