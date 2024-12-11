@@ -10,10 +10,10 @@ export default function Home() {
 
   return (
     <ScrollArea className='relative flex-1'>
-      <main className=''>
+      <main>
         <div className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 `}>
           {error ? <AlertError /> : isLoading
-            ? Array.from({ length: 12 }).map((_, index) => (
+            ? Array.from({ length: 7 }).map((_, index) => (
               <SkeletonChart key={index} />
             ))
             : data?.map((instrument) => (

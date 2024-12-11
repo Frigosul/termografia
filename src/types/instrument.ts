@@ -5,6 +5,7 @@ export interface Instrument {
   status: string
   isSensorError: boolean
   temperature: number
+  pressure: number
   createdAt: Date
   error: string | null
   maxValue: number
