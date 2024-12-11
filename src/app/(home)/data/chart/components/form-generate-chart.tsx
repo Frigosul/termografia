@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Tooltip,
   TooltipContent,
@@ -22,7 +21,7 @@ import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
-import { RefObject, useEffect } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 dayjs.extend(utc)
@@ -63,10 +62,13 @@ type GenerateDataChart = z.infer<typeof generateDataChart>
 
 interface FormGenerateChartProps {
   divRef: RefObject<HTMLDivElement>
+  isPending: boolean
   mutate: (data: ListDataRequest) => Promise<ListDataResponse>
 }
 
-export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
+export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateChartProps) {
+  const [initialDate, setInitialDate] = useState<string | Date>('')
+  const [minEndDate, setMinEndDate] = useState<string | Date>('')
   const { generatePDF } = useGeneratePDF()
 
   const {
@@ -75,12 +77,9 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     watch,
     setValue,
     control,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
-
   const { instrumentList, isLoading } = useInstrumentsStore();
-
-
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
@@ -100,26 +99,30 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
     })
   }
   const startDateValue = watch('startDate')
+  const instrumendSelectedId = watch('local')
+
+  useEffect(() => {
+    if (!instrumendSelectedId) return
+    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+  }, [instrumendSelectedId])
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(24, 'hours').format('YYYY-MM-DDTHH:mm')
-
+    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
+    setMinEndDate(startDateValue)
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
 
   return (
-    <form
-      onSubmit={handleSubmit(handleGenerateDataChart)}
-      className="gap-2 flex flex-col items-center md:items-start"
-    >
+    <form onSubmit={handleSubmit(handleGenerateDataChart)}>
       <TooltipProvider>
-        <div className="flex flex-col w-full md:flex-row gap-2 md:gap-3">
-          <div className="space-y-2 flex-1 h-20 ">
+        <div className="flex gap-x-2 items-end flex-wrap">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
+                  <Label className="font-light text-xs ml-1" htmlFor="local">
                     Local
                   </Label>
                   <Controller
@@ -127,14 +130,13 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
                           {instrumentList?.map(item => {
-
                             return (
-                              <SelectItem value={item.name} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -144,32 +146,34 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                Selecione o local que você deseja gerar o gráfico.
+                Local que será gerado os dados
               </TooltipContent>
             </Tooltip>
 
             {errors.local?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light">
                 {errors.local?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1 h-20">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
-                    Variação gráfico
+                  <Label className="font-light text-xs" htmlFor="graphVariation">
+                    Variação do gráfico
                   </Label>
                   <Controller
                     name="graphVariation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Variação do gráfico" />
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                          <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="01">01 minuto</SelectItem>
+                          <SelectItem value="05">05 minutos</SelectItem>
                           <SelectItem value="10">10 minutos</SelectItem>
                           <SelectItem value="15">15 minutos</SelectItem>
                           <SelectItem value="20">20 minutos</SelectItem>
@@ -182,29 +186,30 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                Selecione a variação desejada para gerar o gráfico.
+                Selecione a varição que deseja apresentar as
+                informações no gráfico.
               </TooltipContent>
             </Tooltip>
             {errors.graphVariation?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.graphVariation?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 flex-1 h-20">
+          <div className="h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="local">
-                    Variação tabela
+                  <Label className="font-light text-xs" htmlFor="tableVariation">
+                    Variação da tabela
                   </Label>
                   <Controller
                     name="tableVariation"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900">
-                          <SelectValue placeholder="Variação da tabela" />
+                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                          <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="01">01 minuto</SelectItem>
@@ -220,29 +225,26 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                Selecione a variação desejada para gerar a tabela.
+                Selecione a variação desejada para mostrar na tabela.
               </TooltipContent>
             </Tooltip>
             {errors.tableVariation?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.tableVariation?.message}
               </p>
             )}
           </div>
-        </div>
-
-        <div className="flex flex-wrap w-full  items-end  gap-2 overflow-hidden">
-          <div className="space-y-2 md:min-w-44 lg:min-w-20 flex-1 h-20">
+          <div className="w-20 h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="limit">
+                  <Label className="font-light text-xs" htmlFor="limit">
                     Valor Limite
                   </Label>
                   <Input
                     id="limit"
                     type="number"
-                    className="[appearance:textfield]   dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="[appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('limit', { valueAsNumber: true })}
                   />
                 </div>
@@ -253,23 +255,22 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </TooltipContent>
             </Tooltip>
             {errors.limit?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.limit?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 md:min-w-44 lg:min-w-20 flex-1 h-20">
+          <div className="w-14 h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="detour">
+                  <Label className="font-light text-xs" htmlFor="detour">
                     Desvio
                   </Label>
-
                   <Input
                     id="detour"
                     type="number"
-                    className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('detour', { valueAsNumber: true })}
                   />
                 </div>
@@ -280,22 +281,22 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </TooltipContent>
             </Tooltip>
             {errors.detour?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.detour?.message}
               </p>
             )}
           </div>
-          <div className="space-y-2 min-w-28  md:min-w-44 lg:min-w-20 flex-1 h-20">
+          <div className="w-20 h-[4.5rem]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-sm" htmlFor="variationTemp">
-                    Var. Col. Temp.
+                  <Label className="font-light text-xs" htmlFor="variationTemp">
+                    Var. Temp.
                   </Label>
                   <Input
                     id="variationTemp"
                     type="number"
-                    className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('variationTemp', { valueAsNumber: true })}
                   />
                 </div>
@@ -305,135 +306,131 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
               </TooltipContent>
             </Tooltip>
             {errors.variationTemp?.message && (
-              <p className="text-red-500 text-sm font-light">
+              <p className="text-red-500 text-xs font-light w-40">
                 {errors.variationTemp?.message}
               </p>
             )}
           </div>
-          <div className="flex md:flex-1 md:min-w-56 lg:min-w-44 h-20 gap-2 ">
-            <div className="space-y-2 flex-1 ">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="font-light text-sm" htmlFor="minValue">
-                      Valor Min.
-                    </Label>
-
-                    <Input
-                      id="minValue"
-                      type="number"
-                      className="[appearance:textfield] dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      {...register('minValue', {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Valor mínimo do gráfico, deixe em branco para ser automático.
-                </TooltipContent>
-              </Tooltip>
-              {errors.minValue?.message && (
-                <p className="text-red-500 text-sm font-light">
-                  {errors.minValue?.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2 flex-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="font-light text-sm" htmlFor="maxValue">
-                      Valor Max.
-                    </Label>
-
-                    <Input
-                      id="maxValue"
-                      type="number"
-                      className="[appearance:textfield]  dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      {...register('maxValue', {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Valor máximo do gráfico, deixe em branco para ser automático.
-                </TooltipContent>
-              </Tooltip>
-              {errors.maxValue?.message && (
-                <p className="text-red-500 text-sm font-light">
-                  {errors.maxValue?.message}
-                </p>
-              )}
-            </div>
+          <div className="w-20 h-[4.5rem]">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-xs" htmlFor="minValue">
+                    Valor Min.
+                  </Label>
+                  <Input
+                    id="minValue"
+                    type="number"
+                    className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    {...register('minValue', {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Valor mínimo do gráfico, deixe em branco para ser automático.
+              </TooltipContent>
+            </Tooltip>
+            {errors.minValue?.message && (
+              <p className="text-red-500 text-xs font-light w-40">
+                {errors.minValue?.message}
+              </p>
+            )}
           </div>
-          <div className="flex w-full flex-1 gap-2">
-            <div className="space-y-2 w-full h-20">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="font-light text-sm" htmlFor="startDate">
-                      Data Inicial
-                    </Label>
-                    <Input
-                      id="startDate"
-                      type="datetime-local"
-                      min="2000-01-01T00:00"
-                      max="9999-12-31T23:59"
-                      className="dark:bg-slate-900 [appearance:textfield] [&::-webkit-calendar-picker-indicator]:appearance-none"
-                      {...register('startDate')}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Data e hora inicial para gerar o gráfico.
-                </TooltipContent>
-              </Tooltip>
-              {errors.startDate?.message && (
-                <p className="text-red-500 text-sm font-light">
-                  {errors.startDate?.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2 w-full h-20">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Label className="font-light text-sm" htmlFor="endDate">
-                      Data Final
-                    </Label>
-                    <Input
-                      id="endDate"
-                      type="datetime-local"
-                      min="2000-01-01T00:00"
-                      max="9999-12-31T23:59"
-                      className="dark:bg-slate-900 "
-                      {...register('endDate')}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  Data e hora final para gerar o gráfico.
-                </TooltipContent>
-              </Tooltip>
-              {errors.endDate?.message && (
-                <p className="text-red-500 text-sm font-light">
-                  {errors.endDate?.message}
-                </p>
-              )}
-            </div>
+          <div className="w-20 h-[4.5rem]">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-xs" htmlFor="maxValue">
+                    Valor Max.
+                  </Label>
+
+                  <Input
+                    id="maxValue"
+                    type="number"
+                    className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    {...register('maxValue', {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Valor máximo do gráfico, deixe em branco para ser automático.
+              </TooltipContent>
+            </Tooltip>
+            {errors.maxValue?.message && (
+              <p className="text-red-500 text-xs font-light w-40">
+                {errors.maxValue?.message}
+              </p>
+            )}
           </div>
-        </div>
-        <div className="flex flex-col md:flex-row w-full gap-3  md:items-end ">
-          <div className="space-y-2 flex-1">
-            <Label className="font-light text-sm" htmlFor="description">
+          <div className="h-[4.5rem]">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-xs" htmlFor="startDate">
+                    Data Inicial
+                  </Label>
+                  <Input
+                    id="startDate"
+                    type="datetime-local"
+                    disabled={!instrumendSelectedId}
+                    min={String(initialDate)}
+                    max="9999-12-31T23:59"
+                    className="dark:bg-slate-900 h-8"
+                    {...register('startDate')}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Data e hora inicial.
+              </TooltipContent>
+            </Tooltip>
+            {errors.startDate?.message && (
+              <p className="text-red-500 text-xs font-light">
+                {errors.startDate?.message}
+              </p>
+            )}
+          </div>
+          <div className="h-[4.5rem]">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-xs" htmlFor="endDate">
+                    Data Final
+                  </Label>
+                  <Input
+                    id="endDate"
+                    type="datetime-local"
+                    disabled={!instrumendSelectedId}
+                    min={String(initialDate)}
+                    max="9999-12-31T23:59"
+                    className="dark:bg-slate-900 h-8"
+                    {...register('endDate')}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Data e hora final.
+              </TooltipContent>
+            </Tooltip>
+            {errors.endDate?.message && (
+              <p className="text-red-500 text-xs font-light">
+                {errors.endDate?.message}
+              </p>
+            )}
+          </div>
+
+          <div className="lg:w-3/5 h-[4.5rem]">
+            <Label className="font-light text-xs" htmlFor="description">
               Informações adicionais
             </Label>
-            <Textarea
+            <Input
               id="description"
               placeholder="Informações adicionais que deseja que apareça no gráfico."
-              className="dark:bg-slate-900 resize-none"
+              className="dark:bg-slate-900 h-8 placeholder:text-xs"
               {...register('description')}
             />
             {errors.description?.message && (
@@ -443,20 +440,20 @@ export function FormGenerateChart({ divRef, mutate }: FormGenerateChartProps) {
             )}
           </div>
           <Button
-            disabled={isSubmitting}
+            disabled={isPending}
             type="submit"
-            className="dark:bg-blue-600 bg-blue-400 hover:bg-blue-500 hover:dark:bg-blue-500 text-foreground"
+            className="h-8 min-w-32 mb-4"
           >
-            Gerar gráfico
+            Gerar
           </Button>
           <Button
-            disabled={isSubmitting}
+            disabled={isPending}
             type="button"
             onClick={() => generatePDF(divRef)}
-            variant="secondary"
-            className="dark:bg-gray-950 bg-slate-300 hover:bg-slate-400 hover:dark:bg-gray-900"
+            variant="outline"
+            className="h-8 min-w-32 mb-4"
           >
-            Imprimir gráfico
+            Imprimir
           </Button>
         </div>
       </TooltipProvider>

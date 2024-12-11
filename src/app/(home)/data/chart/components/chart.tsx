@@ -135,7 +135,7 @@ export function Chart({
             <span>{formattedDateOpen}</span>
           </div>
         </div>
-        <ChartContainer config={chartConfig} className="min-h-[13.5rem]">
+        <ChartContainer config={chartConfig} className="min-h-[14.5rem]">
           <LineChart
             width={500}
             data={formattedData}
@@ -152,6 +152,10 @@ export function Chart({
             />
             <XAxis
               dataKey="time"
+              tickMargin={20}
+              fontWeight={400}
+              height={55}
+              angle={90}
               interval={0}
               stroke="hsl(var(--card-foreground))"
               label={{

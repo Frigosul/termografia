@@ -48,6 +48,9 @@ const config = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      screens: {
+        '3xl': '1500px',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
@@ -72,7 +75,6 @@ const config = {
       },
       gridTemplateColumns: {
         form: 'repeat(auto-fit, minmax(150px, 470px))',
-        // home: 'repeat(auto-fit, minmax(330px, 340px))',
         home: 'repeat(auto-fit, minmax(180px, 200px))'
       },
     },
