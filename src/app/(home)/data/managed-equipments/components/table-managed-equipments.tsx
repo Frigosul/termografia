@@ -18,10 +18,12 @@ import {
 } from '@/components/ui/table'
 import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
+import { useModalStore } from '@/stores/useModalStore'
 import { useMutation } from '@tanstack/react-query'
 import { CircleCheck, CircleX, EllipsisVertical, Search } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { CreateUnionInstruments } from './create-union-instruments'
 
 interface RowData {
   id: string
@@ -41,7 +43,7 @@ interface TableProps {
 
 export function TableManagedEquipments({ value }: TableProps) {
   const [data, setData] = useState<RowData[]>(value)
-
+  const { openModal } = useModalStore()
   const [search, setSearch] = useState<string>('');
   const [filteredData, setFilteredData] = useState<RowData[]>([]);
 
@@ -205,6 +207,13 @@ export function TableManagedEquipments({ value }: TableProps) {
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
+        <Button
+          variant="link"
+          onClick={() => openModal('create-union-instrument')}
+          className='text-sm text-primary ml-auto mr-4'>
+          Adicionar união
+        </Button>
+        <CreateUnionInstruments />
       </div>
 
       <Table className='border border-collapse'>

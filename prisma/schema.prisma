@@ -81,3 +81,14 @@ model InstrumentsPressure {
   @@id([instrument_id, pressure_id])
   @@map("pressure_instrument")
 }
+
+model UnionInstruments {
+  id                   String   @id @default(uuid())
+  name                 String   @unique
+  first_instrument_id  String
+  second_instrument_id String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now())
+
+  @@map("union_instruments")
+}

@@ -12,7 +12,7 @@ interface UserData {
 interface UseModalStoreProps {
   modals: { [key: string]: boolean }
   userData: UserData | null;
-  openModal: (modalName: string, userData: UserData) => void
+  openModal: (modalName: string, userData?: UserData) => void
   closeModal: (modalName: string) => void
   toggleModal: (modalName: string) => void
 }
@@ -20,7 +20,7 @@ interface UseModalStoreProps {
 export const useModalStore = create<UseModalStoreProps>((set) => ({
   modals: {},
   userData: null,
-  openModal: (modalName, userData) => {
+  openModal: (modalName, userData?) => {
     set((state) => ({
       modals: { ...state.modals, [modalName]: true },
       userData: userData || state.userData,
