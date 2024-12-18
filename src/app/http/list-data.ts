@@ -18,10 +18,17 @@ type TemperatureData = {
   time: string
   temperature: number
 }
+type PressureData = {
+  id: string
+  updatedUserAt: string | null
+  updatedAt: string
+  time: string
+  pressure: number
+}
 export type ListDataResponse = {
   id: string
   name: string
-  chartType?: 'temp' | 'press'
+  chartType?: 'temp' | 'temp/press'
   dateClose: string
   dateOpen: string
   minValue?: number
@@ -31,6 +38,7 @@ export type ListDataResponse = {
   variationTemp?: number
   chartTemperature: TemperatureData[]
   tableTemperatureRange?: TemperatureData[]
+  chartPressure?: PressureData[]
   error?: string
 }
 
@@ -48,7 +56,7 @@ export async function listData({
   description = '',
 }: ListDataRequest): Promise<ListDataResponse> {
 
-  const response = await fetch('http://localhost:3000/api/instruments/list-data', {
+  const response = await fetch('/api/instruments/list-data', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

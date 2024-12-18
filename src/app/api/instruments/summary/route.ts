@@ -14,7 +14,6 @@ export async function GET() {
       maxValue: true,
       isActive: true,
       displayOrder: true,
-
     },
     orderBy: {
       name: 'asc'

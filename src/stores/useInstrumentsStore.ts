@@ -46,4 +46,3 @@ export const useInstrumentsStore = create<InstrumentStoreProps>((set) => {
     error: false,
   };
 })
-

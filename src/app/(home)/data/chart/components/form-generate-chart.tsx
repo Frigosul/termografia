@@ -1,4 +1,5 @@
 'use client'
+import { getInstrumentsWithUnions } from '@/app/http/get-instruments-with-unions'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,15 +18,14 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useGeneratePDF } from '@/hooks/useGeneratorPdf'
-import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { RefObject, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 dayjs.extend(utc)
-
 
 const generateDataChart = z.object({
   local: z
@@ -79,7 +79,12 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
     control,
     formState: { errors },
   } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
-  const { instrumentList, isLoading } = useInstrumentsStore();
+
+  const { data: instrumentList, isLoading } = useQuery({
+    queryKey: ['list-instruments-with-unions'],
+    queryFn: getInstrumentsWithUnions,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  })
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
@@ -102,9 +107,10 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
   const instrumendSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId) return
+    if (!instrumendSelectedId || !instrumentList) return
     const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
-    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+    console.log(instrument)
+    setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
   }, [instrumendSelectedId])
 
   useEffect(() => {
@@ -405,7 +411,7 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                     id="endDate"
                     type="datetime-local"
                     disabled={!instrumendSelectedId}
-                    min={String(initialDate)}
+                    min={String(minEndDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
