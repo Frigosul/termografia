@@ -1,15 +1,9 @@
-import { getInstruments } from '@/app/http/get-instruments'
-import { updateInstruments } from '@/app/http/update-instruments'
+import { deleteUnion } from '@/app/http/delete-union'
+import { getUnions } from '@/app/http/get-unions'
+import { updateUnions } from '@/app/http/update-unions'
 import { SkeletonTable } from '@/components/skeleton-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Table,
   TableBody,
@@ -20,43 +14,41 @@ import {
 } from '@/components/ui/table'
 import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
+import { useModalStore } from '@/stores/useModalStore'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { CircleCheck, CircleX, EllipsisVertical, Search } from 'lucide-react'
+import { CircleCheck, CircleX, Search, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { CreateUnionInstruments } from './create-union-instruments'
 
 interface RowData {
   id: string
-  idSitrad: number
   name: string
-  type: 'temp' | 'press'
-  maxValue: number
-  minValue: number
-  isActive: boolean,
-  displayOrder: number,
+  fisrtInstrument: string
+  secondInstrument: string
+  isActive: boolean
 }
 
+export function TableManagedUnions() {
 
-export function TableManagedEquipments() {
-  const { data: instruments, isLoading, isError } = useQuery<RowData[]>({
-    queryKey: ['list-instruments'],
-    queryFn: getInstruments,
-    staleTime: 1000 * 60 * 60, // 1 hour
+  const { data: unions, isError, isLoading, refetch } = useQuery<RowData[]>({
+    queryKey: ['list-unions'],
+    queryFn: getUnions,
+    staleTime: 1000 * 60, // 1 minute
   })
   const [data, setData] = useState<RowData[]>([])
   const [filteredData, setFilteredData] = useState<RowData[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const { openModal } = useModalStore()
+
 
   useEffect(() => {
-    if (instruments) {
-      setData(instruments);
-      setFilteredData(instruments);
+    if (unions) {
+      setData(unions);
+      setFilteredData(unions);
     }
-  }, [instruments]);
+  }, [unions]);
 
-
-  const [search, setSearch] = useState<string>('');
-
-  // DeBounce Function
   useDebounce(() => {
     setFilteredData(
       data.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
@@ -65,10 +57,10 @@ export function TableManagedEquipments() {
   );
 
 
-  const updatedInstrumentsMutation = useMutation({
-    mutationFn: updateInstruments,
+  const updatedUnionsMutation = useMutation({
+    mutationFn: updateUnions,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['list-instruments'] })
+      await queryClient.invalidateQueries({ queryKey: ['list-unions'] })
       toast.success('Dados atualizados com sucesso', {
         position: 'top-right',
         icon: <CircleCheck />,
@@ -82,6 +74,25 @@ export function TableManagedEquipments() {
       console.error(error)
     },
   })
+  const deleteUnionMutation = useMutation({
+    mutationFn: deleteUnion,
+    onSuccess: async () => {
+      await refetch();
+      await queryClient.invalidateQueries({ queryKey: ['list-unions'] })
+      toast.success('União deletada com sucesso', {
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+    },
+    onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente', {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+      console.error(error)
+    },
+  })
+
 
   const [editCell, setEditCell] = useState<{
     rowId: string | null;
@@ -102,7 +113,6 @@ export function TableManagedEquipments() {
     setEditCell({ rowId, field });
     setInputValue(currentValue.toString());
   }
-
 
   function handleSave(rowId: string, field: keyof RowData) {
     const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || '';
@@ -161,7 +171,7 @@ export function TableManagedEquipments() {
   }
 
   function getNextField(currentField: keyof RowData): keyof RowData | null {
-    const fields: (keyof RowData)[] = ['name', 'minValue', 'maxValue', 'displayOrder']
+    const fields: (keyof RowData)[] = ['name']
     const currentIndex = fields.indexOf(currentField)
     const nextIndex = currentIndex + 1
     return nextIndex < fields.length ? fields[nextIndex] : null
@@ -180,20 +190,19 @@ export function TableManagedEquipments() {
     const nextIndex = currentIndex + direction;
     return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
   }
-
-  if (isError) return <p>Erro encontrado, por favor tente novamente.</p>;
-  if (isLoading) return <SkeletonTable />;
+  if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
+  if (isLoading) return <SkeletonTable />
 
   return (
-    <div className="flex-grow flex flex-col max-h-[40vh] max-w-screen-2xl overflow-hidden">
+    <div className="flex-grow flex flex-col max-h-[50vh] max-w-screen-2xl overflow-hidden">
       <div className="flex w-full items-center gap-2 p-1 h-11 border rounded-t-md">
         <div className="flex border rounded-md">
           <Button
             variant="ghost"
             className='h-8 flex items-center justify-center text-sm'
-            disabled={updatedInstrumentsMutation.isPending}
-            onClick={() => updatedInstrumentsMutation.mutateAsync({
-              instruments: data
+            disabled={updatedUnionsMutation.isPending}
+            onClick={() => updatedUnionsMutation.mutateAsync({
+              unions: data
             })}
           >
             Salvar
@@ -201,7 +210,7 @@ export function TableManagedEquipments() {
           <Button
             variant="ghost"
             className='h-8 flex items-center justify-center text-sm'
-            disabled={updatedInstrumentsMutation.isPending}
+            disabled={updatedUnionsMutation.isPending}
           >
             Cancelar
           </Button>
@@ -216,30 +225,31 @@ export function TableManagedEquipments() {
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
-
+        <Button
+          variant="link"
+          onClick={() => openModal('create-union-instrument')}
+          className='text-sm text-primary ml-auto mr-4'>
+          Adicionar união
+        </Button>
+        <CreateUnionInstruments />
       </div>
 
       <Table className='border border-collapse'>
         <TableHeader className="bg-card sticky z-10 top-0 ">
           <TableRow>
-            <TableHead className="border text-card-foreground  min-w-60 w-96">
+            <TableHead className="border text-card-foreground  min-w-60 w-32">
               Nome
             </TableHead>
-            <TableHead className="border text-card-foreground text-center w-32">
-              Valor Mínimo
+            <TableHead className="border text-card-foreground text-center w-44">
+              Instrumento 01
             </TableHead>
-            <TableHead className="border text-card-foreground text-center w-32">
-              Valor Máximo
+            <TableHead className="border text-card-foreground text-center w-44">
+              Instrumento 02
             </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-40">
-              Order de exibição
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center w-36">
-              Tipo
-            </TableHead>
-            <TableHead className="border text-card-foreground text-center min-w-10">
+            <TableHead className="border text-card-foreground text-center w-10">
               Ativo
             </TableHead>
+            <TableHead className="border text-card-foreground text-center w-10" />
           </TableRow>
         </TableHeader>
         <TableBody className='overflow-y-auto'>
@@ -250,14 +260,14 @@ export function TableManagedEquipments() {
                 className={`odd:bg-white odd:dark:bg-slate-950 even:bg-slate-50 even:dark:bg-slate-900 ${!row.isActive && 'opacity-30'}`}
               >
                 <TableCell
-                  className="border  min-w-60 p-0 pl-2 h-2"
+                  className="border w-32 p-0 pl-2 h-2"
                   onDoubleClick={() =>
                     handleDoubleClick(row.id, 'name', row.name)
                   }
                 >
                   {editCell.rowId === row.id && editCell.field === 'name' ? (
                     <input
-                      className="bg-transparent w-full h-full   m-0"
+                      className="bg-transparent w-full h-full m-0"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'name')}
@@ -269,106 +279,16 @@ export function TableManagedEquipments() {
                   )}
                 </TableCell>
                 <TableCell
-                  className="border text-center w-32 p-0 h-4"
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'minValue', row.minValue)
-                  }
-                >
-                  {editCell.rowId === row.id && editCell.field === 'minValue' ? (
-                    <input
-                      className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      type='text'
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'minValue')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'minValue')}
-                      autoFocus
-                    />
-                  ) : (
-                    row.minValue
-                  )
-                  }
-                </TableCell>
-                <TableCell
-                  className="border text-center w-32 p-0 h-4"
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'maxValue', row.maxValue)
-                  }
-                >
-                  {editCell.rowId === row.id && editCell.field === 'maxValue' ? (
-                    <input
-                      className="bg-transparent w-full h-full  text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      type='text'
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'maxValue')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'maxValue')}
-                      autoFocus
-                    />
-                  ) : (
-                    row.maxValue
-                  )
-                  }
-                </TableCell>
+                  className="border text-center w-44 p-0 h-4"
 
-                <TableCell
-                  className="border text-center w-40 p-0 h-4"
-                  onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
-                  }
-                >
-                  {editCell.rowId === row.id && editCell.field === 'displayOrder' ? (
-                    <input
-                      className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      type="text"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'displayOrder')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'displayOrder')}
-                      autoFocus
-                    />
-                  ) : (
-                    row.displayOrder
-                  )}
+                >{row.fisrtInstrument}
                 </TableCell>
-                <TableCell className="text-center flex justify-between items-center px-4">
-                  {row.type}
-                  <Popover>
-                    <PopoverTrigger>
-                      <EllipsisVertical className="size-5" />
-                    </PopoverTrigger>
-                    <PopoverContent className="flex flex-col gap-4 w-40">
-                      <RadioGroup
-                        defaultValue={row.type}
-                        onValueChange={(value: "temp" | "press") => {
-                          setData((prevData) =>
-                            prevData.map((item) =>
-                              item.id === row.id ? { ...item, type: value } : item
-                            )
-                          );
-                        }}
-                      >
-                        <div className="flex items-center">
-                          <RadioGroupItem
-                            value="temp"
-                            id='temp'
-                          />
-                          <Label htmlFor='temp' className="text-sm ml-2 tracking-wider font-light">
-                            Temperatura
-                          </Label>
-                        </div>
-                        <div className="flex items-center">
-                          <RadioGroupItem
-                            value="press"
-                            id='press'
-                          />
-                          <Label htmlFor='press' className="text-sm ml-2 tracking-wider font-light">
-                            Pressão
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </PopoverContent>
-                  </Popover>
+                <TableCell
+                  className="border text-center w-44 p-0 h-4"
+
+                >
+                  {row.secondInstrument}
+
                 </TableCell>
                 <TableCell className="border text-center w-10">
                   <Checkbox
@@ -383,6 +303,17 @@ export function TableManagedEquipments() {
                     }
                     }
                   />
+                </TableCell>
+                <TableCell className="border text-center w-10 p-0 m-0">
+                  <Button
+                    variant="ghost"
+                    className='group'
+                    onClick={async () => {
+                      await deleteUnionMutation.mutateAsync({ unionId: row.id })
+                    }}
+                  >
+                    <Trash2 className='size-5 group-hover:text-red-600 transition-colors' />
+                  </Button>
                 </TableCell>
               </TableRow>
             )

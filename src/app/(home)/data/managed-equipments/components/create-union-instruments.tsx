@@ -59,7 +59,6 @@ export function CreateUnionInstruments() {
   const queryClient = useQueryClient()
   const { instrumentList, isLoading } = useInstrumentsStore();
 
-
   const {
     register,
     reset,
@@ -71,7 +70,7 @@ export function CreateUnionInstruments() {
   const createUnionInstrumentMutation = useMutation({
     mutationFn: createUnionInstrumentFn,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['list-users'] })
+      await queryClient.invalidateQueries({ queryKey: ['list-unions'] })
       toast.success('União cadastrada com sucesso', {
         position: 'top-right',
         icon: <CircleCheck />,
@@ -101,7 +100,7 @@ export function CreateUnionInstruments() {
       firstInstrument: data.firstInstrument,
       secondInstrument: data.secondInstrument,
     })
-    // reset()
+
   }
 
   return (
