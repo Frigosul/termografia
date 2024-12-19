@@ -69,10 +69,9 @@ export default function PageChart() {
                   variation={dataChart.variationTemp}
                   local={dataChart.name}
                   data={dataChart?.chartPressure!}
-
                 />
               )}
-              <Table data={dataChart.tableTemperatureRange!} />
+              <Table data={dataChart.tableTemperatureRange!} pressure={dataChart.tablePressureRange!} />
             </>
 
             <div className="flex gap-2 h-32 mt-4">

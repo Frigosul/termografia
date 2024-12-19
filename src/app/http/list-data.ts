@@ -25,6 +25,11 @@ type PressureData = {
   time: string
   value: number
 }
+type PressureDataTable = {
+  id: string
+  time: string
+  pressure: number
+}
 export type ListDataResponse = {
   id: string
   name: string
@@ -38,6 +43,7 @@ export type ListDataResponse = {
   variationTemp?: number
   chartTemperature: TemperatureData[]
   tableTemperatureRange?: TemperatureData[]
+  tablePressureRange?: PressureDataTable[]
   chartPressure?: PressureData[]
   error?: string
   description?: string

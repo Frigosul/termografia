@@ -216,11 +216,18 @@ export async function POST(req: NextRequest) {
 
     if (tableVariation) {
       const tableTemperatureRange = filterByInterval({ data: temp, intervalMinutes: tableVariation, key: "temperature" });
+      const tablePressureRange = filterByInterval({ data: press, intervalMinutes: tableVariation, key: "pressure" });
       response.tableTemperatureRange = tableTemperatureRange.map(temp => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),
         value: temp.temperature.editValue,
+
       }));
+      response.tablePressureRange = tablePressureRange.map(press => ({
+        id: press.pressure.id,
+        time: press.pressure.createdAt.toISOString(),
+        pressure: press.pressure.editValue,
+      }))
     }
 
 
