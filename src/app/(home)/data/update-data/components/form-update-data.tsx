@@ -1,4 +1,5 @@
 'use client'
+import { getInstruments } from '@/app/http/get-instruments'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,8 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { useEffect, useState } from 'react'
@@ -52,7 +53,11 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
   } = useForm<UpdatedDataChart>({
     resolver: zodResolver(updatedDataChart),
   })
-  const { instrumentList, isLoading } = useInstrumentsStore();
+  const { data: instrumentList, isLoading } = useQuery({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  })
 
   function handleUpdatedDataChart(data: UpdatedDataChart) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
@@ -69,9 +74,9 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
   const instrumendSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId) return
+    if (!instrumendSelectedId || !instrumentList) return
     const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
-    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+    setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
   }, [instrumendSelectedId])
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 'use client'
 import { GenerateDataRequest, GenerateDataResponse } from '@/app/http/generate-data'
+import { getInstruments } from '@/app/http/get-instruments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,9 +17,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { generateDataMode } from '@/types/generate-data-mode'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { useSession } from 'next-auth/react'
@@ -51,7 +52,12 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   const [minDefrostDate, setMinDefrostDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
 
-  const { instrumentList, isLoading } = useInstrumentsStore();
+  const { data: instrumentList, isLoading } = useQuery({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  })
+
 
   const {
     register,
@@ -82,9 +88,9 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   const instrumendSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId) return
+    if (!instrumendSelectedId || !instrumentList) return
     const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
-    setInitialDate(dayjs(instrument?.instrumentCreatedAt).format('YYYY-MM-DDTHH:mm'))
+    setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
   }, [instrumendSelectedId])
 
   useEffect(() => {
