@@ -16,14 +16,14 @@ type TemperatureData = {
   updatedUserAt: string | null
   updatedAt: string
   time: string
-  temperature: number
+  value: number
 }
 type PressureData = {
   id: string
   updatedUserAt: string | null
   updatedAt: string
   time: string
-  pressure: number
+  value: number
 }
 export type ListDataResponse = {
   id: string
@@ -40,6 +40,7 @@ export type ListDataResponse = {
   tableTemperatureRange?: TemperatureData[]
   chartPressure?: PressureData[]
   error?: string
+  description?: string
 }
 
 export async function listData({

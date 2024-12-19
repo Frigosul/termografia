@@ -78,7 +78,9 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
     setValue,
     control,
     formState: { errors },
-  } = useForm<GenerateDataChart>({ resolver: zodResolver(generateDataChart) })
+  } = useForm<GenerateDataChart>({
+    resolver: zodResolver(generateDataChart)
+  })
 
   const { data: instrumentList, isLoading } = useQuery({
     queryKey: ['list-instruments-with-unions'],
@@ -109,7 +111,6 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
   useEffect(() => {
     if (!instrumendSelectedId || !instrumentList) return
     const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
-    console.log(instrument)
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
   }, [instrumendSelectedId])
 

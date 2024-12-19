@@ -6,7 +6,7 @@ interface TableProps {
   maxValue?: number
   data: {
     time: string
-    temperature: number
+    value: number
   }[]
 }
 
@@ -16,9 +16,9 @@ export function Table({ minValue, maxValue, data }: TableProps) {
       (acc, current) => {
         return {
           minValue:
-            current.temperature < acc.minValue ? current.temperature - 1 : acc.minValue,
+            current.value < acc.minValue ? current.value - 1 : acc.minValue,
           maxValue:
-            current.temperature > acc.maxValue ? current.temperature + 1 : acc.maxValue,
+            current.value > acc.maxValue ? current.value + 1 : acc.maxValue,
         }
       },
       { minValue: Infinity, maxValue: -Infinity },
@@ -46,7 +46,7 @@ export function Table({ minValue, maxValue, data }: TableProps) {
                   {formattedTime(item.time)}
                 </span>
                 <span className="text-xs tracking-wide dark:font-light ">
-                  {item.temperature}
+                  {item.value}
                 </span>
               </div>
             </Fragment>

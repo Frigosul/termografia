@@ -200,14 +200,14 @@ export async function POST(req: NextRequest) {
       chartTemperature: chartTemperature.map(temp => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),
-        temperature: temp.temperature.editValue,
+        value: temp.temperature.editValue,
         updatedUserAt: temp.temperature.userUpdatedAt,
         updatedAt: temp.temperature.updatedAt,
       })),
       chartPressure: chartPressure.map(press => ({
         id: press.pressure.id,
         time: press.pressure.createdAt.toISOString(),
-        pressure: press.pressure.editValue,
+        value: press.pressure.editValue,
         updatedUserAt: press.pressure.userUpdatedAt,
         updatedAt: press.pressure.updatedAt,
       }))
@@ -219,7 +219,7 @@ export async function POST(req: NextRequest) {
       response.tableTemperatureRange = tableTemperatureRange.map(temp => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),
-        temperature: temp.temperature.editValue,
+        value: temp.temperature.editValue,
       }));
     }
 
@@ -305,14 +305,14 @@ export async function POST(req: NextRequest) {
     chartTemperature: chartTemperature.map(temp => ({
       id: temp.temperature.id,
       time: temp.temperature.createdAt.toISOString(),
-      temperature: temp.temperature.editValue,
+      value: temp.temperature.editValue,
       updatedUserAt: temp.temperature.userUpdatedAt,
       updatedAt: temp.temperature.updatedAt,
     })),
     chartPressure: chartPressure.map(press => ({
       id: press.pressure.id,
       time: press.pressure.createdAt.toISOString(),
-      pressure: press.pressure.editValue,
+      value: press.pressure.editValue,
       updatedUserAt: press.pressure.userUpdatedAt,
       updatedAt: press.pressure.updatedAt,
     }))
@@ -324,7 +324,7 @@ export async function POST(req: NextRequest) {
     response.tableTemperatureRange = tableTemperatureRange.map(temp => ({
       id: temp.temperature.id,
       time: temp.temperature.createdAt.toISOString(),
-      temperature: temp.temperature.editValue,
+      value: temp.temperature.editValue,
     }));
   }
 

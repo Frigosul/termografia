@@ -39,20 +39,19 @@ const chartConfig = {
 
 interface ChartProps {
   local: string
-  chartType: 'temp' | 'press'
   dateClose: string
   dateOpen: string
   limit?: number
   detour?: number
-  variationTemp?: number
+  variation?: number
   minValue?: number
   maxValue?: number
   data: {
     time: string
-    temperature: number
+    value: number
   }[]
 }
-export function Chart({
+export function ChartTemperature({
   data,
   dateClose,
   dateOpen,
@@ -60,23 +59,28 @@ export function Chart({
   minValue,
   detour,
   limit,
-  variationTemp,
+  variation,
   maxValue,
 }: ChartProps) {
   if (!minValue || !maxValue) {
-    const minAndMaxValue = data.reduce(
-      (acc, current) => {
-        return {
-          minValue:
-            current.temperature < acc.minValue ? current.temperature - 1 : acc.minValue,
-          maxValue:
-            current.temperature > acc.maxValue ? current.temperature + 1 : acc.maxValue,
-        }
-      },
-      { minValue: Infinity, maxValue: -Infinity },
-    )
-    minValue = Number(minAndMaxValue.minValue.toFixed(2))
-    maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
+    if (data.length > 0) {
+      const minAndMaxValue = data.reduce(
+        (acc, current) => {
+          return {
+            minValue:
+              current.value < acc.minValue ? current.value - 1 : acc.minValue,
+            maxValue:
+              current.value > acc.maxValue ? current.value + 1 : acc.maxValue,
+          };
+        },
+        { minValue: Infinity, maxValue: -Infinity }
+      );
+      minValue = Number(minAndMaxValue.minValue.toFixed(2));
+      maxValue = Number(minAndMaxValue.maxValue.toFixed(2));
+    } else {
+      minValue = 0;
+      maxValue = 1;
+    }
   }
 
   const interval = Number(
@@ -85,10 +89,9 @@ export function Chart({
 
 
   const formattedData = data.map((item) => {
-
     return {
       time: formattedTime(item.time),
-      temp: item.temperature,
+      value: item.value,
     }
   })
 
@@ -135,9 +138,9 @@ export function Chart({
             <span>{formattedDateOpen}</span>
           </div>
         </div>
-        <ChartContainer config={chartConfig} className="min-h-[14.5rem]">
+        <ChartContainer config={chartConfig} className="h-[54.5rem] w-full">
           <LineChart
-            width={500}
+
             data={formattedData}
             margin={{
               top: 5,
@@ -186,7 +189,7 @@ export function Chart({
               ticks={Array.from({ length: interval }).map(
                 (_, i) => minValue + i,
               )}
-              interval={variationTemp ? variationTemp - 1 : 0}
+              interval={variation ? variation - 1 : 0}
               stroke="hsl(var(--card-foreground))"
             />
             {limit && <ReferenceLine y={limit} label="Max." stroke="red" />}
@@ -194,7 +197,7 @@ export function Chart({
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line
               type="monotone"
-              dataKey="temp"
+              dataKey="value"
               strokeWidth={2}
               stroke="var(--color-desktop)"
               fill="var(--color-desktop)"
