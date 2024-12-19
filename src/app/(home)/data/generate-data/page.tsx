@@ -10,6 +10,7 @@ import { FormGenerateData } from './components/form-generate-data'
 
 export default function PageManagedData() {
   const [dataValue, setDataValue] = useState<GenerateDataResponse>()
+
   const generateDataMutation = useMutation({
     mutationKey: ['generate-data'],
     mutationFn: generateData,
@@ -18,6 +19,7 @@ export default function PageManagedData() {
         position: 'top-right',
         icon: <CircleCheck />,
       })
+
       setDataValue(data)
     },
     onError: (error) => {
@@ -28,7 +30,6 @@ export default function PageManagedData() {
       })
     },
   })
-
   return (
     <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
       <div className="w-full max-w-screen-2xl">
@@ -40,7 +41,7 @@ export default function PageManagedData() {
       <div className="w-full my-2 max-w-screen-2xl">
         {generateDataMutation.isPending ? <SkeletonTable />
           : dataValue?.data && (
-            <TableEditValues data={dataValue?.data} />
+            <TableEditValues data={dataValue?.data} instrumentType={dataValue.instrumentType} />
           )
         }
       </div>

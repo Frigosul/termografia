@@ -1,21 +1,21 @@
 
 type DataRequest = {
-  temperatures: {
+  dataValue: {
     id: string
-    temperature: number
+    value: number
     updatedAt: string
     updatedUserAt: string | null
 
   }[]
 }
 
-export async function updateData({ temperatures }: DataRequest) {
+export async function updateData({ dataValue }: DataRequest) {
   const response = await fetch(`/api/instruments/update-data`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ temperatures }),
+    body: JSON.stringify({ dataValue }),
   })
   if (!response.ok) {
     const error = await response.json()

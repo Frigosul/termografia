@@ -18,8 +18,9 @@ export interface GenerateDataResponse {
     updatedUserAt: string | null
     updatedAt: string
     time: string
-    temperature: number
+    value: number
   }[]
+  instrumentType: string
   error?: string
 }
 

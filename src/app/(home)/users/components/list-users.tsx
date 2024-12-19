@@ -2,11 +2,6 @@
 import { getUsers } from '@/app/http/get-users'
 import { Button } from '@/components/ui/button'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
   Table,
   TableBody,
   TableCell,
@@ -15,9 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useModalStore } from '@/stores/useModalStore'
-import { userRoles } from '@/utils/user-roles'
+import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
-import { EllipsisVertical, NotebookPen, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { DeleteUser } from './delete-user'
 import { SkeletonTable } from './skeleton-table'
 import { UpdateUser } from './update-user'
@@ -41,11 +36,12 @@ export function ListUsers() {
           <TableHead className="border ">Nome</TableHead>
           <TableHead className="border">E-mail</TableHead>
           <TableHead className="border">Tipo de Usuário</TableHead>
-          <TableHead className="border">Ações</TableHead>
+          <TableHead className="border-t" />
+          <TableHead className='border-t border-r' />
         </TableRow>
       </TableHeader>
       <TableBody className='overflow-y-auto'>
-        {isLoading ? <SkeletonTable /> : error ? <h2>Erro encontrado, tente novamente.</h2> : users?.map((user) => {
+        {isLoading ? <SkeletonTable /> : error ? <p>Erro encontrado, tente novamente.</p> : users?.map((user) => {
           return (
             <TableRow
               key={user.id}
@@ -60,32 +56,26 @@ export function ListUsers() {
               <TableCell className="border min-w-40">
                 {userRoles[user.userRole] || user.userRole}
               </TableCell>
-              <TableCell className="text-center w-4 border">
-                <Popover>
-                  <PopoverTrigger className="h-4">
-                    <EllipsisVertical size={18} />
-                  </PopoverTrigger>
-                  <PopoverContent className="space-y-2 w-30 mr-9">
-                    <Button
-                      variant="ghost"
-                      className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
-                      onClick={() => openModal('update-modal', { id: user.id, email: user.email, name: user.name, password: '', role: user.userRole })}
-                    >
-                      <NotebookPen size={19} />
-                      Editar
-                    </Button>
-                    <UpdateUser />
-                    <Button
-                      variant="ghost"
-                      className="flex gap-2 p-0 h-6 text-base text-muted-foreground font-normal items-center justify-center hover:bg-transparent hover:text-foreground"
-                      onClick={() => openModal('delete-modal', { id: user.id })}
-                    >
-                      <Trash2 size={20} />
-                      Excluir
-                    </Button>
-                    <DeleteUser userId={user.id} />
-                  </PopoverContent>
-                </Popover>
+              <TableCell className="text-center border p-0 w-16">
+                <Button
+                  variant="ghost"
+                  className='p-0 m-0'
+                  onClick={() => openModal('update-modal', { id: String(user.id), email: String(user.email), name: String(user.name), password: user.password, role: user.userRole as UserRolesType })}
+                >
+                  <Pencil className='size-4' />
+                </Button>
+                <UpdateUser />
+              </TableCell>
+              <TableCell className="text-center  border px-2 py-0 w-16">
+                <Button
+                  variant="ghost"
+                  className='p-0 m-0'
+                  onClick={() => openModal('delete-modal', { id: user.id })}
+                >
+                  <Trash2 className='size-4' />
+
+                </Button>
+                <DeleteUser userId={user.id} />
               </TableCell>
             </TableRow>
           )

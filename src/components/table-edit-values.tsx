@@ -33,13 +33,15 @@ dayjs.extend(customParseFormat)
 interface TableRow {
   id: string;
   time: string;
-  temperature: number;
+  value: number;
   updatedUserAt: string | null;
   updatedAt: string;
 }
 
 interface TableProps {
   data: TableRow[];
+  instrumentType?: string
+
 }
 
 const searchDataSchema = z.object({
@@ -51,7 +53,7 @@ type SearchData = z.infer<typeof searchDataSchema>
 
 const ITEMS_PER_PAGE = 50
 
-export function TableEditValues({ data }: TableProps) {
+export function TableEditValues({ data, instrumentType }: TableProps) {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [editData, setEditData] = useState<TableProps>({ data });
@@ -74,10 +76,10 @@ export function TableEditValues({ data }: TableProps) {
   function handleSearchData(searchData: SearchData) {
     const { search, searchParams } = searchData
     const searchDate = dayjs(search, "DD/MM/YYYY - HH:mm", true)
-    const searchTemp = parseFloat(search)
+    const searchValue = parseFloat(search)
     const filtered = editData.data.filter((row) => {
       const rowDate = dayjs(row.time)
-      const temperatureValue = row.temperature
+      const rowValue = row.value
 
       if (searchDate.isValid()) {
         switch (searchParams) {
@@ -91,14 +93,14 @@ export function TableEditValues({ data }: TableProps) {
             return true
         }
 
-      } else if (!isNaN(searchTemp)) {
+      } else if (!isNaN(searchValue)) {
         switch (searchParams) {
           case 'equal':
-            return temperatureValue === searchTemp
+            return rowValue === searchValue
           case 'lessOrEqual':
-            return temperatureValue <= searchTemp
+            return rowValue <= searchValue
           case 'greaterOrEqual':
-            return temperatureValue >= searchTemp
+            return rowValue >= searchValue
           default:
             return true
         }
@@ -109,8 +111,6 @@ export function TableEditValues({ data }: TableProps) {
     setFilteredData(filtered)
     setCurrentPage(1)
   }
-
-
 
   const updatedDataMutation = useMutation({
     mutationFn: updateData,
@@ -173,7 +173,7 @@ export function TableEditValues({ data }: TableProps) {
             if (item.id === rowId) {
               return {
                 ...item,
-                [field]: field === 'temperature' ? Number(inputValue) : inputValue,
+                [field]: field === 'value' ? Number(inputValue) : inputValue,
                 updatedUserAt: String(session?.user?.name),
                 updatedAt: dayjs().format('YYYY-MM-DDTHH:mm')
               }
@@ -224,7 +224,7 @@ export function TableEditValues({ data }: TableProps) {
   }
 
   function getNextField(currentField: keyof TableRow): keyof TableRow | null {
-    const fields: (keyof TableRow)[] = ['time', 'temperature'];
+    const fields: (keyof TableRow)[] = ['time', 'value'];
     const currentIndex = fields.indexOf(currentField);
     const nextIndex = currentIndex + 1;
     return nextIndex < fields.length ? fields[nextIndex] : null;
@@ -258,7 +258,7 @@ export function TableEditValues({ data }: TableProps) {
             variant="ghost"
             className="h-8 flex items-center justify-center text-sm"
             disabled={updatedDataMutation.isPending}
-            onClick={() => updatedDataMutation.mutateAsync({ temperatures: editData.data })}>
+            onClick={() => updatedDataMutation.mutateAsync({ dataValue: editData.data })}>
             Salvar
           </Button>
           <Button variant="ghost" className="h-8 flex items-center justify-center text-sm">
@@ -306,11 +306,11 @@ export function TableEditValues({ data }: TableProps) {
       <Table className="border-collapse">
         <TableHeader className="bg-card  sticky z-10 top-0 border-b">
           <TableRow>
-            <TableHead className="border text-card-foreground w-64 text-center ">
+            <TableHead className="border text-card-foreground w-64 text-center">
               Data - Hora
             </TableHead>
-            <TableHead className="border text-card-foreground w-20 text-center ">
-              Temperatura
+            <TableHead className="border text-card-foreground w-20 text-center">
+              {instrumentType === 'press' ? 'Pressão' : 'Temperatura'}
             </TableHead>
             <TableHead className="border text-card-foreground ">
               Status de alteração
@@ -328,6 +328,7 @@ export function TableEditValues({ data }: TableProps) {
               handleDoubleClick={handleDoubleClick}
               handleSave={handleSave}
               handleKeyDown={handleKeyDown}
+              instrumentType={instrumentType}
             />
           )
           )}

@@ -9,6 +9,7 @@ export async function GET() {
       id: true,
       idSitrad: true,
       name: true,
+      createdAt: true,
       type: true,
       minValue: true,
       maxValue: true,
