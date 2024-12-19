@@ -62,7 +62,7 @@ export function SheetSidebar() {
             <DropdownMenuLabel className='text-center'>Minha conta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
-              openModal('update-modal', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
+              openModal('update-user', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
             }}>
               <UserPen size={18} />
               Alterar Perfil

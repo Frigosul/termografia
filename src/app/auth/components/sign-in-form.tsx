@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CircleX } from 'lucide-react'
 import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -58,7 +59,7 @@ export function SignInForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(handleSignIn)} className="w-[20rem] space-y-4">
+    <form onSubmit={handleSubmit(handleSignIn)} className="w-[20rem] flex flex-col space-y-3">
       <div className="space-y-2">
         <Label htmlFor="email">Seu e-mail</Label>
         <Input
@@ -88,9 +89,10 @@ export function SignInForm() {
         )}
       </div>
 
-      <Button className="w-full" disabled={isSubmitting} type="submit">
+      <Button disabled={isSubmitting} type="submit">
         Entrar
       </Button>
+      <Link href="/auth/forgot-password" className='text-sm text-primary text-center '>Esqueci minha senha</Link>
     </form>
   )
 }

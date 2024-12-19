@@ -20,8 +20,8 @@ interface DeleteUserProps {
   userId: string
 }
 
-export function DeleteUser({ userId }: DeleteUserProps) {
-  const { modals, closeModal } = useModalStore()
+export function DeleteUser() {
+  const { modals, closeModal, userData } = useModalStore()
   const queryClient = useQueryClient()
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
@@ -46,10 +46,12 @@ export function DeleteUser({ userId }: DeleteUserProps) {
     deleteUserMutation.mutateAsync({ userId: id })
   }
 
+
+  if (!userData) return <p>Erro encontrado</p>
   return (
     <Dialog
-      open={modals['delete-modal']}
-      onOpenChange={(open) => (open ? null : closeModal('delete-modal'))}
+      open={modals['delete-user']}
+      onOpenChange={() => closeModal('delete-user')}
     >
       <DialogContent className="w-11/12 rounded-md">
         <DialogHeader className="flex items-center justify-center pb-4 border-b">
@@ -63,7 +65,7 @@ export function DeleteUser({ userId }: DeleteUserProps) {
         </DialogHeader>
 
         <form
-          onSubmit={(event) => handleDeleteUser(event, userId)}
+          onSubmit={(event) => handleDeleteUser(event, userData?.id)}
           className="flex gap-5 mx-auto md:w-80 "
         >
           <DialogClose asChild>

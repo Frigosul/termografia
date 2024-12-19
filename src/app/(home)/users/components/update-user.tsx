@@ -39,15 +39,22 @@ const updateUserSchema = z
       .email({ message: 'Digite um e-mail válido.' })
       .toLowerCase(),
     confirm_email: z.string(),
-
+    password: z.string(),
+    confirm_password: z.string(),
     userRole: z.enum(
       Object.keys(userRoles) as [UserRolesType, ...UserRolesType[]],
       {
         message: `Nível de usuário inválido, Escolha entre ${Object.values(userRoles).join(', ')}`,
       },
     ),
-  })
-  .superRefine((value, ctx) => {
+  }).superRefine((value, ctx) => {
+    if (value.confirm_password !== value.password) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['confirm_password'],
+        message: 'As senhas não coincidem.',
+      })
+    }
     if (value.email !== value.confirm_email) {
       ctx.addIssue({
         code: 'custom',
@@ -96,7 +103,7 @@ export function UpdateUser() {
         position: 'top-right',
         icon: <CircleCheck />,
       })
-      closeModal('update-modal')
+      closeModal('update-user')
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente.', {
@@ -119,13 +126,12 @@ export function UpdateUser() {
 
   return (
     <Dialog
-      open={modals['update-modal']}
-      onOpenChange={() => closeModal('update-modal')}
+      open={modals['update-user']}
+      onOpenChange={() => closeModal('update-user')}
     >
       <DialogDescription className="sr-only">
         Modal de edição de usuário
       </DialogDescription>
-
       <DialogContent className="w-11/12 rounded-md md:max-w-3xl lg:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle className="text-sm lg:text-base text-left">
@@ -137,9 +143,9 @@ export function UpdateUser() {
           className="gap-2 grid grid-cols-form md:grid-cols-2 justify-center lg:justify-between gap-x-4"
         >
           <div className="space-y-2 ">
-            <Label htmlFor="name">Seu Nome</Label>
+            <Label htmlFor={`name-${userData?.id}`}>Seu Nome</Label>
             <Input
-              id="name"
+              id={`name-${userData?.id}`}
               type="text"
               placeholder="Digite seu nome..."
               {...register('name')}
@@ -151,17 +157,17 @@ export function UpdateUser() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="userRole">Tipo de Usuário</Label>
+            <Label htmlFor={`userRole-${userData?.id}`}>Tipo de Usuário</Label>
             <Controller
               name="userRole"
               control={control}
               defaultValue={userData?.role}
               render={({ field: { onChange, value, ref } }) => (
                 <Select onValueChange={onChange} value={value} name="userRole">
-                  <SelectTrigger ref={ref}>
+                  <SelectTrigger id={`userRole-${userData?.id}`} ref={ref}>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent id={`userRole-${userData?.id}`}>
                     {Object.entries(userRoles).map(([value, name]) => (
                       <SelectItem key={value} value={value}>
                         {name}
@@ -177,10 +183,45 @@ export function UpdateUser() {
               </p>
             )}
           </div>
-          <div className="space-y-2 ">
-            <Label htmlFor="email">Seu e-mail</Label>
+
+          <div className="space-y-2">
+            <Label htmlFor={`password-${userData?.id}`}>Sua senha</Label>
             <Input
-              id="email"
+              id={`password-${userData?.id}`}
+              type="password"
+              autoComplete="new-password"
+              placeholder="Digite sua senha..."
+              {...register('password')}
+            />
+            {errors.password?.message && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.password?.message}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`confirm_password-${userData?.id}`}>Confirme sua senha</Label>
+            <Input
+              id={`confirm_password-${userData?.id}`}
+              // type="password"
+              placeholder="Confirme sua senha..."
+              autoComplete="off"
+              {...register('confirm_password')}
+            />
+            {errors.confirm_password?.message && (
+              <p className="text-red-500 text-sm font-light">
+                {errors.confirm_password?.message}
+              </p>
+            )}
+          </div>
+
+
+
+
+          <div className="space-y-2 ">
+            <Label htmlFor={`email-${userData?.id}`}>Seu e-mail</Label>
+            <Input
+              id={`email-${userData?.id}`}
               type="email"
               placeholder="Digite seu e-mail..."
               {...register('email')}
@@ -192,9 +233,9 @@ export function UpdateUser() {
             )}
           </div>
           <div className="space-y-2 ">
-            <Label htmlFor="confirm_email">Confirme seu e-mail</Label>
+            <Label htmlFor={`confirm_email-${userData?.id}`}>Confirme seu e-mail</Label>
             <Input
-              id="confirm_email"
+              id={`confirm_email-${userData?.id}`}
               type="email"
               placeholder="Confirme seu e-mail..."
               autoComplete="off"
@@ -212,7 +253,7 @@ export function UpdateUser() {
               variant="outline"
               className="flex-1"
               onClick={() => {
-                closeModal('update-modal')
+                closeModal('update-user')
                 reset()
               }}
               type="button"

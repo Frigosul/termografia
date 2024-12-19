@@ -13,9 +13,7 @@ import { useModalStore } from '@/stores/useModalStore'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
-import { DeleteUser } from './delete-user'
 import { SkeletonTable } from './skeleton-table'
-import { UpdateUser } from './update-user'
 
 export function ListUsers() {
   const { openModal } = useModalStore()
@@ -60,22 +58,23 @@ export function ListUsers() {
                 <Button
                   variant="ghost"
                   className='p-0 m-0'
-                  onClick={() => openModal('update-modal', { id: String(user.id), email: String(user.email), name: String(user.name), password: user.password, role: user.userRole as UserRolesType })}
+                  onClick={() => openModal('update-user', { id: String(user.id), email: String(user.email), name: String(user.name), password: user.password, role: user.userRole as UserRolesType })}
                 >
                   <Pencil className='size-4' />
                 </Button>
-                <UpdateUser />
               </TableCell>
               <TableCell className="text-center  border px-2 py-0 w-16">
                 <Button
                   variant="ghost"
                   className='p-0 m-0'
-                  onClick={() => openModal('delete-modal', { id: user.id })}
+                  onClick={() => {
+                    openModal('delete-user', { id: String(user.id) })
+                  }}
                 >
                   <Trash2 className='size-4' />
 
                 </Button>
-                <DeleteUser userId={user.id} />
+
               </TableCell>
             </TableRow>
           )

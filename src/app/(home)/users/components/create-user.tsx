@@ -75,7 +75,6 @@ type SignUpForm = z.infer<typeof signUpForm>
 export function CreateUser() {
   const { modals, closeModal, toggleModal } = useModalStore()
   const queryClient = useQueryClient()
-
   const createUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: async () => {
