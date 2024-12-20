@@ -31,6 +31,7 @@ export function DeleteUser() {
         position: 'top-right',
         icon: <CircleCheck />,
       })
+      closeModal('delete-user')
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente.', {

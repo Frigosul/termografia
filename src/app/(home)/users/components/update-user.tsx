@@ -115,12 +115,22 @@ export function UpdateUser() {
   })
 
   function handleUpdateUser(data: UpdateUserForm) {
-    updateUserMutation.mutateAsync({
-      userId: String(userData?.id),
-      email: data.email,
-      name: data.name,
-      userRole: data.userRole,
-    })
+    if (data.confirm_password.length > 1) {
+      updateUserMutation.mutateAsync({
+        userId: String(userData?.id),
+        email: data.email,
+        name: data.name,
+        userRole: data.userRole,
+        password: data.confirm_password
+      })
+    } else {
+      updateUserMutation.mutateAsync({
+        userId: String(userData?.id),
+        email: data.email,
+        name: data.name,
+        userRole: data.userRole,
+      })
+    }
     reset()
   }
 
@@ -203,7 +213,7 @@ export function UpdateUser() {
             <Label htmlFor={`confirm_password-${userData?.id}`}>Confirme sua senha</Label>
             <Input
               id={`confirm_password-${userData?.id}`}
-              // type="password"
+              type="password"
               placeholder="Confirme sua senha..."
               autoComplete="off"
               {...register('confirm_password')}
@@ -214,9 +224,6 @@ export function UpdateUser() {
               </p>
             )}
           </div>
-
-
-
 
           <div className="space-y-2 ">
             <Label htmlFor={`email-${userData?.id}`}>Seu e-mail</Label>
