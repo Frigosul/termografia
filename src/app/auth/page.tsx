@@ -1,4 +1,4 @@
-import logo from '@/assets/frigosul.png'
+import logo from '@/assets/sulterm.svg'
 
 import Image from 'next/image'
 import { SignInForm } from './components/sign-in-form'
@@ -11,12 +11,10 @@ export default function SignIn() {
           <Image
             src={logo}
             className="w-60 lg:w-72"
-            alt="Logo frigosul"
+            alt="Logo sulTerm"
             priority
           />
-          <h1 className="text-center text-xl lg:text-3xl font-semibold tracking-tight">
-            Termografia
-          </h1>
+          <span className='text-sm text-center'>Gerenciamento de termografia</span>
         </div>
       </div>
       <div className="flex flex-col justify-center items-center w-full h-full mb-20 lg:mb-0">

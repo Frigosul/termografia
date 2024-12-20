@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CircleX } from 'lucide-react'
 import { signIn } from 'next-auth/react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -89,10 +88,10 @@ export function SignInForm() {
         )}
       </div>
 
-      <Button disabled={isSubmitting} type="submit">
+      <Button className='mt-2' disabled={isSubmitting} type="submit">
         Entrar
       </Button>
-      <Link href="/auth/forgot-password" className='text-sm text-primary text-center '>Esqueci minha senha</Link>
+      {/* <Link href="/auth/forgot-password" className='text-sm text-primary text-center '>Esqueci minha senha</Link> */}
     </form>
   )
 }
