@@ -71,22 +71,21 @@ export function ChartTemperature({
               current.value < acc.minValue ? current.value - 1 : acc.minValue,
             maxValue:
               current.value > acc.maxValue ? current.value + 1 : acc.maxValue,
-          };
+          }
         },
-        { minValue: Infinity, maxValue: -Infinity }
-      );
-      minValue = Number(minAndMaxValue.minValue.toFixed(2));
-      maxValue = Number(minAndMaxValue.maxValue.toFixed(2));
+        { minValue: Infinity, maxValue: -Infinity },
+      )
+      minValue = Number(minAndMaxValue.minValue.toFixed(2))
+      maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
     } else {
-      minValue = 0;
-      maxValue = 1;
+      minValue = 0
+      maxValue = 1
     }
   }
 
   const interval = Number(
     (Math.abs(Number(maxValue) - Number(minValue)) + 1).toFixed(0),
   )
-
 
   const formattedData = data.map((item) => {
     return {
@@ -95,7 +94,7 @@ export function ChartTemperature({
     }
   })
 
-  const formattedDateClose = dayjs(dateClose).format("DD/MM/YYYY - HH:mm")
+  const formattedDateClose = dayjs(dateClose).format('DD/MM/YYYY - HH:mm')
   const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
@@ -138,7 +137,10 @@ export function ChartTemperature({
             <span>{formattedDateOpen}</span>
           </div>
         </div>
-        <ChartContainer config={chartConfig} className="h-[54.5rem] print:h-full w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[54.5rem] print:h-full w-full"
+        >
           <LineChart
             data={formattedData}
             margin={{

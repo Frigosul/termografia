@@ -1,4 +1,3 @@
-
 type DataRequest = {
   dataValue: {
     id: string
@@ -20,7 +19,7 @@ export async function updateData({ dataValue }: DataRequest) {
     const error = await response.json()
     return Promise.reject({
       status: response.status,
-      message: error.message || "Error api",
+      message: error.message || 'Error api',
     })
   }
   const data = await response.json()

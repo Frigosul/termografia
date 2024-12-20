@@ -34,10 +34,14 @@ export async function updatePasswordUser({
 
   if (!response.ok) {
     const error = await response.json()
-    return Promise.reject({
-      status: response.status,
-      message: error.error || "Error api",
-    })
+    return Promise.reject(
+      new Error(
+        JSON.stringify({
+          status: response.status,
+          message: error.error || 'Error api',
+        }),
+      ),
+    )
   }
   const data = await response.json()
   return data

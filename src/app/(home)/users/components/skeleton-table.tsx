@@ -1,9 +1,7 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { TableCell, TableRow } from "@/components/ui/table";
-
+import { Skeleton } from '@/components/ui/skeleton'
+import { TableCell, TableRow } from '@/components/ui/table'
 
 export function SkeletonTable() {
-
   return Array.from({ length: 3 }).map((_, index) => (
     <TableRow key={index}>
       <TableCell className="border min-w-52 w-96">
@@ -23,5 +21,4 @@ export function SkeletonTable() {
       </TableCell>
     </TableRow>
   ))
-
 }

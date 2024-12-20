@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
           name,
           email,
           userRole,
-          password: hashedPassword
+          password: hashedPassword,
         },
       })
 
@@ -44,7 +44,6 @@ export async function PUT(req: NextRequest) {
 
       return NextResponse.json({ updateUser }, { status: 201 })
     }
-
   } catch (error) {
     return NextResponse.json(
       { error: 'Error updating user', details: error },

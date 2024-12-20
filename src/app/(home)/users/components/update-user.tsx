@@ -47,7 +47,8 @@ const updateUserSchema = z
         message: `Nível de usuário inválido, Escolha entre ${Object.values(userRoles).join(', ')}`,
       },
     ),
-  }).superRefine((value, ctx) => {
+  })
+  .superRefine((value, ctx) => {
     if (value.confirm_password !== value.password) {
       ctx.addIssue({
         code: 'custom',
@@ -90,9 +91,9 @@ export function UpdateUser() {
         email: userData.email,
         confirm_email: userData.email,
         userRole: userData.role,
-      });
+      })
     }
-  }, [userData, reset]);
+  }, [userData, reset])
 
   const queryClient = useQueryClient()
   const updateUserMutation = useMutation({
@@ -121,7 +122,7 @@ export function UpdateUser() {
         email: data.email,
         name: data.name,
         userRole: data.userRole,
-        password: data.confirm_password
+        password: data.confirm_password,
       })
     } else {
       updateUserMutation.mutateAsync({
@@ -210,7 +211,9 @@ export function UpdateUser() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor={`confirm_password-${userData?.id}`}>Confirme sua senha</Label>
+            <Label htmlFor={`confirm_password-${userData?.id}`}>
+              Confirme sua senha
+            </Label>
             <Input
               id={`confirm_password-${userData?.id}`}
               type="password"
@@ -240,7 +243,9 @@ export function UpdateUser() {
             )}
           </div>
           <div className="space-y-2 ">
-            <Label htmlFor={`confirm_email-${userData?.id}`}>Confirme seu e-mail</Label>
+            <Label htmlFor={`confirm_email-${userData?.id}`}>
+              Confirme seu e-mail
+            </Label>
             <Input
               id={`confirm_email-${userData?.id}`}
               type="email"

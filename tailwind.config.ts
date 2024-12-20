@@ -13,7 +13,6 @@ const config = {
       },
     },
     extend: {
-
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -51,7 +50,7 @@ const config = {
       },
       screens: {
         '3xl': '1500px',
-        'print': { 'raw': 'print' }
+        print: { raw: 'print' },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -77,7 +76,7 @@ const config = {
       },
       gridTemplateColumns: {
         form: 'repeat(auto-fit, minmax(150px, 470px))',
-        home: 'repeat(auto-fit, minmax(180px, 200px))'
+        home: 'repeat(auto-fit, minmax(180px, 200px))',
       },
     },
   },

@@ -87,7 +87,7 @@ export function CreateUser() {
     },
     onError: (error) => {
       if (error.message === 'User already exists') {
-        toast.error("Usuário já existe, por favor tente novamente.", {
+        toast.error('Usuário já existe, por favor tente novamente.', {
           position: 'top-right',
           icon: <CircleX />,
         })
@@ -99,7 +99,6 @@ export function CreateUser() {
         })
         console.error(error)
       }
-
     },
   })
 
@@ -122,7 +121,10 @@ export function CreateUser() {
   }
 
   return (
-    <Dialog open={modals['create-user']} onOpenChange={() => toggleModal('create-user')}>
+    <Dialog
+      open={modals['create-user']}
+      onOpenChange={() => toggleModal('create-user')}
+    >
       <DialogDescription className="sr-only">
         Criação de usuários.
       </DialogDescription>

@@ -7,7 +7,9 @@ export async function DELETE(req: NextRequest) {
   const unionId = String(req.nextUrl.searchParams.get('unionId')!)
 
   try {
-    const existingUnion = await prisma.unionInstruments.findUnique({ where: { id: unionId } })
+    const existingUnion = await prisma.unionInstruments.findUnique({
+      where: { id: unionId },
+    })
     if (!existingUnion) {
       return NextResponse.json({ message: 'Union not exist' }, { status: 404 })
     }

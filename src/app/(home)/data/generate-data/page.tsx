@@ -36,14 +36,22 @@ export default function PageManagedData() {
         <h2 className="font-normal tracking-tight text-foreground mb-2 text-sm md:text-base">
           Gerar dados
         </h2>
-        <FormGenerateData isPending={generateDataMutation.isPending} mutate={generateDataMutation.mutateAsync} />
+        <FormGenerateData
+          isPending={generateDataMutation.isPending}
+          mutate={generateDataMutation.mutateAsync}
+        />
       </div>
       <div className="w-full my-2 max-w-screen-2xl">
-        {generateDataMutation.isPending ? <SkeletonTable />
-          : dataValue?.data && (
-            <TableEditValues data={dataValue?.data} instrumentType={dataValue.instrumentType} />
+        {generateDataMutation.isPending ? (
+          <SkeletonTable />
+        ) : (
+          dataValue?.data && (
+            <TableEditValues
+              data={dataValue?.data}
+              instrumentType={dataValue.instrumentType}
+            />
           )
-        }
+        )}
       </div>
     </main>
   )

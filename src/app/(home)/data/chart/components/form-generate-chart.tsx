@@ -20,7 +20,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import utc from "dayjs/plugin/utc"
+import utc from 'dayjs/plugin/utc'
 import { RefObject, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useReactToPrint } from 'react-to-print'
@@ -28,13 +28,12 @@ import { z } from 'zod'
 dayjs.extend(utc)
 
 const generateDataChart = z.object({
-  local: z
-    .string({ message: 'Selecione o local desejado.' }),
-  graphVariation: z
-    .string({ message: 'Defina a variação desejada no gráfico.' }),
+  local: z.string({ message: 'Selecione o local desejado.' }),
+  graphVariation: z.string({
+    message: 'Defina a variação desejada no gráfico.',
+  }),
 
-  tableVariation: z
-    .string({ message: 'Defina a variação desejada na tabela' }),
+  tableVariation: z.string({ message: 'Defina a variação desejada na tabela' }),
 
   limit: z
     .union([z.number({ message: 'Defina um limite.' }), z.nan()])
@@ -66,11 +65,15 @@ interface FormGenerateChartProps {
   mutate: (data: ListDataRequest) => Promise<ListDataResponse>
 }
 
-export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateChartProps) {
+export function FormGenerateChart({
+  divRef,
+  mutate,
+  isPending,
+}: FormGenerateChartProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
   // const { generatePDF } = useGeneratePDF()
-  const reactToPrintFn = useReactToPrint({ contentRef: divRef });
+  const reactToPrintFn = useReactToPrint({ contentRef: divRef })
 
   const {
     register,
@@ -80,7 +83,7 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
     control,
     formState: { errors },
   } = useForm<GenerateDataChart>({
-    resolver: zodResolver(generateDataChart)
+    resolver: zodResolver(generateDataChart),
   })
 
   const { data: instrumentList, isLoading } = useQuery({
@@ -111,13 +114,17 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
 
   useEffect(() => {
     if (!instrumendSelectedId || !instrumentList) return
-    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    const instrument = instrumentList.find(
+      (instrument) => instrument.id === instrumendSelectedId,
+    )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId])
+  }, [instrumendSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
+    const endDate = dayjs(startDateValue)
+      .add(1, 'day')
+      .format('YYYY-MM-DDTHH:mm')
     setMinEndDate(startDateValue)
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
@@ -137,14 +144,23 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                     name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
+                      <Select
+                        onValueChange={onChange}
+                        value={value}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-72"
+                        >
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {instrumentList?.map(item => {
+                          {instrumentList?.map((item) => {
                             return (
-                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id}>
+                                {item.name}
+                              </SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -168,7 +184,10 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-xs" htmlFor="graphVariation">
+                  <Label
+                    className="font-light text-xs"
+                    htmlFor="graphVariation"
+                  >
                     Variação do gráfico
                   </Label>
                   <Controller
@@ -176,7 +195,10 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-40"
+                        >
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
@@ -194,8 +216,8 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                Selecione a varição que deseja apresentar as
-                informações no gráfico.
+                Selecione a varição que deseja apresentar as informações no
+                gráfico.
               </TooltipContent>
             </Tooltip>
             {errors.graphVariation?.message && (
@@ -208,7 +230,10 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label className="font-light text-xs" htmlFor="tableVariation">
+                  <Label
+                    className="font-light text-xs"
+                    htmlFor="tableVariation"
+                  >
                     Variação da tabela
                   </Label>
                   <Controller
@@ -216,7 +241,10 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-40"
+                        >
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
@@ -420,9 +448,7 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Data e hora final.
-              </TooltipContent>
+              <TooltipContent side="bottom">Data e hora final.</TooltipContent>
             </Tooltip>
             {errors.endDate?.message && (
               <p className="text-red-500 text-xs font-light">

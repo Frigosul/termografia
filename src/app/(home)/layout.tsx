@@ -14,7 +14,6 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
           SulTerm | suporte2.apms@frigosul.com.br
         </footer>
       </div>
-
     </div>
   )
 }

@@ -14,7 +14,9 @@ export default function SignIn() {
             alt="Logo sulTerm"
             priority
           />
-          <span className='text-sm text-center'>Gerenciamento de termografia</span>
+          <span className="text-sm text-center">
+            Gerenciamento de termografia
+          </span>
         </div>
       </div>
       <div className="flex flex-col justify-center items-center w-full h-full mb-20 lg:mb-0">

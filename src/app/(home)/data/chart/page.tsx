@@ -30,7 +30,6 @@ export default function PageChart() {
 
   const divPdfRef = useRef<HTMLDivElement>(null)
 
-
   return (
     <ScrollArea className="flex-1">
       <main className="p-4 sm:p-6 md:p-6 max-w-screen-xl">
@@ -45,59 +44,70 @@ export default function PageChart() {
           />
         </div>
 
-        {generateChartMutation.isPending ? <p>Carregando...</p> : dataChart && (
-          <div ref={divPdfRef} className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full">
-            <>
-              <ChartTemperature
-                maxValue={dataChart.maxValue}
-                minValue={dataChart.minValue}
-                dateClose={dataChart.dateClose}
-                dateOpen={dataChart.dateOpen}
-                limit={dataChart.limit}
-                detour={dataChart.detour}
-                variation={dataChart.variationTemp}
-                local={dataChart.name}
-                data={dataChart.chartTemperature}
-              />
-              {dataChart.chartType === 'temp/press' && (
-                <ChartPressure
-                  maxValue={6}
-                  minValue={0}
+        {generateChartMutation.isPending ? (
+          <p>Carregando...</p>
+        ) : (
+          dataChart && (
+            <div
+              ref={divPdfRef}
+              className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full"
+            >
+              <>
+                <ChartTemperature
+                  maxValue={dataChart.maxValue}
+                  minValue={dataChart.minValue}
                   dateClose={dataChart.dateClose}
                   dateOpen={dataChart.dateOpen}
                   limit={dataChart.limit}
+                  detour={dataChart.detour}
                   variation={dataChart.variationTemp}
                   local={dataChart.name}
-                  data={dataChart?.chartPressure!}
+                  data={dataChart.chartTemperature}
                 />
-              )}
-              <Table data={dataChart.tableTemperatureRange!} pressure={dataChart.tablePressureRange!} />
-            </>
+                {dataChart.chartType === 'temp/press' &&
+                  dataChart.chartPressure && (
+                    <ChartPressure
+                      maxValue={6}
+                      minValue={0}
+                      dateClose={dataChart.dateClose}
+                      dateOpen={dataChart.dateOpen}
+                      limit={dataChart.limit}
+                      variation={dataChart.variationTemp}
+                      local={dataChart.name}
+                      data={dataChart?.chartPressure}
+                    />
+                  )}
+                <Table
+                  data={dataChart.tableTemperatureRange!}
+                  pressure={dataChart.tablePressureRange!}
+                />
+              </>
 
-            <div className="flex gap-2 h-32 mt-4">
-              <Card className="bg-transparent flex-1">
-                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
-                  <span className="text-xs"> Ocorrências / Medidas Corretivas: </span>
-                  <p className='text-sm'>{dataChart.description}</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-transparent flex-2 w-80">
-                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
-                  <span className="text-xs">Assinatura:</span>
-                </CardContent>
-              </Card>
-              <Card className="bg-transparent flex-2  w-80">
-                <CardContent className="border border-card-foreground rounded-md px-2 h-full">
-                  <span className="text-xs">Assinatura:</span>
-                </CardContent>
-              </Card>
+              <div className="flex gap-2 h-32 mt-4">
+                <Card className="bg-transparent flex-1">
+                  <CardContent className="border border-card-foreground rounded-md px-2 h-full">
+                    <span className="text-xs">
+                      {' '}
+                      Ocorrências / Medidas Corretivas:{' '}
+                    </span>
+                    <p className="text-sm">{dataChart.description}</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-transparent flex-2 w-80">
+                  <CardContent className="border border-card-foreground rounded-md px-2 h-full">
+                    <span className="text-xs">Assinatura:</span>
+                  </CardContent>
+                </Card>
+                <Card className="bg-transparent flex-2  w-80">
+                  <CardContent className="border border-card-foreground rounded-md px-2 h-full">
+                    <span className="text-xs">Assinatura:</span>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          )
         )}
-
       </main>
-
-
     </ScrollArea>
   )
 }

@@ -28,15 +28,15 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 interface TableRow {
-  id: string;
-  time: string;
-  temperature: number;
-  updatedUserAt: string | null;
-  updatedAt: string;
+  id: string
+  time: string
+  value: number
+  updatedUserAt: string | null
+  updatedAt: string
 }
 
 interface TableProps {
-  data: TableRow[];
+  data: TableRow[]
 }
 
 const searchParams = ['igual à', 'menor ou igual à', 'maior ou igual à']
@@ -78,15 +78,15 @@ export function TableUpdateData({ data }: TableProps) {
     resolver: zodResolver(searchDataSchema),
   })
 
-  const [editData, setEditData] = useState<TableProps>({ data });
+  const [editData, setEditData] = useState<TableProps>({ data })
 
   const [editCell, setEditCell] = useState<{
-    rowId: string | null;
-    field: keyof TableRow | null;
+    rowId: string | null
+    field: keyof TableRow | null
   }>({
     rowId: null,
     field: null,
-  });
+  })
 
   const [inputValue, setInputValue] = useState<string>('')
 
@@ -99,54 +99,51 @@ export function TableUpdateData({ data }: TableProps) {
     field: keyof TableRow,
     currentValue: string | number,
   ) {
-    setEditCell({ rowId, field });
+    setEditCell({ rowId, field })
 
-    const valueAsString = field === 'time'
-      ? dayjs(currentValue).format('YYYY-MM-DD HH:mm')
-      : currentValue.toString();
+    const valueAsString =
+      field === 'time'
+        ? dayjs(currentValue).format('YYYY-MM-DD HH:mm')
+        : currentValue.toString()
 
-    setInputValue(valueAsString);
+    setInputValue(valueAsString)
   }
 
-
   function handleSave(rowId: string, field: keyof TableRow) {
-    const originalValue = data.find((row) => row.id === rowId);
-    const formattedValue = field === 'time' && originalValue
-      ? dayjs(originalValue[field]).format('YYYY-MM-DD HH:mm')
-      : originalValue?.[field]?.toString() || '';
-
-
+    const originalValue = data.find((row) => row.id === rowId)
+    const formattedValue =
+      field === 'time' && originalValue
+        ? dayjs(originalValue[field]).format('YYYY-MM-DD HH:mm')
+        : originalValue?.[field]?.toString() || ''
 
     if (inputValue !== '' && inputValue !== formattedValue) {
       setEditData((prevData) => ({
         data:
           prevData?.data.map((item) => {
-            return (
-              item.id === rowId
-                ? {
+            return item.id === rowId
+              ? {
                   ...item,
-                  [field]: field === 'temperature' ? Number(inputValue) : inputValue,
+                  [field]: field === 'value' ? Number(inputValue) : inputValue,
                   updatedUserAt: String(session?.user?.name),
-                  updatedAt: dayjs().format('YYYY-MM-DDTHH:mm')
+                  updatedAt: dayjs().format('YYYY-MM-DDTHH:mm'),
                 }
-                : item
-            )
+              : item
           }) || [],
-      }));
+      }))
     }
-    setEditCell({ rowId: null, field: null });
+    setEditCell({ rowId: null, field: null })
   }
 
   function handleSaveAndMove(rowId: string, field: keyof TableRow) {
-    handleSave(rowId, field);
-    const nextRowId = getNextRowId(rowId, 1);
+    handleSave(rowId, field)
+    const nextRowId = getNextRowId(rowId, 1)
 
     if (nextRowId !== null) {
-      moveToNextCell(nextRowId, field);
+      moveToNextCell(nextRowId, field)
     } else {
-      const nextField = getNextField(field);
+      const nextField = getNextField(field)
       if (nextField) {
-        moveToNextCell(data[0].id, nextField);
+        moveToNextCell(data[0].id, nextField)
       }
     }
   }
@@ -157,46 +154,46 @@ export function TableUpdateData({ data }: TableProps) {
     field: keyof TableRow,
   ) {
     if (e.key === 'Enter') {
-      handleSaveAndMove(rowId, field);
+      handleSaveAndMove(rowId, field)
     }
     if (e.key === 'ArrowDown') {
-      const nextRowId = getNextRowId(rowId, 1);
+      const nextRowId = getNextRowId(rowId, 1)
       if (nextRowId !== null) {
-        moveToNextCell(nextRowId, field);
+        moveToNextCell(nextRowId, field)
       }
     } else if (e.key === 'ArrowUp') {
-      const prevRowId = getNextRowId(rowId, -1);
+      const prevRowId = getNextRowId(rowId, -1)
       if (prevRowId !== null) {
-        moveToNextCell(prevRowId, field);
+        moveToNextCell(prevRowId, field)
       }
     }
   }
 
   function getNextField(currentField: keyof TableRow): keyof TableRow | null {
-    const fields: (keyof TableRow)[] = ['time', 'temperature'];
-    const currentIndex = fields.indexOf(currentField);
-    const nextIndex = currentIndex + 1;
-    return nextIndex < fields.length ? fields[nextIndex] : null;
+    const fields: (keyof TableRow)[] = ['time', 'value']
+    const currentIndex = fields.indexOf(currentField)
+    const nextIndex = currentIndex + 1
+    return nextIndex < fields.length ? fields[nextIndex] : null
   }
 
   function moveToNextCell(nextRowId: string, field: keyof TableRow) {
-    const nextRow = data.find((row) => row.id === nextRowId);
+    const nextRow = data.find((row) => row.id === nextRowId)
     if (nextRow && nextRow[field]) {
-      setEditCell({ rowId: nextRowId, field });
+      setEditCell({ rowId: nextRowId, field })
 
-      const valueAsString = field === 'time'
-        ? dayjs(nextRow[field]).format('YYYY-MM-DD HH:mm')
-        : nextRow[field]?.toString() || '';
+      const valueAsString =
+        field === 'time'
+          ? dayjs(nextRow[field]).format('YYYY-MM-DD HH:mm')
+          : nextRow[field]?.toString() || ''
 
-      setInputValue(valueAsString);
-
+      setInputValue(valueAsString)
     }
   }
 
   function getNextRowId(currentId: string, direction: number): string | null {
-    const currentIndex = data.findIndex((row) => row.id === currentId);
-    const nextIndex = currentIndex + direction;
-    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
+    const currentIndex = data.findIndex((row) => row.id === currentId)
+    const nextIndex = currentIndex + direction
+    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null
   }
 
   return (
@@ -207,7 +204,10 @@ export function TableUpdateData({ data }: TableProps) {
             variant="ghost"
             className="flex gap-1 hover:bg-green-400/30"
             disabled={updatedDataMutation.isPending}
-            onClick={() => updatedDataMutation.mutateAsync({ temperatures: editData.data })}>
+            onClick={() =>
+              updatedDataMutation.mutateAsync({ dataValue: editData.data })
+            }
+          >
             <Save className="size-4" />
             Salvar
           </Button>
@@ -276,7 +276,6 @@ export function TableUpdateData({ data }: TableProps) {
         </TableHeader>
         <TableBody className="overflow-y-auto">
           {editData.data.map((row) => {
-
             return (
               <TableRow
                 key={row.id}
@@ -288,25 +287,28 @@ export function TableUpdateData({ data }: TableProps) {
                 <TableCell
                   className="border text-center p-0 h-4"
                   onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'temperature', row.temperature)
+                    handleDoubleClick(row.id, 'value', row.value)
                   }
                 >
-                  {editCell.rowId === row.id &&
-                    editCell.field === 'temperature' ? (
+                  {editCell.rowId === row.id && editCell.field === 'value' ? (
                     <input
                       className="bg-transparent w-full h-full  text-center m-0"
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'temperature')}
-                      onKeyDown={(e) => handleKeyDown(e, row.id, 'temperature')}
+                      onBlur={() => handleSave(row.id, 'value')}
+                      onKeyDown={(e) => handleKeyDown(e, row.id, 'value')}
                       autoFocus
                     />
                   ) : (
-                    `${row.temperature} ºC`
+                    `${row.value} ºC`
                   )}
                 </TableCell>
-                <TableCell className="border">{row.updatedUserAt ? `Temperatura alterada por ${row.updatedUserAt} em ${formattedDateTime(row.updatedAt)}` : `Temperatura integrada`}</TableCell>
+                <TableCell className="border">
+                  {row.updatedUserAt
+                    ? `Temperatura alterada por ${row.updatedUserAt} em ${formattedDateTime(row.updatedAt)}`
+                    : `Temperatura integrada`}
+                </TableCell>
               </TableRow>
             )
           })}

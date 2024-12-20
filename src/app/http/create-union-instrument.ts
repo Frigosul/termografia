@@ -9,7 +9,7 @@ type CreateUnionInstrument = {
 export async function createUnionInstrumentFn({
   name,
   firstInstrument,
-  secondInstrument
+  secondInstrument,
 }: CreateUnionInstrument) {
   const response = await fetchServer(`/api/instruments/create-union`, {
     method: 'POST',
@@ -19,7 +19,7 @@ export async function createUnionInstrumentFn({
     body: JSON.stringify({
       name,
       firstInstrument,
-      secondInstrument
+      secondInstrument,
     }),
   })
 
@@ -27,7 +27,7 @@ export async function createUnionInstrumentFn({
     const error = await response.json()
     return Promise.reject({
       status: response.status,
-      message: error.message || "Error api",
+      message: error.message || 'Error api',
     })
   }
   const data = await response.json()

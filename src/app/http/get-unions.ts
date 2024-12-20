@@ -1,4 +1,3 @@
-
 interface GetUnionsResponse {
   id: string
   name: string
@@ -8,14 +7,13 @@ interface GetUnionsResponse {
 }
 
 export async function getUnions(): Promise<GetUnionsResponse[]> {
-
   const response = await fetch('/api/instruments/get-unions')
 
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({
       status: response.status,
-      message: error.message || "Error api",
+      message: error.message || 'Error api',
     })
   }
   const data: GetUnionsResponse[] = await response.json()

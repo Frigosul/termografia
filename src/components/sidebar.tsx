@@ -7,13 +7,18 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ScrollText,
-  Users
+  Users,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { NavLink } from './nav-link'
 import { Button } from './ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip'
 
 export function SideBar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,26 +27,32 @@ export function SideBar() {
   return (
     <aside className="flex flex-col min-h-screen border-r sr-only lg:not-sr-only">
       <TooltipProvider>
-        <Button variant="ghost" onClick={() => setIsOpen(!isOpen)} className={`flex justify-start items-center mt-4`}>
-          {isOpen ? <PanelLeftClose className="size-6" strokeWidth={1} /> : <PanelLeftOpen className="size-6" strokeWidth={1} />}
+        <Button
+          variant="ghost"
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex justify-start items-center mt-4`}
+        >
+          {isOpen ? (
+            <PanelLeftClose className="size-6" strokeWidth={1} />
+          ) : (
+            <PanelLeftOpen className="size-6" strokeWidth={1} />
+          )}
           <span className={`text-xl font-light pl-2 ${!isOpen && 'sr-only'}`}>
             Menu
           </span>
         </Button>
 
-        <nav className={`flex flex-col mt-5 flex-1 transition-all duration-300 overflow-hidden ${isOpen ? "w-64" : "w-12"}`}>
-          <Tooltip >
+        <nav
+          className={`flex flex-col mt-5 flex-1 transition-all duration-300 overflow-hidden ${isOpen ? 'w-64' : 'w-12'}`}
+        >
+          <Tooltip>
             <TooltipTrigger>
               <NavLink href="/">
                 <House size={20} />
                 Home
               </NavLink>
             </TooltipTrigger>
-            {!isOpen && (
-              <TooltipContent side='right'>
-                Home
-              </TooltipContent>
-            )}
+            {!isOpen && <TooltipContent side="right">Home</TooltipContent>}
           </Tooltip>
           {session?.role === 'adm' && (
             <>
@@ -53,9 +64,7 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
-                    Gerar gráfico
-                  </TooltipContent>
+                  <TooltipContent side="right">Gerar gráfico</TooltipContent>
                 )}
               </Tooltip>
               <Tooltip>
@@ -66,9 +75,7 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
-                    Editar dados
-                  </TooltipContent>
+                  <TooltipContent side="right">Editar dados</TooltipContent>
                 )}
               </Tooltip>
               <Tooltip>
@@ -79,9 +86,7 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
-                    Gerar padrões
-                  </TooltipContent>
+                  <TooltipContent side="right">Gerar padrões</TooltipContent>
                 )}
               </Tooltip>
               <Tooltip>
@@ -92,7 +97,7 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
+                  <TooltipContent side="right">
                     Gerenciar equipamentos
                   </TooltipContent>
                 )}
@@ -105,9 +110,7 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
-                    Usuários
-                  </TooltipContent>
+                  <TooltipContent side="right">Usuários</TooltipContent>
                 )}
               </Tooltip>
             </>
@@ -123,15 +126,13 @@ export function SideBar() {
                   </NavLink>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side='right'>
-                    Gerar gráfico
-                  </TooltipContent>
+                  <TooltipContent side="right">Gerar gráfico</TooltipContent>
                 )}
               </Tooltip>
             </>
           )}
         </nav>
       </TooltipProvider>
-    </aside >
+    </aside>
   )
 }

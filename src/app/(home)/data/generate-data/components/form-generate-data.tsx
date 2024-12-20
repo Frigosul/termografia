@@ -1,5 +1,8 @@
 'use client'
-import { GenerateDataRequest, GenerateDataResponse } from '@/app/http/generate-data'
+import {
+  GenerateDataRequest,
+  GenerateDataResponse,
+} from '@/app/http/generate-data'
 import { getInstruments } from '@/app/http/get-instruments'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,7 +24,7 @@ import { generateDataMode } from '@/types/generate-data-mode'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import utc from "dayjs/plugin/utc"
+import utc from 'dayjs/plugin/utc'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -35,8 +38,12 @@ const generateStandards = z.object({
   defrostDate: z.string({ message: 'Defina data de degelo.' }),
   endDate: z.string({ message: 'Defina data de abertura.' }),
   generateMode: z.string({ message: 'Defina o modo.' }).optional(),
-  initialTemp: z.union([z.number({ message: 'Defina a temperatura.' }), z.nan()]).optional(),
-  averageTemp: z.union([z.number({ message: 'Defina a média.' }), z.nan()]).optional(),
+  initialTemp: z
+    .union([z.number({ message: 'Defina a temperatura.' }), z.nan()])
+    .optional(),
+  averageTemp: z
+    .union([z.number({ message: 'Defina a média.' }), z.nan()])
+    .optional(),
 })
 
 type GenerateStandards = z.infer<typeof generateStandards>
@@ -46,7 +53,6 @@ interface FormGenerateDataProps {
   isPending: boolean
 }
 export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
-
   const { data: session } = useSession()
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minDefrostDate, setMinDefrostDate] = useState<string | Date>('')
@@ -57,7 +63,6 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
     queryFn: getInstruments,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
-
 
   const {
     register,
@@ -73,14 +78,16 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   function handleGenerateStandards(data: GenerateStandards) {
     const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
     const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
-    const defrostDataUtc = dayjs(data.defrostDate).utc().format('YYYY-MM-DDTHH:mm')
+    const defrostDataUtc = dayjs(data.defrostDate)
+      .utc()
+      .format('YYYY-MM-DDTHH:mm')
     mutate({
       endDate: endDataUtc,
       startDate: startDataUtc,
       variation: Number(data.variation),
       defrostDate: defrostDataUtc,
       instrumentId: data.local,
-      userName: session?.user?.name!
+      userName: String(session?.user?.name),
     })
   }
 
@@ -89,14 +96,20 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
 
   useEffect(() => {
     if (!instrumendSelectedId || !instrumentList) return
-    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    const instrument = instrumentList.find(
+      (instrument) => instrument.id === instrumendSelectedId,
+    )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId])
+  }, [instrumendSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
-    const addHoursDefrost = dayjs(startDateValue).add(8, 'hours').format('YYYY-MM-DDTHH:mm')
+    const endDate = dayjs(startDateValue)
+      .add(1, 'day')
+      .format('YYYY-MM-DDTHH:mm')
+    const addHoursDefrost = dayjs(startDateValue)
+      .add(8, 'hours')
+      .format('YYYY-MM-DDTHH:mm')
     setMinDefrostDate(startDateValue)
     setMinEndDate(startDateValue)
     setValue('endDate', endDate)
@@ -118,14 +131,23 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                     name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
+                      <Select
+                        onValueChange={onChange}
+                        value={value}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-72"
+                        >
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {instrumentList?.map(item => {
+                          {instrumentList?.map((item) => {
                             return (
-                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id}>
+                                {item.name}
+                              </SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -157,7 +179,10 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-40"
+                        >
                           <SelectValue placeholder="Variação" />
                         </SelectTrigger>
                         <SelectContent>
@@ -190,22 +215,33 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
               <TooltipTrigger asChild>
                 <div>
                   <Label className="font-light text-xs" htmlFor="generateMode">
-                    Modo  de geração
+                    Modo de geração
                   </Label>
                   <Controller
                     name="generateMode"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                      <Select
+                        onValueChange={onChange}
+                        value={value}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-40"
+                        >
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.entries(generateDataMode).map(([value, name]) => {
-                            return (
-                              <SelectItem value={value} key={value}>{name}</SelectItem>
-                            )
-                          })}
+                          {Object.entries(generateDataMode).map(
+                            ([value, name]) => {
+                              return (
+                                <SelectItem value={value} key={value}>
+                                  {name}
+                                </SelectItem>
+                              )
+                            },
+                          )}
                         </SelectContent>
                       </Select>
                     )}
@@ -238,9 +274,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Valor inicial
-              </TooltipContent>
+              <TooltipContent side="bottom">Valor inicial</TooltipContent>
             </Tooltip>
             {errors.initialTemp?.message && (
               <p className="text-red-500 text-xs font-light">
@@ -263,9 +297,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                Valor médio
-              </TooltipContent>
+              <TooltipContent side="bottom">Valor médio</TooltipContent>
             </Tooltip>
             {errors.averageTemp?.message && (
               <p className="text-red-500 text-xs font-light">
@@ -354,11 +386,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
             )}
           </div>
           <div className="h-[4.5rem] flex items-end">
-            <Button
-              disabled={isPending}
-              type="submit"
-              className="h-8 mb-4"
-            >
+            <Button disabled={isPending} type="submit" className="h-8 mb-4">
               Gerar dados
             </Button>
           </div>

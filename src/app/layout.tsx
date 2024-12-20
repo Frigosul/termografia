@@ -22,12 +22,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
-
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <AuthProvider>
-
         <body
           suppressHydrationWarning={true}
           className={cn(
@@ -37,14 +34,12 @@ export default async function RootLayout({
         >
           <ReactQueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-
               <ToggleTheme />
               <Toaster richColors expand visibleToasts={20} />
               {children}
             </ThemeProvider>
           </ReactQueryProvider>
         </body>
-
       </AuthProvider>
     </html>
   )

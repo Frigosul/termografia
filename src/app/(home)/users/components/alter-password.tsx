@@ -66,7 +66,6 @@ export function AlterPassword() {
       closeModal('alter-password')
     },
     onError: (error) => {
-
       if (error.message === 'Old password is incorrect') {
         toast.error('Senha atual inválida, verifique sua senha atual.', {
           position: 'top-right',
@@ -84,7 +83,7 @@ export function AlterPassword() {
 
   function handleUpdateUser(data: UpdatePasswordSchema) {
     updatePasswordMutation.mutateAsync({
-      userId: userData?.id!,
+      userId: String(userData?.id),
       oldPassword: data.old_password,
       newPassword: data.new_password,
     })
@@ -181,5 +180,3 @@ export function AlterPassword() {
     </Dialog>
   )
 }
-
-

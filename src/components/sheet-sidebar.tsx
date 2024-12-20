@@ -22,10 +22,17 @@ import {
   Menu,
   ScrollText,
   UserPen,
-  Users
+  Users,
 } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
 export function SheetSidebar() {
   const { data: session } = useSession()
   const { openModal } = useModalStore()
@@ -48,21 +55,32 @@ export function SheetSidebar() {
             <Avatar className="size-9 flex items-center justify-center">
               <AvatarImage
                 className="rounded-full"
-              // src="https://github.com/joaoeduardodias.png"
+                // src="https://github.com/joaoeduardodias.png"
               />
               <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
                 {getInitials(userName)}
               </AvatarFallback>
             </Avatar>
             {userName}
-            <ChevronDown className='size-4' />
+            <ChevronDown className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel className='text-center'>Minha conta</DropdownMenuLabel>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel className="text-center">
+              Minha conta
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
-              openModal('update-user', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
-            }}>
+            <DropdownMenuItem
+              className="flex items-center justify-start gap-2"
+              onClick={() => {
+                openModal('update-user', {
+                  id: String(session?.id),
+                  email: String(session?.user?.email),
+                  name: String(session?.user?.name),
+                  password: '',
+                  role: session?.role as UserRolesType,
+                })
+              }}
+            >
               <UserPen size={18} />
               Alterar Perfil
             </DropdownMenuItem>
@@ -72,14 +90,17 @@ export function SheetSidebar() {
               <LockKeyhole size={16} />
               Alterar Senha
             </DropdownMenuItem> */}
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
+            <DropdownMenuItem
+              className="flex items-center justify-start gap-2"
+              onClick={() => signOut()}
+            >
               <LogOut size={16} className="rotate-180" />
               Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <nav className="flex flex-col h-full pb-12">
-          <NavLink href="/" >
+          <NavLink href="/">
             <House size={20} />
             Home
           </NavLink>

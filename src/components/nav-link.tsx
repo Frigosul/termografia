@@ -15,21 +15,17 @@ export function NavLink({ children, href, ...props }: NavLinkProps) {
     <Button
       variant="ghost"
       data-current={pathname === href}
-      className='flex py-2 justify-start data-[current=true]:bg-accent'
+      className="flex py-2 justify-start data-[current=true]:bg-accent"
       asChild
     >
-      <Link
-        href={href}
-        {...props}
-        prefetch
-      >
+      <Link href={href} {...props} prefetch>
         <span
           data-current={pathname === href}
-          className="flex items-center gap-4 font-medium text-muted-foreground data-[current=true]:text-primary hover:text-primary">
+          className="flex items-center gap-4 font-medium text-muted-foreground data-[current=true]:text-primary hover:text-primary"
+        >
           {children}
         </span>
       </Link>
     </Button>
   )
 }
-

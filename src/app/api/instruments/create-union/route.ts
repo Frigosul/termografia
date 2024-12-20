@@ -9,7 +9,7 @@ interface CreateUnionInstrumentType {
 }
 
 export async function POST(request: NextRequest) {
-  const body: CreateUnionInstrumentType = await request.json();
+  const body: CreateUnionInstrumentType = await request.json()
   const { name, firstInstrument, secondInstrument } = body
 
   if (!name || !firstInstrument || !secondInstrument) {
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
   try {
     const existingUnionInstrument = await prisma.unionInstruments.findUnique({
       where: {
-        name
-      }
+        name,
+      },
     })
     if (existingUnionInstrument) {
       return NextResponse.json(
@@ -39,10 +39,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-
     return NextResponse.json({ unionInstrument }, { status: 201 })
   } catch (error) {
-
     console.log(error)
 
     return NextResponse.json(

@@ -1,11 +1,17 @@
-import { DependencyList, useCallback, useEffect } from 'react';
-type Effect = () => void;
+import { DependencyList, useEffect } from 'react'
 
-export function useDebounce(effect: Effect, dependencies: DependencyList, delay: number) {
-  const callback = useCallback(effect, dependencies);
+type Effect = () => void
 
+export function useDebounce(
+  effect: Effect,
+  dependencies: DependencyList,
+  delay: number,
+) {
   useEffect(() => {
-    const timeout = setTimeout(callback, delay);
-    return () => clearTimeout(timeout);
-  }, [callback, delay]);
+    const timeout = setTimeout(() => {
+      effect() // Chama o efeito quando o timeout é concluído
+    }, delay)
+
+    return () => clearTimeout(timeout) // Limpa o timeout se as dependências mudarem ou o componente desmontar
+  }, [dependencies, delay, effect]) // Inclua todas as dependências e o delay
 }

@@ -62,7 +62,6 @@ export async function listData({
   endDate,
   description = '',
 }: ListDataRequest): Promise<ListDataResponse> {
-
   const response = await fetch('/api/instruments/list-data', {
     method: 'POST',
     headers: {
@@ -79,14 +78,14 @@ export async function listData({
       maxValue,
       startDate,
       endDate,
-    })
+    }),
   })
 
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({
       status: response.status,
-      message: error.message || "Error api",
+      message: error.message || 'Error api',
     })
   }
   const data = await response.json()
@@ -101,5 +100,3 @@ export async function listData({
   }
   return dataAndValues
 }
-
-

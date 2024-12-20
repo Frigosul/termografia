@@ -1,7 +1,7 @@
 export interface Instrument {
   id: string
   name: string
-  type: "temp" | "press"
+  type: 'temp' | 'press'
   status: string
   isSensorError: boolean
   temperature: number

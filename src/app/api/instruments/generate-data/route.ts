@@ -1,33 +1,33 @@
-import { GenerateDataModeType } from '@/types/generate-data-mode';
-import { Pressure, PrismaClient, Temperature } from '@prisma/client';
-import dayjs from 'dayjs';
-import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
+import { GenerateDataModeType } from '@/types/generate-data-mode'
+import { Pressure, PrismaClient, Temperature } from '@prisma/client'
+import dayjs from 'dayjs'
+import { NextRequest, NextResponse } from 'next/server'
+import { v4 as uuidv4 } from 'uuid'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 interface SensorData {
-  id: string;
-  updatedAt: string;
-  time: string;
-  value: number;
+  id: string
+  updatedAt: string
+  time: string
+  value: number
 }
 
 interface GenerateDataRequest {
-  startDate: string;
-  defrostDate: string;
-  endDate: string;
-  instrumentId: string;
-  variation: number;
-  initialValue?: number;
-  averageValue?: number;
-  generateMode?: GenerateDataModeType;
-  instrumentType: 'temperature' | 'pressure';
+  startDate: string
+  defrostDate: string
+  endDate: string
+  instrumentId: string
+  variation: number
+  initialValue?: number
+  averageValue?: number
+  generateMode?: GenerateDataModeType
+  instrumentType: 'temperature' | 'pressure'
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GenerateDataRequest = await request.json();
+    const body: GenerateDataRequest = await request.json()
     const {
       startDate,
       defrostDate,
@@ -37,25 +37,28 @@ export async function POST(request: NextRequest) {
       averageValue,
       initialValue,
       generateMode = 'n1',
-    } = body;
+    } = body
 
     if (!startDate || !defrostDate || !endDate || !instrumentId || !variation) {
-      return NextResponse.json({ error: 'Missing data.' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing data.' }, { status: 400 })
     }
 
-    const formattedStartDate = dayjs(startDate);
-    const formattedEndDate = dayjs(endDate).add(1, 'minute');
-    const formattedDefrostDate = dayjs(defrostDate);
+    const formattedStartDate = dayjs(startDate)
+    const formattedEndDate = dayjs(endDate).add(1, 'minute')
+    const formattedDefrostDate = dayjs(defrostDate)
 
     const instrument = await prisma.instrument.findUnique({
       where: { id: instrumentId },
       select: { type: true },
-    });
+    })
 
     if (!instrument) {
-      return NextResponse.json({ message: 'Instrument not found.' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Instrument not found.' },
+        { status: 400 },
+      )
     }
-    let historicalData: any = [];
+    let historicalData: Temperature[] | Pressure[] = []
 
     if (instrument.type === 'pressure') {
       historicalData = await prisma.pressure.findMany({
@@ -65,7 +68,7 @@ export async function POST(request: NextRequest) {
           },
         },
         take: 20,
-      });
+      })
     } else if (instrument.type === 'temperature') {
       historicalData = await prisma.temperature.findMany({
         where: {
@@ -74,54 +77,61 @@ export async function POST(request: NextRequest) {
           },
         },
         take: 20,
-      });
+      })
     }
 
-    const avgValue = averageValue ?? (historicalData.length
-      ? historicalData.reduce((sum: number, record: Pressure | Temperature) => sum + record.value, 0) / historicalData.length
-      : instrument.type === 'temperature' ? 10 : 3.5);
+    const avgValue =
+      averageValue ??
+      (historicalData.length
+        ? historicalData.reduce(
+            (sum: number, record: Pressure | Temperature) => sum + record.value,
+            0,
+          ) / historicalData.length
+        : instrument.type === 'temperature'
+          ? 10
+          : 3.5)
 
-    const sensorData: SensorData[] = [];
-    const variationSensorData: SensorData[] = [];
-    let currentDate = formattedStartDate;
-    let value = initialValue ?? (instrument.type === 'temperature' ? 15 : 0);
-    let lastVariationMinute = -1;
-    let pressureCycleStart = currentDate;
-    let pressureCyclePhase = 'initial';
+    const sensorData: SensorData[] = []
+    const variationSensorData: SensorData[] = []
+    let currentDate = formattedStartDate
+    const value = initialValue ?? (instrument.type === 'temperature' ? 15 : 0)
+    let lastVariationMinute = -1
+    let pressureCycleStart = currentDate
+    let pressureCyclePhase = 'initial'
 
     while (currentDate.isBefore(formattedEndDate)) {
-      let currentValue = value;
+      let currentValue = value
 
       if (instrument.type === 'temperature') {
         if (generateMode === 'n1') {
           currentValue = currentDate.isBefore(formattedStartDate.add(5, 'hour'))
             ? currentValue - Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2);
+            : avgValue + (Math.random() * 4 - 2)
         } else if (generateMode === 'n2') {
           currentValue = currentDate.isBefore(formattedStartDate.add(4, 'hour'))
             ? currentValue - Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2);
+            : avgValue + (Math.random() * 4 - 2)
         } else if (generateMode === 'n3') {
           currentValue = currentDate.isBefore(formattedStartDate.add(3, 'hour'))
             ? currentValue - Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2);
+            : avgValue + (Math.random() * 4 - 2)
         }
 
         if (currentDate.isAfter(formattedDefrostDate)) {
-          currentValue += Math.random() * 3;
+          currentValue += Math.random() * 3
         }
       } else if (instrument.type === 'pressure') {
-        const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute');
+        const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
         if (pressureCyclePhase === 'initial' && minutesInCycle >= 3) {
-          currentValue = 3.5;
-          pressureCyclePhase = 'varying';
+          currentValue = 3.5
+          pressureCyclePhase = 'varying'
         } else if (pressureCyclePhase === 'varying') {
-          currentValue = minutesInCycle < 23 ? 3.5 + Math.random() : 0;
-          if (minutesInCycle >= 23) pressureCyclePhase = 'zero';
+          currentValue = minutesInCycle < 23 ? 3.5 + Math.random() : 0
+          if (minutesInCycle >= 23) pressureCyclePhase = 'zero'
         } else if (pressureCyclePhase === 'zero' && minutesInCycle >= 33) {
-          pressureCycleStart = currentDate;
-          pressureCyclePhase = 'initial';
-          currentValue = 0;
+          pressureCycleStart = currentDate
+          pressureCyclePhase = 'initial'
+          currentValue = 0
         }
       }
 
@@ -130,20 +140,24 @@ export async function POST(request: NextRequest) {
         time: currentDate.format('YYYY-MM-DDTHH:mm:ss'),
         value: Number(currentValue.toFixed(1)),
         updatedAt: currentDate.format('YYYY-MM-DDTHH:mm:ss'),
-      };
-
-      sensorData.push(sensorItem);
-
-      const minutesDiff = currentDate.diff(formattedStartDate, 'minute');
-      if (minutesDiff > 0 && minutesDiff % variation === 0 && minutesDiff !== lastVariationMinute) {
-        variationSensorData.push(sensorItem);
-        lastVariationMinute = minutesDiff;
       }
 
-      currentDate = currentDate.add(10, 'seconds');
+      sensorData.push(sensorItem)
+
+      const minutesDiff = currentDate.diff(formattedStartDate, 'minute')
+      if (
+        minutesDiff > 0 &&
+        minutesDiff % variation === 0 &&
+        minutesDiff !== lastVariationMinute
+      ) {
+        variationSensorData.push(sensorItem)
+        lastVariationMinute = minutesDiff
+      }
+
+      currentDate = currentDate.add(10, 'seconds')
     }
 
-    let existingRecords = [];
+    let existingRecords = []
 
     if (instrument.type === 'pressure') {
       existingRecords = await prisma.pressure.findMany({
@@ -153,7 +167,7 @@ export async function POST(request: NextRequest) {
           },
           createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
         },
-      });
+      })
     } else if (instrument.type === 'temperature') {
       existingRecords = await prisma.temperature.findMany({
         where: {
@@ -162,11 +176,14 @@ export async function POST(request: NextRequest) {
           },
           createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
         },
-      });
+      })
     }
 
     if (existingRecords.length > 0) {
-      return NextResponse.json({ error: 'Records already exist for the provided dates.' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'Records already exist for the provided dates.' },
+        { status: 409 },
+      )
     }
 
     for (const record of sensorData) {
@@ -187,16 +204,22 @@ export async function POST(request: NextRequest) {
             },
           },
         },
-      });
+      })
     }
 
-    return NextResponse.json({
-      message: 'Data successfully generated.',
-      data: variationSensorData,
-      instrumentType: instrument.type,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'Data successfully generated.',
+        data: variationSensorData,
+        instrumentType: instrument.type,
+      },
+      { status: 201 },
+    )
   } catch (error) {
-    console.error('Error generating or saving data:', error);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    console.error('Error generating or saving data:', error)
+    return NextResponse.json(
+      { error: 'Internal server error.' },
+      { status: 500 },
+    )
   }
 }

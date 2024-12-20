@@ -16,10 +16,6 @@ import { CircleCheck, CircleX, Trash2 } from 'lucide-react'
 import { FormEvent } from 'react'
 import { toast } from 'sonner'
 
-interface DeleteUserProps {
-  userId: string
-}
-
 export function DeleteUser() {
   const { modals, closeModal, userData } = useModalStore()
   const queryClient = useQueryClient()
@@ -47,7 +43,6 @@ export function DeleteUser() {
     deleteUserMutation.mutateAsync({ userId: id })
   }
 
-
   return (
     <Dialog
       open={modals['delete-user']}
@@ -65,7 +60,7 @@ export function DeleteUser() {
         </DialogHeader>
 
         <form
-          onSubmit={(event) => handleDeleteUser(event, userData?.id!)}
+          onSubmit={(event) => handleDeleteUser(event, String(userData?.id))}
           className="flex gap-5 mx-auto md:w-80 "
         >
           <DialogClose asChild>

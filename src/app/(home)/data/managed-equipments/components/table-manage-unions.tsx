@@ -30,32 +30,39 @@ interface RowData {
 }
 
 export function TableManagedUnions() {
-
-  const { data: unions, isError, isLoading, refetch } = useQuery<RowData[]>({
+  const {
+    data: unions,
+    isError,
+    isLoading,
+    refetch,
+  } = useQuery<RowData[]>({
     queryKey: ['list-unions'],
     queryFn: getUnions,
     staleTime: 1000 * 60, // 1 minute
   })
   const [data, setData] = useState<RowData[]>([])
-  const [filteredData, setFilteredData] = useState<RowData[]>([]);
-  const [search, setSearch] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<RowData[]>([])
+  const [search, setSearch] = useState<string>('')
   const { openModal } = useModalStore()
-
 
   useEffect(() => {
     if (unions) {
-      setData(unions);
-      setFilteredData(unions);
+      setData(unions)
+      setFilteredData(unions)
     }
-  }, [unions]);
+  }, [unions])
 
-  useDebounce(() => {
-    setFilteredData(
-      data.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-    );
-  }, [data, search], 100
-  );
-
+  useDebounce(
+    () => {
+      setFilteredData(
+        data.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase()),
+        ),
+      )
+    },
+    [data, search],
+    100,
+  )
 
   const updatedUnionsMutation = useMutation({
     mutationFn: updateUnions,
@@ -77,7 +84,7 @@ export function TableManagedUnions() {
   const deleteUnionMutation = useMutation({
     mutationFn: deleteUnion,
     onSuccess: async () => {
-      await refetch();
+      await refetch()
       await queryClient.invalidateQueries({ queryKey: ['list-unions'] })
       toast.success('União deletada com sucesso', {
         position: 'top-right',
@@ -93,14 +100,13 @@ export function TableManagedUnions() {
     },
   })
 
-
   const [editCell, setEditCell] = useState<{
-    rowId: string | null;
-    field: keyof RowData | null;
+    rowId: string | null
+    field: keyof RowData | null
   }>({
     rowId: null,
     field: null,
-  });
+  })
 
   const [inputValue, setInputValue] = useState<string | number>('')
 
@@ -109,30 +115,33 @@ export function TableManagedUnions() {
     field: keyof RowData,
     currentValue: string | number,
   ) {
-
-    setEditCell({ rowId, field });
-    setInputValue(currentValue.toString());
+    setEditCell({ rowId, field })
+    setInputValue(currentValue.toString())
   }
 
   function handleSave(rowId: string, field: keyof RowData) {
-    const originalValue = data.find((row) => row.id === rowId)?.[field]?.toString() || '';
+    const originalValue =
+      data.find((row) => row.id === rowId)?.[field]?.toString() || ''
 
     if (inputValue !== '' && inputValue !== originalValue) {
       setData((prevData) =>
         prevData.map((item) => {
           if (item.id === rowId) {
-            const updatedValue = ['minValue', 'maxValue', 'displayOrder'].includes(field)
+            const updatedValue = [
+              'minValue',
+              'maxValue',
+              'displayOrder',
+            ].includes(field)
               ? Number(inputValue)
-              : inputValue;
+              : inputValue
 
-            return { ...item, [field]: updatedValue };
+            return { ...item, [field]: updatedValue }
           }
-          return item;
-        }
-        ),
-      );
+          return item
+        }),
+      )
     }
-    setEditCell({ rowId: null, field: null });
+    setEditCell({ rowId: null, field: null })
   }
 
   function handleSaveAndMove(rowId: string, field: keyof RowData) {
@@ -155,17 +164,17 @@ export function TableManagedUnions() {
     field: keyof RowData,
   ) {
     if (e.key === 'Enter') {
-      handleSaveAndMove(rowId, field);
+      handleSaveAndMove(rowId, field)
     }
     if (e.key === 'ArrowDown') {
-      const nextRowId = getNextRowId(rowId, 1);
+      const nextRowId = getNextRowId(rowId, 1)
       if (nextRowId !== null) {
-        moveToNextCell(nextRowId, field);
+        moveToNextCell(nextRowId, field)
       }
     } else if (e.key === 'ArrowUp') {
-      const prevRowId = getNextRowId(rowId, -1);
+      const prevRowId = getNextRowId(rowId, -1)
       if (prevRowId !== null) {
-        moveToNextCell(prevRowId, field);
+        moveToNextCell(prevRowId, field)
       }
     }
   }
@@ -186,9 +195,9 @@ export function TableManagedUnions() {
   }
 
   function getNextRowId(currentId: string, direction: number): string | null {
-    const currentIndex = data.findIndex((row) => row.id === currentId);
-    const nextIndex = currentIndex + direction;
-    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
+    const currentIndex = data.findIndex((row) => row.id === currentId)
+    const nextIndex = currentIndex + direction
+    return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null
   }
   if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
   if (isLoading) return <SkeletonTable />
@@ -199,28 +208,30 @@ export function TableManagedUnions() {
         <div className="flex border rounded-md">
           <Button
             variant="ghost"
-            className='h-8 flex items-center justify-center text-sm'
+            className="h-8 flex items-center justify-center text-sm"
             disabled={updatedUnionsMutation.isPending}
-            onClick={() => updatedUnionsMutation.mutateAsync({
-              unions: data
-            })}
+            onClick={() =>
+              updatedUnionsMutation.mutateAsync({
+                unions: data,
+              })
+            }
           >
             Salvar
           </Button>
           <Button
             variant="ghost"
-            className='h-8 flex items-center justify-center text-sm'
+            className="h-8 flex items-center justify-center text-sm"
             disabled={updatedUnionsMutation.isPending}
           >
             Cancelar
           </Button>
         </div>
 
-        <div className='h-8 flex items-center justify-center px-2 gap-1 w-full max-w-2xl border rounded-md overflow-hidden focus-within:outline-none focus-within:ring-1 hover:border hover:border-primary focus-within:ring-ring '>
-          <Search className='size-5 text-muted-foreground' />
+        <div className="h-8 flex items-center justify-center px-2 gap-1 w-full max-w-2xl border rounded-md overflow-hidden focus-within:outline-none focus-within:ring-1 hover:border hover:border-primary focus-within:ring-ring ">
+          <Search className="size-5 text-muted-foreground" />
           <input
             placeholder="Pesquisar"
-            className='w-full h-full text-sm ml-1 bg-transparent placeholder:text-sm focus-visible:outline-none focus-visible:ring-0'
+            className="w-full h-full text-sm ml-1 bg-transparent placeholder:text-sm focus-visible:outline-none focus-visible:ring-0"
             type="text"
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -228,13 +239,14 @@ export function TableManagedUnions() {
         <Button
           variant="link"
           onClick={() => openModal('create-union-instrument')}
-          className='text-sm text-primary ml-auto mr-4'>
+          className="text-sm text-primary ml-auto mr-4"
+        >
           Adicionar união
         </Button>
         <CreateUnionInstruments />
       </div>
 
-      <Table className='border border-collapse'>
+      <Table className="border border-collapse">
         <TableHeader className="bg-card sticky z-10 top-0 ">
           <TableRow>
             <TableHead className="border text-card-foreground  min-w-60 w-32">
@@ -252,7 +264,7 @@ export function TableManagedUnions() {
             <TableHead className="border text-card-foreground text-center w-10" />
           </TableRow>
         </TableHeader>
-        <TableBody className='overflow-y-auto'>
+        <TableBody className="overflow-y-auto">
           {filteredData.map((row) => {
             return (
               <TableRow
@@ -278,41 +290,36 @@ export function TableManagedUnions() {
                     row.name
                   )}
                 </TableCell>
-                <TableCell
-                  className="border text-center w-44 p-0 h-4"
-
-                >{row.fisrtInstrument}
+                <TableCell className="border text-center w-44 p-0 h-4">
+                  {row.fisrtInstrument}
                 </TableCell>
-                <TableCell
-                  className="border text-center w-44 p-0 h-4"
-
-                >
+                <TableCell className="border text-center w-44 p-0 h-4">
                   {row.secondInstrument}
-
                 </TableCell>
                 <TableCell className="border text-center w-10">
                   <Checkbox
                     defaultChecked={row.isActive}
-                    className='ml-[-10px]'
+                    className="ml-[-10px]"
                     onCheckedChange={(checked: boolean) => {
                       setData((prevData) =>
                         prevData.map((item) =>
-                          item.id === row.id ? { ...item, isActive: checked } : item
-                        )
-                      );
-                    }
-                    }
+                          item.id === row.id
+                            ? { ...item, isActive: checked }
+                            : item,
+                        ),
+                      )
+                    }}
                   />
                 </TableCell>
                 <TableCell className="border text-center w-10 p-0 m-0">
                   <Button
                     variant="ghost"
-                    className='group'
+                    className="group"
                     onClick={async () => {
                       await deleteUnionMutation.mutateAsync({ unionId: row.id })
                     }}
                   >
-                    <Trash2 className='size-5 group-hover:text-red-600 transition-colors' />
+                    <Trash2 className="size-5 group-hover:text-red-600 transition-colors" />
                   </Button>
                 </TableCell>
               </TableRow>

@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-
   const prisma = new PrismaClient()
   const instruments = await prisma.instrument.findMany({
     select: {
@@ -17,10 +16,9 @@ export async function GET() {
       displayOrder: true,
     },
     orderBy: {
-      name: 'asc'
-    }
+      name: 'asc',
+    },
   })
-
 
   return NextResponse.json(instruments, { status: 200 })
 }

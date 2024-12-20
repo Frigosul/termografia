@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
@@ -17,7 +17,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
 import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { useModalStore } from '@/stores/useModalStore'
@@ -29,13 +29,15 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-
 const createUnionInstrument = z
   .object({
-    name: z.string().min(3, { message: 'O nome da junção precisa ser maior que 03 caracteres.', }),
-    firstInstrument: z.string({ message: "Selecione o instrumento" }),
-    secondInstrument: z.string({ message: "Selecione o instrumento" })
-  }).superRefine((value, ctx) => {
+    name: z.string().min(3, {
+      message: 'O nome da junção precisa ser maior que 03 caracteres.',
+    }),
+    firstInstrument: z.string({ message: 'Selecione o instrumento' }),
+    secondInstrument: z.string({ message: 'Selecione o instrumento' }),
+  })
+  .superRefine((value, ctx) => {
     if (value.secondInstrument === value.firstInstrument) {
       ctx.addIssue({
         code: 'custom',
@@ -48,16 +50,14 @@ const createUnionInstrument = z
         message: 'Os instrumentos não podem ser iguais',
       })
     }
-
   })
-
 
 type CreateUnionInstrument = z.infer<typeof createUnionInstrument>
 
 export function CreateUnionInstruments() {
   const { modals, closeModal, toggleModal } = useModalStore()
   const queryClient = useQueryClient()
-  const { instrumentList, isLoading } = useInstrumentsStore();
+  const { instrumentList, isLoading } = useInstrumentsStore()
 
   const {
     register,
@@ -65,7 +65,9 @@ export function CreateUnionInstruments() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<CreateUnionInstrument>({ resolver: zodResolver(createUnionInstrument) })
+  } = useForm<CreateUnionInstrument>({
+    resolver: zodResolver(createUnionInstrument),
+  })
 
   const createUnionInstrumentMutation = useMutation({
     mutationFn: createUnionInstrumentFn,
@@ -79,7 +81,7 @@ export function CreateUnionInstruments() {
     },
     onError: (error) => {
       if (error.message === 'Union already exists') {
-        toast.error("União já existente, por favor tente novamente.", {
+        toast.error('União já existente, por favor tente novamente.', {
           position: 'top-right',
           icon: <CircleX />,
         })
@@ -91,7 +93,6 @@ export function CreateUnionInstruments() {
         })
         console.error(error)
       }
-
     },
   })
   function handleCreateUnionInstrunent(data: CreateUnionInstrument) {
@@ -100,11 +101,13 @@ export function CreateUnionInstruments() {
       firstInstrument: data.firstInstrument,
       secondInstrument: data.secondInstrument,
     })
-
   }
 
   return (
-    <Dialog open={modals['create-union-instrument']} onOpenChange={() => toggleModal('create-union-instrument')}>
+    <Dialog
+      open={modals['create-union-instrument']}
+      onOpenChange={() => toggleModal('create-union-instrument')}
+    >
       <DialogDescription className="sr-only">
         Criação da União.
       </DialogDescription>
@@ -134,21 +137,29 @@ export function CreateUnionInstruments() {
             )}
           </div>
 
-
           <div className="space-y-2">
-            <Label htmlFor="firstInstrument">Selecione o primeiro instrumento</Label>
+            <Label htmlFor="firstInstrument">
+              Selecione o primeiro instrumento
+            </Label>
             <Controller
               name="firstInstrument"
               control={control}
               render={({ field: { onChange, value, ref } }) => (
-                <Select disabled={isLoading} onValueChange={onChange} value={value} name="firstInstrument">
+                <Select
+                  disabled={isLoading}
+                  onValueChange={onChange}
+                  value={value}
+                  name="firstInstrument"
+                >
                   <SelectTrigger ref={ref}>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {instrumentList?.map(item => {
+                    {instrumentList?.map((item) => {
                       return (
-                        <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
+                        <SelectItem value={item.id} key={item.id}>
+                          {item.name}
+                        </SelectItem>
                       )
                     })}
                   </SelectContent>
@@ -163,19 +174,28 @@ export function CreateUnionInstruments() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="secondInstrument">Selecione o segundo instrumento</Label>
+            <Label htmlFor="secondInstrument">
+              Selecione o segundo instrumento
+            </Label>
             <Controller
               name="secondInstrument"
               control={control}
               render={({ field: { onChange, value, ref } }) => (
-                <Select disabled={isLoading} onValueChange={onChange} value={value} name="secondInstrument">
+                <Select
+                  disabled={isLoading}
+                  onValueChange={onChange}
+                  value={value}
+                  name="secondInstrument"
+                >
                   <SelectTrigger ref={ref}>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    {instrumentList?.map(item => {
+                    {instrumentList?.map((item) => {
                       return (
-                        <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
+                        <SelectItem value={item.id} key={item.id}>
+                          {item.name}
+                        </SelectItem>
                       )
                     })}
                   </SelectContent>

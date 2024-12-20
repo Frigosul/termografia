@@ -20,7 +20,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import utc from "dayjs/plugin/utc"
+import utc from 'dayjs/plugin/utc'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -67,7 +67,7 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
       endDate: endDataUtc,
       startDate: startDataUtc,
       graphVariation: data.variation,
-      local: data.local
+      local: data.local,
     })
   }
   const startDateValue = watch('startDate')
@@ -75,13 +75,17 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
 
   useEffect(() => {
     if (!instrumendSelectedId || !instrumentList) return
-    const instrument = instrumentList.find(instrument => instrument.id === instrumendSelectedId)
+    const instrument = instrumentList.find(
+      (instrument) => instrument.id === instrumendSelectedId,
+    )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId])
+  }, [instrumendSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
-    const endDate = dayjs(startDateValue).add(1, 'day').format('YYYY-MM-DDTHH:mm')
+    const endDate = dayjs(startDateValue)
+      .add(1, 'day')
+      .format('YYYY-MM-DDTHH:mm')
     setMinEndDate(startDateValue)
     setValue('endDate', endDate)
   }, [startDateValue, setValue])
@@ -104,14 +108,23 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
                     name="local"
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
-                      <Select onValueChange={onChange} value={value} disabled={isLoading}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-72">
+                      <Select
+                        onValueChange={onChange}
+                        value={value}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-72"
+                        >
                           <SelectValue placeholder="Selecione o local" />
                         </SelectTrigger>
                         <SelectContent>
-                          {instrumentList?.map(item => {
+                          {instrumentList?.map((item) => {
                             return (
-                              <SelectItem value={item.id} key={item.id} >{item.name}</SelectItem>
+                              <SelectItem value={item.id} key={item.id}>
+                                {item.name}
+                              </SelectItem>
                             )
                           })}
                         </SelectContent>
@@ -143,7 +156,10 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
                     control={control}
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger ref={ref} className="dark:bg-slate-900 h-8 w-40">
+                        <SelectTrigger
+                          ref={ref}
+                          className="dark:bg-slate-900 h-8 w-40"
+                        >
                           <SelectValue placeholder="Variação" />
                         </SelectTrigger>
                         <SelectContent>
@@ -226,11 +242,7 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
             )}
           </div>
           <div className="h-[4.5rem] flex items-end">
-            <Button
-              disabled={isPending}
-              type="submit"
-              className="h-8 mb-4"
-            >
+            <Button disabled={isPending} type="submit" className="h-8 mb-4">
               Editar dados
             </Button>
           </div>

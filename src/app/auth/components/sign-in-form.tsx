@@ -49,7 +49,6 @@ export function SignInForm() {
         router.push('/')
       }
     } catch (error) {
-
       toast.error('Erro encontrado, por favor tente novamente: ' + error, {
         position: 'top-right',
         icon: <CircleX />,
@@ -58,7 +57,10 @@ export function SignInForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(handleSignIn)} className="w-[20rem] flex flex-col space-y-3">
+    <form
+      onSubmit={handleSubmit(handleSignIn)}
+      className="w-[20rem] flex flex-col space-y-3"
+    >
       <div className="space-y-2">
         <Label htmlFor="email">Seu e-mail</Label>
         <Input
@@ -88,7 +90,7 @@ export function SignInForm() {
         )}
       </div>
 
-      <Button className='mt-2' disabled={isSubmitting} type="submit">
+      <Button className="mt-2" disabled={isSubmitting} type="submit">
         Entrar
       </Button>
       {/* <Link href="/auth/forgot-password" className='text-sm text-primary text-center '>Esqueci minha senha</Link> */}

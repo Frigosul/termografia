@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-
   const prisma = new PrismaClient()
   const unionInstruments = await prisma.unionInstruments.findMany({
     select: {
@@ -11,27 +10,27 @@ export async function GET() {
       isActive: true,
       firstInstrument: {
         select: {
-          name: true
-        }
+          name: true,
+        },
       },
       secondInstrument: {
         select: {
-          name: true
-        }
-      }
+          name: true,
+        },
+      },
     },
     orderBy: {
-      name: 'asc'
-    }
+      name: 'asc',
+    },
   })
 
-  const formattedUnionInstruments = unionInstruments.map(unionInstrument => {
+  const formattedUnionInstruments = unionInstruments.map((unionInstrument) => {
     return {
       id: unionInstrument.id,
       name: unionInstrument.name,
       fisrtInstrument: unionInstrument.firstInstrument.name,
       secondInstrument: unionInstrument.secondInstrument.name,
-      isActive: unionInstrument.isActive
+      isActive: unionInstrument.isActive,
     }
   })
 

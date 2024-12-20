@@ -7,7 +7,15 @@ import { UserRolesType } from '@/utils/user-roles'
 import { ChevronDown, LayoutGrid, LogOut, UserPen } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { SheetSidebar } from './sheet-sidebar'
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
 
 export function Header() {
   const { openModal } = useModalStore()
@@ -23,27 +31,40 @@ export function Header() {
       <SheetSidebar />
 
       <div className="flex justify-center items-center gap-1 mr-11 lg:mr-9">
-        <p className='text-base font-light'>Temp. em <span className='text-primary font-semibold'>ºC</span> </p>
+        <p className="text-base font-light">
+          Temp. em <span className="text-primary font-semibold">ºC</span>{' '}
+        </p>
         <DropdownMenu>
           <DropdownMenuTrigger className="hidden md:flex items-center justify-center mx-2 gap-1">
             <Avatar className="size-9 flex items-center justify-center">
               <AvatarImage
                 className="rounded-full"
-              // src="https://github.com/joaoeduardodias.png"
+                // src="https://github.com/joaoeduardodias.png"
               />
               <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
                 {getInitials(userName)}
               </AvatarFallback>
             </Avatar>
             {userName}
-            <ChevronDown className='size-4' />
+            <ChevronDown className="size-4" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel className='text-center'>Minha conta</DropdownMenuLabel>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel className="text-center">
+              Minha conta
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
-              openModal('update-user', { id: String(session?.id), email: String(session?.user?.email), name: String(session?.user?.name), password: '', role: session?.role as UserRolesType })
-            }}>
+            <DropdownMenuItem
+              className="flex items-center justify-start gap-2"
+              onClick={() => {
+                openModal('update-user', {
+                  id: String(session?.id),
+                  email: String(session?.user?.email),
+                  name: String(session?.user?.name),
+                  password: '',
+                  role: session?.role as UserRolesType,
+                })
+              }}
+            >
               <UserPen size={18} />
               Alterar Perfil
             </DropdownMenuItem>
@@ -53,7 +74,10 @@ export function Header() {
               <LockKeyhole size={16} />
               Alterar Senha
             </DropdownMenuItem> */}
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
+            <DropdownMenuItem
+              className="flex items-center justify-start gap-2"
+              onClick={() => signOut()}
+            >
               <LogOut size={16} className="rotate-180" />
               Sair
             </DropdownMenuItem>
@@ -61,21 +85,21 @@ export function Header() {
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger >
+          <DropdownMenuTrigger>
             <LayoutGrid strokeWidth={2} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className='text-center'>
+          <DropdownMenuContent align="end" className="text-center">
             <DropdownMenuLabel>Modos de Exibição</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={appearanceMode === 'simple'}
-              onCheckedChange={() => onModeAppearance("simple")}
+              onCheckedChange={() => onModeAppearance('simple')}
             >
               Simplificado
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={appearanceMode === 'graph'}
-              onCheckedChange={() => onModeAppearance("graph")}
+              onCheckedChange={() => onModeAppearance('graph')}
             >
               Gráfico
             </DropdownMenuCheckboxItem>

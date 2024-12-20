@@ -1,5 +1,3 @@
-
-
 import {
   ChartConfig,
   ChartContainer,
@@ -60,7 +58,6 @@ export function ChartPressure({
   variation,
   maxValue,
 }: ChartProps) {
-
   const interval = Number(
     (Math.abs(Number(maxValue) - Number(minValue)) + 1).toFixed(0),
   )
@@ -71,8 +68,7 @@ export function ChartPressure({
     }
   })
 
-
-  const formattedDateClose = dayjs(dateClose).format("DD/MM/YYYY - HH:mm")
+  const formattedDateClose = dayjs(dateClose).format('DD/MM/YYYY - HH:mm')
   const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
@@ -91,7 +87,7 @@ export function ChartPressure({
           <span>{formattedDateOpen}</span>
         </div>
       </div>
-      <ChartContainer config={chartConfig} className='h-64 print:h-full w-full'>
+      <ChartContainer config={chartConfig} className="h-64 print:h-full w-full">
         <LineChart
           width={500}
           data={formattedData}
@@ -139,9 +135,7 @@ export function ChartPressure({
               },
             }}
             domain={[minValue, maxValue]}
-            ticks={Array.from({ length: interval }).map(
-              (_, i) => minValue + i,
-            )}
+            ticks={Array.from({ length: interval }).map((_, i) => minValue + i)}
             interval={variation ? variation - 1 : 0}
             stroke="hsl(var(--card-foreground))"
           />
@@ -158,8 +152,6 @@ export function ChartPressure({
           />
         </LineChart>
       </ChartContainer>
-
     </div>
-
   )
 }
