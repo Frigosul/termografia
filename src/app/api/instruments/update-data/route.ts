@@ -5,10 +5,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(req: NextRequest) {
 
-  const { temperatures } = await req.json()
+  const { value } = await req.json()
   const prisma = new PrismaClient()
-
-  if (!temperatures) {
+  console.log(value)
+  if (!value) {
     return NextResponse.json(
       { message: 'Missing data' },
       { status: 400 },
@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest) {
   }
   try {
     const result = await Promise.all(
-      temperatures.map(async ({ id, temperature, updatedUserAt, updatedAt }: { id: string, temperature: number, updatedAt: string, updatedUserAt: string }) => {
+      value.map(async ({ id, temperature, updatedUserAt, updatedAt }: { id: string, temperature: number, updatedAt: string, updatedUserAt: string }) => {
         const existTemperature = await prisma.temperature.findUnique({ where: { id } });
         if (!existTemperature) {
           return { message: 'Temperature not exists', status: 400 };
@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest) {
 
   } catch (error) {
     return NextResponse.json(
-      { error: 'Error update temperatures', details: error },
+      { error: 'Error update value', details: error },
       { status: 500 },
     )
   }

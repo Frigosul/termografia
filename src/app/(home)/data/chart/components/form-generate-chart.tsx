@@ -17,13 +17,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useGeneratePDF } from '@/hooks/useGeneratorPdf'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from "dayjs/plugin/utc"
 import { RefObject, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useReactToPrint } from 'react-to-print'
 import { z } from 'zod'
 dayjs.extend(utc)
 
@@ -69,7 +69,8 @@ interface FormGenerateChartProps {
 export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateChartProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
-  const { generatePDF } = useGeneratePDF()
+  // const { generatePDF } = useGeneratePDF()
+  const reactToPrintFn = useReactToPrint({ contentRef: divRef });
 
   const {
     register,
@@ -456,7 +457,7 @@ export function FormGenerateChart({ divRef, mutate, isPending }: FormGenerateCha
           <Button
             disabled={isPending}
             type="button"
-            onClick={() => generatePDF(divRef)}
+            onClick={() => reactToPrintFn()}
             variant="outline"
             className="h-8 min-w-32 mb-4"
           >

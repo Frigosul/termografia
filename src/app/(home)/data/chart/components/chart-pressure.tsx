@@ -77,7 +77,7 @@ export function ChartPressure({
 
   return (
     <div className="relative border border-card-foreground rounded-md pt-4  h-72 my-4">
-      <div className="absolute right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
+      <div className="absolute print:right-2 right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
         <div className="flex justify-between">
           <span>Local: </span>
           <span>{local}</span>
@@ -91,7 +91,7 @@ export function ChartPressure({
           <span>{formattedDateOpen}</span>
         </div>
       </div>
-      <ChartContainer config={chartConfig} className='h-64 w-full'>
+      <ChartContainer config={chartConfig} className='h-64 print:h-full w-full'>
         <LineChart
           width={500}
           data={formattedData}

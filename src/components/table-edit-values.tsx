@@ -249,6 +249,7 @@ export function TableEditValues({ data, instrumentType }: TableProps) {
     const nextIndex = currentIndex + direction;
     return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null;
   }
+  // console.log(editData.data)
 
   return (
     <div className="flex-grow flex flex-col max-h-[55vh] max-w-screen-2xl overflow-hidden">

@@ -5,7 +5,6 @@ type DataRequest = {
     value: number
     updatedAt: string
     updatedUserAt: string | null
-
   }[]
 }
 
@@ -15,7 +14,7 @@ export async function updateData({ dataValue }: DataRequest) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ dataValue }),
+    body: JSON.stringify({ value: dataValue }),
   })
   if (!response.ok) {
     const error = await response.json()

@@ -13,6 +13,7 @@ const config = {
       },
     },
     extend: {
+
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -50,6 +51,7 @@ const config = {
       },
       screens: {
         '3xl': '1500px',
+        'print': { 'raw': 'print' }
       },
       borderRadius: {
         lg: 'var(--radius)',
