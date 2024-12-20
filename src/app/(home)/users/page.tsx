@@ -1,4 +1,3 @@
-import { AlterPassword } from './components/alter-password'
 import { CreateUser } from './components/create-user'
 import { DeleteUser } from './components/delete-user'
 import { ListUsers } from './components/list-users'
@@ -12,7 +11,6 @@ export default function Users() {
           Gerenciar usuários
         </h2>
         <CreateUser />
-        <AlterPassword />
         <UpdateUser />
         <DeleteUser />
       </div>

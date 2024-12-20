@@ -18,12 +18,11 @@ import {
   Database,
   House,
   LineChart,
-  LockKeyhole,
   LogOut,
   Menu,
   ScrollText,
   UserPen,
-  Users,
+  Users
 } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
@@ -67,12 +66,12 @@ export function SheetSidebar() {
               <UserPen size={18} />
               Alterar Perfil
             </DropdownMenuItem>
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+            {/* <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
               openModal('alter-password', { id: String(session?.id) })
             }}>
               <LockKeyhole size={16} />
               Alterar Senha
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
               <LogOut size={16} className="rotate-180" />
               Sair

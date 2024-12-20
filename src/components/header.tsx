@@ -4,7 +4,7 @@ import { useApperanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
 import { getInitials } from '@/utils/return-initials'
 import { UserRolesType } from '@/utils/user-roles'
-import { ChevronDown, LayoutGrid, LockKeyhole, LogOut, UserPen } from 'lucide-react'
+import { ChevronDown, LayoutGrid, LogOut, UserPen } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { SheetSidebar } from './sheet-sidebar'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
@@ -47,12 +47,12 @@ export function Header() {
               <UserPen size={18} />
               Alterar Perfil
             </DropdownMenuItem>
-            <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
+            {/* <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => {
               openModal('alter-password', { id: String(session?.id) })
             }}>
               <LockKeyhole size={16} />
               Alterar Senha
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem className='flex items-center justify-start gap-2' onClick={() => signOut()}>
               <LogOut size={16} className="rotate-180" />
               Sair
