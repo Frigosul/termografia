@@ -48,7 +48,6 @@ export function DeleteUser() {
   }
 
 
-  if (!userData) return <p>Erro encontrado</p>
   return (
     <Dialog
       open={modals['delete-user']}
@@ -66,7 +65,7 @@ export function DeleteUser() {
         </DialogHeader>
 
         <form
-          onSubmit={(event) => handleDeleteUser(event, userData?.id)}
+          onSubmit={(event) => handleDeleteUser(event, userData?.id!)}
           className="flex gap-5 mx-auto md:w-80 "
         >
           <DialogClose asChild>

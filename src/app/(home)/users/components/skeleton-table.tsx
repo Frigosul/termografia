@@ -1,9 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 
-export interface SkeletonTableProps { }
 
-export function SkeletonTable(props: SkeletonTableProps) {
+export function SkeletonTable() {
 
   return Array.from({ length: 3 }).map((_, index) => (
     <TableRow key={index}>
