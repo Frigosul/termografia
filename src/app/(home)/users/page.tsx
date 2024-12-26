@@ -1,7 +1,6 @@
 import { CreateUser } from './components/create-user'
 import { DeleteUser } from './components/delete-user'
 import { ListUsers } from './components/list-users'
-import { UpdateUser } from './components/update-user'
 
 export default function Users() {
   return (
@@ -11,7 +10,6 @@ export default function Users() {
           Gerenciar usuários
         </h2>
         <CreateUser />
-        <UpdateUser />
         <DeleteUser />
       </div>
       <ListUsers />

@@ -2,6 +2,7 @@ import { Header } from '@/components/header'
 import { SideBar } from '@/components/sidebar'
 
 import { ReactNode } from 'react'
+import { UpdateUser } from './users/components/update-user'
 
 export default function HomeLayout({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
           SulTerm | suporte2.apms@frigosul.com.br
         </footer>
       </div>
+      <UpdateUser />
     </div>
   )
 }
