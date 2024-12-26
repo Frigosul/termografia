@@ -263,6 +263,7 @@ export async function POST(req: NextRequest) {
     select: {
       id: true,
       name: true,
+      type: true,
       temperatures: {
         where: {
           temperature: {
@@ -336,7 +337,7 @@ export async function POST(req: NextRequest) {
   const response: ListDataResponse = {
     id: data.id,
     name: data.name,
-    chartType: 'temp',
+    chartType: data.type === 'press' ? 'temp/press' : 'temp',
     dateClose: formattedStartDate,
     dateOpen: formattedEndDateNotAdd,
     chartTemperature: chartTemperature.map((temp) => ({

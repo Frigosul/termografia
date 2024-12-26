@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Login | Termografia',
+  title: 'Login | SulTerm',
 }
 export default function AuthLayout({
   children,

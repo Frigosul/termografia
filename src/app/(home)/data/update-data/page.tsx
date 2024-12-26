@@ -24,6 +24,7 @@ export default function PageManagedData() {
       })
     },
   })
+  console.log(dataValue?.chartType)
 
   return (
     <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
@@ -41,7 +42,12 @@ export default function PageManagedData() {
         <SkeletonTable />
       ) : (
         dataValue?.chartTemperature && (
-          <TableEditValues data={dataValue.chartTemperature} />
+          <TableEditValues
+            instrumentType={
+              dataValue.chartType === 'temp/press' ? 'press' : 'temp'
+            }
+            data={dataValue.chartTemperature}
+          />
         )
       )}
     </main>

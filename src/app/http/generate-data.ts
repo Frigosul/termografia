@@ -20,7 +20,7 @@ export interface GenerateDataResponse {
     time: string
     value: number
   }[]
-  instrumentType: string
+  instrumentType: 'press' | 'temp'
   error?: string
 }
 
