@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 export interface GetInstrumentWithUnionsResponse {
   id: string
   name: string
@@ -6,7 +8,9 @@ export interface GetInstrumentWithUnionsResponse {
 export async function getInstrumentsWithUnions(): Promise<
   GetInstrumentWithUnionsResponse[]
 > {
-  const response = await fetch('/api/instruments/list-instruments-with-unions')
+  const response = await fetchServer(
+    '/api/instruments/list-instruments-with-unions',
+  )
 
   if (!response.ok) {
     const error = await response.json()

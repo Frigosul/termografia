@@ -1,9 +1,10 @@
+import { fetchServer } from '@/middlewares/fetch-server'
 import { User } from '@/types/user'
 
 type UsersResponse = User[]
 
 export async function getUsers(): Promise<UsersResponse> {
-  const response = await fetch('/api/users/list-users')
+  const response = await fetchServer('/api/users/list-users')
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({

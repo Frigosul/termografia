@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 interface DeleteUnionRequest {
   unionId: string
 }
@@ -5,7 +7,7 @@ interface DeleteUnionRequest {
 export async function deleteUnion({
   unionId,
 }: DeleteUnionRequest): Promise<void> {
-  const response = await fetch(
+  const response = await fetchServer(
     `/api/instruments/delete-union?unionId=${unionId}`,
     {
       method: 'DELETE',

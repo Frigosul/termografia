@@ -1,3 +1,4 @@
+import { fetchServer } from '@/middlewares/fetch-server'
 import { UserRolesType } from '@/utils/user-roles'
 
 type UserResponse = {
@@ -21,18 +22,21 @@ export async function updateUser({
   email,
   password,
 }: UserRequest): Promise<UserResponse> {
-  const response = await fetch(`/api/users/update-user?userId=${userId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
+  const response = await fetchServer(
+    `/api/users/update-user?userId=${userId}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        userRole,
+        email,
+        password,
+      }),
     },
-    body: JSON.stringify({
-      name,
-      userRole,
-      email,
-      password,
-    }),
-  })
+  )
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({

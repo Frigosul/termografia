@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 type DataRequest = {
   unions: {
     id: string
@@ -9,7 +11,7 @@ type DataRequest = {
 }
 
 export async function updateUnions({ unions }: DataRequest) {
-  const response = await fetch(`/api/instruments/update-unions`, {
+  const response = await fetchServer(`/api/instruments/update-unions`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

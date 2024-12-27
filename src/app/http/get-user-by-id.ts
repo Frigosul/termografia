@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 type UserResponse = {
   id: string
   name: string
@@ -12,7 +14,7 @@ type UserRequest = {
 export async function getUserById({
   userId,
 }: UserRequest): Promise<UserResponse> {
-  const response = await fetch(`http://localhost:3333/users/${userId}`)
+  const response = await fetchServer(`http://localhost:3333/users/${userId}`)
   if (!response.ok) {
     const error = await response.json()
     return Promise.reject({

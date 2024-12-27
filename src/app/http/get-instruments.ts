@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 export type InstrumentsResponse = {
   id: string
   idSitrad: number
@@ -11,7 +13,7 @@ export type InstrumentsResponse = {
 }[]
 
 export async function getInstruments(): Promise<InstrumentsResponse> {
-  const response = await fetch('/api/instruments/summary')
+  const response = await fetchServer('/api/instruments/summary')
 
   if (!response.ok) {
     const error = await response.json()

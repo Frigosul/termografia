@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 export type ListDataRequest = {
   local: string
   graphVariation: string
@@ -62,7 +64,7 @@ export async function listData({
   endDate,
   description = '',
 }: ListDataRequest): Promise<ListDataResponse> {
-  const response = await fetch('/api/instruments/list-data', {
+  const response = await fetchServer('/api/instruments/list-data', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

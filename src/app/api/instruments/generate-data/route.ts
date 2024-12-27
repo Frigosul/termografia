@@ -22,7 +22,7 @@ interface GenerateDataRequest {
   initialValue?: number
   averageValue?: number
   generateMode?: GenerateDataModeType
-  instrumentType: 'temperature' | 'pressure'
+  instrumentType: 'temp' | 'press'
 }
 
 export async function POST(request: NextRequest) {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
     let historicalData: Temperature[] | Pressure[] = []
 
-    if (instrument.type === 'pressure') {
+    if (instrument.type === 'press') {
       historicalData = await prisma.pressure.findMany({
         where: {
           instruments: {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         },
         take: 20,
       })
-    } else if (instrument.type === 'temperature') {
+    } else if (instrument.type === 'temp') {
       historicalData = await prisma.temperature.findMany({
         where: {
           instruments: {
@@ -87,14 +87,14 @@ export async function POST(request: NextRequest) {
             (sum: number, record: Pressure | Temperature) => sum + record.value,
             0,
           ) / historicalData.length
-        : instrument.type === 'temperature'
+        : instrument.type === 'temp'
           ? 10
           : 3.5)
 
     const sensorData: SensorData[] = []
     const variationSensorData: SensorData[] = []
     let currentDate = formattedStartDate
-    const value = initialValue ?? (instrument.type === 'temperature' ? 15 : 0)
+    const value = initialValue ?? (instrument.type === 'temp' ? 15 : 0)
     let lastVariationMinute = -1
     let pressureCycleStart = currentDate
     let pressureCyclePhase = 'initial'
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     while (currentDate.isBefore(formattedEndDate)) {
       let currentValue = value
 
-      if (instrument.type === 'temperature') {
+      if (instrument.type === 'temp') {
         if (generateMode === 'n1') {
           currentValue = currentDate.isBefore(formattedStartDate.add(5, 'hour'))
             ? currentValue - Math.random() * 0.7
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         if (currentDate.isAfter(formattedDefrostDate)) {
           currentValue += Math.random() * 3
         }
-      } else if (instrument.type === 'pressure') {
+      } else if (instrument.type === 'press') {
         const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
         if (pressureCyclePhase === 'initial' && minutesInCycle >= 3) {
           currentValue = 3.5
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
 
     let existingRecords = []
 
-    if (instrument.type === 'pressure') {
+    if (instrument.type === 'press') {
       existingRecords = await prisma.pressure.findMany({
         where: {
           instruments: {
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
           createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
         },
       })
-    } else if (instrument.type === 'temperature') {
+    } else if (instrument.type === 'temp') {
       existingRecords = await prisma.temperature.findMany({
         where: {
           instruments: {

@@ -1,3 +1,4 @@
+import { fetchServer } from '@/middlewares/fetch-server'
 import { GenerateDataModeType } from '@/types/generate-data-mode'
 
 export interface GenerateDataRequest {
@@ -35,7 +36,7 @@ export async function generateData({
   initialTemp,
   userName,
 }: GenerateDataRequest): Promise<GenerateDataResponse> {
-  const response = await fetch(`/api/instruments/generate-data`, {
+  const response = await fetchServer(`/api/instruments/generate-data`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

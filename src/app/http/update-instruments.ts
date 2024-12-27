@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 type DataRequest = {
   instruments: {
     id: string
@@ -12,7 +14,7 @@ type DataRequest = {
 }
 
 export async function updateInstruments({ instruments }: DataRequest) {
-  const response = await fetch(`/api/instruments/update-instruments`, {
+  const response = await fetchServer(`/api/instruments/update-instruments`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

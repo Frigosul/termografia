@@ -29,7 +29,7 @@ export default function PageChart() {
   })
 
   const divPdfRef = useRef<HTMLDivElement>(null)
-
+  console.log(dataChart)
   return (
     <ScrollArea className="flex-1">
       <main className="p-4 sm:p-6 md:p-6 max-w-screen-xl">
@@ -84,8 +84,8 @@ export default function PageChart() {
               </>
 
               <div className="flex gap-2 h-32 mt-4">
-                <Card className="bg-transparent flex-1">
-                  <CardContent className="border border-card-foreground rounded-md px-2 h-full">
+                <Card className="bg-transparent flex-1 print:w-96">
+                  <CardContent className="border border-card-foreground rounded-md px-2 h-full print:w-96">
                     <span className="text-xs">
                       {' '}
                       Ocorrências / Medidas Corretivas:{' '}

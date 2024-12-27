@@ -333,7 +333,7 @@ export async function POST(req: NextRequest) {
     intervalMinutes: graphVariation,
     key: 'pressure',
   })
-
+  console.log(chartPressure)
   const response: ListDataResponse = {
     id: data.id,
     name: data.name,

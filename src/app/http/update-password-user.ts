@@ -1,3 +1,5 @@
+import { fetchServer } from '@/middlewares/fetch-server'
+
 interface UserRequest {
   userId: string
   oldPassword: string
@@ -18,7 +20,7 @@ export async function updatePasswordUser({
   oldPassword,
   newPassword,
 }: UserRequest): Promise<UpdatePasswordError | UpdatePasswordResponse> {
-  const response = await fetch(
+  const response = await fetchServer(
     `/api/users/update-password-user?userId=${userId}`,
     {
       method: 'PATCH',
