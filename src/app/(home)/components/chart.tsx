@@ -1,10 +1,17 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useApperanceStore } from '@/stores/useAppearanceStore'
+import { useModalStore } from '@/stores/useModalStore'
+import { Send } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { memo, useMemo, useRef } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+
+
 import { toast } from 'sonner'
 interface ChartProps {
   dataChart: {
-    id: string
+    idSitrad: number
     name: string
     type: 'temp' | 'press'
     status: string
@@ -19,6 +26,7 @@ interface ChartProps {
 
 const Chart = memo(function Chart({
   dataChart: {
+    idSitrad,
     name,
     type,
     temperature,
@@ -30,7 +38,10 @@ const Chart = memo(function Chart({
     maxValue,
   },
 }: ChartProps) {
+  const {openModal} = useModalStore()
   const { appearanceMode } = useApperanceStore()
+  const session = useSession()
+
   const valueInPercent = Math.min(
     Math.max(
       (((type === 'press' ? pressure : temperature) - minValue) /
@@ -154,18 +165,47 @@ const Chart = memo(function Chart({
         </div>
         {type === 'temp' && (
           <div className="flex justify-between px-1  lg:p-2 flex-wrap">
-            <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
-              DEGE.
-              <div
-                className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
-            <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
-              VENT.
-              <div
-                className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
+            {session.data?.role === 'manage' ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="text-sm px-0 z-30 gap-3 h-7"
+                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Deg', name})}
+                >
+                  DEGE.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="text-sm px-0 z-30 gap-3 h-7"
+                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Vent',name})}
+
+                >
+                  VENT.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </Button>
+               
+              </>
+            ) : (
+              <>
+                <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
+                  DEGE.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </span>
+                <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
+                  VENT.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </span>
+              </>
+            )}
             <span className="text-xs w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
               RESF.
               <div
@@ -178,6 +218,14 @@ const Chart = memo(function Chart({
                 className={`size-3 lg:size-4 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
               />
             </span>
+            {session.data?.role && (
+              <div className='flex items-center justify-between w-full gap-1 mt-2'>
+               <Input type='number' min={minValue} max={maxValue}  className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder='setpoint' />
+                <Button className='z-30 h-8 px-2'>
+                  <Send className='size-4 dark:text-white' />
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -211,18 +259,47 @@ const Chart = memo(function Chart({
             </span>
           </div>
           <div className="flex flex-col justify-between lg:p-2 flex-wrap">
-            <span className="text-xs  w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
-              DEGE.
-              <div
-                className={`size-3 lg:size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
-            <span className="text-xs w-[70px]  font-normal lg:text-sm flex items-center justify-between gap-3">
-              VENT.
-              <div
-                className={`size-3 lg:size-3 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
+          {session.data?.role === 'manage' ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="text-sm px-0 z-30 gap-3 h-6"
+                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Deg', name})}
+                >
+                  DEGE.
+                  <div
+                    className={`!size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="text-sm px-0 z-30 gap-3 h-6"
+                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Vent',name})}
+
+                >
+                  VENT.
+                  <div
+                    className={`!size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </Button>
+               
+              </>
+            ) : (
+              <>
+                <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
+                  DEGE.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </span>
+                <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
+                  VENT.
+                  <div
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                  />
+                </span>
+              </>
+            )}
             <span className="text-xs w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
               RESF.
               <div
@@ -237,6 +314,14 @@ const Chart = memo(function Chart({
             </span>
           </div>
         </div>
+        {session.data?.role && (
+              <div className='flex items-center justify-between w-full gap-2 mt-2'>
+               <Input type='number' min={minValue} max={maxValue}  className="z-30 flex-1 [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder='setpoint' />
+                <Button className='z-30 h-8 px-2'>
+                  <Send className='size-4 dark:text-white' />
+                </Button>
+              </div>
+            )}
       </div>
     )
   }

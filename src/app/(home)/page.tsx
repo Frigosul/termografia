@@ -3,6 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { AlertError } from './components/alert'
 import { Chart } from './components/chart'
+import { DialogOptions } from './components/dialog-options'
 import { SkeletonChart } from './components/skeleton-chart'
 
 export default function Home() {
@@ -10,6 +11,8 @@ export default function Home() {
 
   return (
     <ScrollArea className="relative flex-1">
+      <DialogOptions />
+
       <main>
         <div className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 `}>
           {error ? (

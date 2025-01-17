@@ -5,6 +5,7 @@ import {
   withAuth,
 } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
+import { userRoles } from './utils/user-roles'
 
 const callbackOptions: NextAuthMiddlewareOptions = {}
 
@@ -29,13 +30,8 @@ export async function middleware(request: NextRequestWithAuth) {
     ],
     level2: ['/data/chart', '/'],
     level1: ['/'],
+    manage: ['/'],
   }
-
-  const userRoles = {
-    adm: 'Administrador',
-    level1: 'Nível 1',
-    level2: 'Nível 2',
-  } as const
 
   function userHasAccess(pathname: string, role: string) {
     const roleKey = (

@@ -1,48 +1,48 @@
-import { NextAuthOptions } from "next-auth";
-import NextAuth from "next-auth/next";
-import CredentialProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from 'next-auth'
+import NextAuth from 'next-auth/next'
+import CredentialProvider from 'next-auth/providers/credentials'
 
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialProvider({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Senha", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Senha', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials) return null;
+        if (!credentials) return null
         try {
           const response = await fetch(
             `${process.env.NEXTAUTH_URL}/api/users/sign-in`,
             {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 email: credentials.email,
                 password: credentials.password,
               }),
-            }
-          );
+            },
+          )
 
-          if (response.status !== 200) return null;
+          if (response.status !== 200) return null
 
-          const data = await response.json();
-          if (!data.token || !data.role) return null;
+          const data = await response.json()
+          if (!data.token || !data.role) return null
 
           const parseJWT = await JSON.parse(
-            Buffer.from(data.token.split(".")[1], "base64").toString()
-          );
+            Buffer.from(data.token.split('.')[1], 'base64').toString(),
+          )
 
           return {
             id: parseJWT.userId,
             email: data.email,
             role: data.role,
             name: data.name,
-          };
+          }
         } catch (error) {
-          console.error("Erro na autenticação:", error);
-          return null;
+          console.error('Erro na autenticação:', error)
+          return null
         }
       },
     }),
@@ -50,29 +50,29 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        token.id = user.id
+        token.role = user.role
       }
 
-      return token;
+      return token
     },
     async session({ session, token }) {
-      session.id = token.id as string;
-      session.role = token.role as string;
+      session.id = token.id as string
+      session.role = token.role as string
 
-      return session;
+      return session
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      return baseUrl;
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      return baseUrl
     },
   },
   pages: {
-    signIn: "/auth",
-    signOut: "/auth",
+    signIn: '/auth',
+    signOut: '/auth',
   },
-};
+}
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions)
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST }

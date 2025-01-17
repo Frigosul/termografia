@@ -1,5 +1,6 @@
 export interface Instrument {
   id: string
+  idSitrad: number
   name: string
   type: 'temp' | 'press'
   status: string

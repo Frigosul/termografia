@@ -8,22 +8,30 @@ interface UserData {
   email?: string
   password?: string
 }
+interface AlertData {
+  action: 'Deg' | 'Vent'
+  name: string
+  instrumentId: number
+}
 
 interface UseModalStoreProps {
   modals: { [key: string]: boolean }
   userData: UserData | null
-  openModal: (modalName: string, userData?: UserData) => void
+  alertData: AlertData | null
+  openModal: (modalName: string, userData?: UserData, alertData?: AlertData) => void
   closeModal: (modalName: string) => void
   toggleModal: (modalName: string) => void
 }
 
 export const useModalStore = create<UseModalStoreProps>((set) => ({
   modals: {},
+  alertData: null,
   userData: null,
-  openModal: (modalName, userData?) => {
+  openModal: (modalName, userData?, alertData?) => {
     set((state) => ({
       modals: { ...state.modals, [modalName]: true },
       userData: userData || state.userData,
+      alertData: alertData || state.alertData,
     }))
   },
   closeModal: (modalName) => {
