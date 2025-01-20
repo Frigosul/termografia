@@ -296,7 +296,7 @@ const Chart = memo(function Chart({
                     'setpoint',
                     ['9.9', '-9.9', '-999', '9999', '999'],
                     {
-                      placeholder: '',
+                      placeholder: 'setpoint',
                     },
                   )}
                   min={minValue}
@@ -444,7 +444,7 @@ const Chart = memo(function Chart({
               {...registerWithMask(
                 'setpoint',
                 ['9.9', '-9.9', '-999', '9999', '999'],
-                { placeholder: '' },
+                { placeholder: 'setpoint' },
               )}
               min={minValue}
               max={maxValue}
