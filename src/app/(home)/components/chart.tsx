@@ -7,12 +7,12 @@ import { useSession } from 'next-auth/react'
 import { memo, useMemo, useRef } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
-
 import { toast } from 'sonner'
 interface ChartProps {
   dataChart: {
     idSitrad: number
     name: string
+    model: number
     type: 'temp' | 'press'
     status: string
     isSensorError: boolean
@@ -29,6 +29,7 @@ const Chart = memo(function Chart({
     idSitrad,
     name,
     type,
+    model,
     temperature,
     pressure,
     status,
@@ -38,7 +39,7 @@ const Chart = memo(function Chart({
     maxValue,
   },
 }: ChartProps) {
-  const {openModal} = useModalStore()
+  const { openModal } = useModalStore()
   const { appearanceMode } = useApperanceStore()
   const session = useSession()
 
@@ -170,25 +171,48 @@ const Chart = memo(function Chart({
                 <Button
                   variant="outline"
                   className="text-sm px-0 z-30 gap-3 h-7"
-                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Deg', name})}
+                  onClick={() =>
+                    openModal('alert-confirm', undefined, {
+                      instrumentId: idSitrad,
+                      action: 'Deg',
+                      name,
+                      model,
+                      active: !!status.includes('deg'),
+                    })
+                  }
                 >
                   DEGE.
                   <div
                     className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
                   />
                 </Button>
-                <Button
-                  variant="outline"
-                  className="text-sm px-0 z-30 gap-3 h-7"
-                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Vent',name})}
-
-                >
-                  VENT.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </Button>
-               
+                {model !== 73 ? (
+                  <Button
+                    variant="outline"
+                    className="text-sm px-0 z-30 gap-3 h-7"
+                    onClick={() =>
+                      openModal('alert-confirm', undefined, {
+                        instrumentId: idSitrad,
+                        action: 'Vent',
+                        name,
+                        model,
+                        active: !!status.includes('vent'),
+                      })
+                    }
+                  >
+                    VENT.
+                    <div
+                      className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    />
+                  </Button>
+                ) : (
+                  <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
+                    VENT.
+                    <div
+                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    />
+                  </span>
+                )}
               </>
             ) : (
               <>
@@ -219,10 +243,16 @@ const Chart = memo(function Chart({
               />
             </span>
             {session.data?.role && (
-              <div className='flex items-center justify-between w-full gap-1 mt-2'>
-               <Input type='number' min={minValue} max={maxValue}  className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder='setpoint' />
-                <Button className='z-30 h-8 px-2'>
-                  <Send className='size-4 dark:text-white' />
+              <div className="flex items-center justify-between w-full gap-1 mt-2">
+                <Input
+                  type="number"
+                  min={minValue}
+                  max={maxValue}
+                  className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="setpoint"
+                />
+                <Button className="z-30 h-8 px-2">
+                  <Send className="size-4 dark:text-white" />
                 </Button>
               </div>
             )}
@@ -259,30 +289,53 @@ const Chart = memo(function Chart({
             </span>
           </div>
           <div className="flex flex-col justify-between lg:p-2 flex-wrap">
-          {session.data?.role === 'manage' ? (
+            {session.data?.role === 'manage' ? (
               <>
                 <Button
                   variant="outline"
                   className="text-sm px-0 z-30 gap-3 h-6"
-                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Deg', name})}
+                  onClick={() =>
+                    openModal('alert-confirm', undefined, {
+                      instrumentId: idSitrad,
+                      action: 'Deg',
+                      name,
+                      model,
+                      active: !!status.includes('deg'),
+                    })
+                  }
                 >
                   DEGE.
                   <div
                     className={`!size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
                   />
                 </Button>
-                <Button
-                  variant="outline"
-                  className="text-sm px-0 z-30 gap-3 h-6"
-                  onClick={()=> openModal('alert-confirm',undefined,{instrumentId: idSitrad,action: 'Vent',name})}
-
-                >
-                  VENT.
-                  <div
-                    className={`!size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </Button>
-               
+                {model !== 73 ? (
+                  <Button
+                    variant="outline"
+                    className="text-sm px-0 z-30 gap-3 h-7"
+                    onClick={() =>
+                      openModal('alert-confirm', undefined, {
+                        instrumentId: idSitrad,
+                        action: 'Vent',
+                        name,
+                        model,
+                        active: !!status.includes('vent'),
+                      })
+                    }
+                  >
+                    VENT.
+                    <div
+                      className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    />
+                  </Button>
+                ) : (
+                  <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
+                    VENT.
+                    <div
+                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    />
+                  </span>
+                )}
               </>
             ) : (
               <>
@@ -315,13 +368,19 @@ const Chart = memo(function Chart({
           </div>
         </div>
         {session.data?.role && (
-              <div className='flex items-center justify-between w-full gap-2 mt-2'>
-               <Input type='number' min={minValue} max={maxValue}  className="z-30 flex-1 [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder='setpoint' />
-                <Button className='z-30 h-8 px-2'>
-                  <Send className='size-4 dark:text-white' />
-                </Button>
-              </div>
-            )}
+          <div className="flex items-center justify-between w-full gap-2 mt-2">
+            <Input
+              type="number"
+              min={minValue}
+              max={maxValue}
+              className="z-30 flex-1 [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              placeholder="setpoint"
+            />
+            <Button className="z-30 h-8 px-2">
+              <Send className="size-4 dark:text-white" />
+            </Button>
+          </div>
+        )}
       </div>
     )
   }

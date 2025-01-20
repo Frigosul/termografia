@@ -12,13 +12,19 @@ interface AlertData {
   action: 'Deg' | 'Vent'
   name: string
   instrumentId: number
+  active: boolean
+  model: number
 }
 
 interface UseModalStoreProps {
   modals: { [key: string]: boolean }
   userData: UserData | null
   alertData: AlertData | null
-  openModal: (modalName: string, userData?: UserData, alertData?: AlertData) => void
+  openModal: (
+    modalName: string,
+    userData?: UserData,
+    alertData?: AlertData,
+  ) => void
   closeModal: (modalName: string) => void
   toggleModal: (modalName: string) => void
 }
