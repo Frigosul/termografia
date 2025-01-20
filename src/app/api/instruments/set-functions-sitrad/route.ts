@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       } else if (model === 72) {
         dataBody = {
           code: 'DEFR',
-          value: active ? 0 : 1,
+          value: 0,
           groupCode: null,
           showSpc: true,
         }
@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     const response = await httpInstance.post(url, dataBody)
     return NextResponse.json(response.data, { status: 202 })
   } catch (error) {
-    console.log(error)
     return NextResponse.json(
       { error: 'Error api', details: error },
       { status: 500 },

@@ -43,7 +43,7 @@ const Chart = memo(function Chart({
     maxValue,
   },
 }: ChartProps) {
-  const { register, handleSubmit, watch } = useForm()
+  const { register, handleSubmit, watch, reset } = useForm()
   const registerWithMask = useHookFormMask(register)
   const { openModal } = useModalStore()
   const { appearanceMode } = useApperanceStore()
@@ -92,6 +92,7 @@ const Chart = memo(function Chart({
         position: 'top-right',
         icon: <CircleCheck />,
       })
+      reset()
     },
     onError: (error) => {
       toast.error('Erro encontrado, por favor tente novamente. ', {
@@ -105,10 +106,11 @@ const Chart = memo(function Chart({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetPoint(data: any) {
     const setPoint = removeMask(data.setpoint)
-    console.log(setPoint)
+
     setSetpointMutation.mutateAsync({
       id: idSitrad,
       setpoint: setPoint,
+      model,
     })
   }
 
@@ -205,7 +207,7 @@ const Chart = memo(function Chart({
             <span className="w-6 text-center">{maxValue}</span>
           </div>
         </div>
-        {type === 'temp' && (
+        {type === 'temp' && model !== 78 && (
           <div className="flex justify-between px-1  lg:p-2 flex-wrap">
             {session.data?.role === 'manage' ? (
               <>
@@ -283,7 +285,7 @@ const Chart = memo(function Chart({
                 className={`size-3 lg:size-4 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
               />
             </span>
-            {session.data?.role && (
+            {session.data?.role === 'manage' && model !== 78 && (
               <form
                 onSubmit={handleSubmit(handleSetPoint)}
                 className="flex items-center justify-between w-full gap-1 mt-2"
@@ -329,7 +331,9 @@ const Chart = memo(function Chart({
           <strong className="font-normal text-xl mb-4">{name}</strong>
         </div>
         <div className="flex items-center justify-center gap-2">
-          <div className="flex flex-col h-20 justify-between">
+          <div
+            className={`flex flex-col h-20 justify-between ${type === 'press' && 'mt-4'}`}
+          >
             <span className="text-xs text-muted-foreground font-light">
               min: {minValue}
             </span>
@@ -348,86 +352,89 @@ const Chart = memo(function Chart({
               max: {maxValue}
             </span>
           </div>
-          <div className="flex flex-col justify-between lg:p-2 flex-wrap">
-            {session.data?.role === 'manage' ? (
-              <>
-                <Button
-                  variant="outline"
-                  className="text-sm px-0 z-30 gap-3 h-6"
-                  onClick={() =>
-                    openModal('alert-confirm', undefined, {
-                      instrumentId: idSitrad,
-                      action: 'Deg',
-                      name,
-                      model,
-                      active: !!status.includes('deg'),
-                    })
-                  }
-                >
-                  DEGE.
-                  <div
-                    className={`!size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </Button>
-                {model !== 73 ? (
+          {type === 'temp' && model !== 78 && (
+            <div className="flex flex-col justify-between lg:p-2 flex-wrap">
+              {session.data?.role === 'manage' ? (
+                <>
                   <Button
                     variant="outline"
-                    className="text-sm px-0 z-30 gap-3 h-7"
+                    className="text-sm px-[2px] z-30 gap-3 h-6"
                     onClick={() =>
                       openModal('alert-confirm', undefined, {
                         instrumentId: idSitrad,
-                        action: 'Vent',
+                        action: 'Deg',
                         name,
                         model,
-                        active: !!status.includes('vent'),
+                        active: !!status.includes('deg'),
                       })
                     }
                   >
-                    VENT.
+                    DEGE.
                     <div
-                      className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`!size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
                     />
                   </Button>
-                ) : (
-                  <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
-                    VENT.
+                  {model !== 73 ? (
+                    <Button
+                      variant="outline"
+                      className="text-sm px-[2px] z-30 gap-3 h-6"
+                      onClick={() =>
+                        openModal('alert-confirm', undefined, {
+                          instrumentId: idSitrad,
+                          action: 'Vent',
+                          name,
+                          model,
+                          active: !!status.includes('vent'),
+                        })
+                      }
+                    >
+                      VENT.
+                      <div
+                        className={`size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      />
+                    </Button>
+                  ) : (
+                    <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between h-6  gap-3">
+                      VENT.
+                      <div
+                        className={`size-3 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      />
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between h-6 gap-3">
+                    DEGE.
                     <div
-                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
                     />
                   </span>
-                )}
-              </>
-            ) : (
-              <>
-                <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
-                  DEGE.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </span>
-                <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
-                  VENT.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </span>
-              </>
-            )}
-            <span className="text-xs w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
-              RESF.
-              <div
-                className={`size-3 lg:size-3 rounded-full ${status.includes('resf') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
-            <span className="text-xs w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
-              PORT.
-              <div
-                className={`size-3 lg:size-3 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-              />
-            </span>
-          </div>
+                  <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between h-6 gap-3">
+                    VENT.
+                    <div
+                      className={`size-3  rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    />
+                  </span>
+                </>
+              )}
+              <span className="text-xs w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
+                RESF.
+                <div
+                  className={`size-3  rounded-full ${status.includes('resf') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                />
+              </span>
+              <span className="text-xs w-[70px] font-normal lg:text-sm flex items-center justify-between gap-3">
+                PORT.
+                <div
+                  className={`size-3 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                />
+              </span>
+            </div>
+          )}
         </div>
-        {session.data?.role && (
+
+        {type === 'temp' && model !== 78 && session.data?.role === 'manage' && (
           <form
             onSubmit={handleSubmit(handleSetPoint)}
             className="flex items-center justify-between w-full gap-2 mt-2"
