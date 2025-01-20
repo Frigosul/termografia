@@ -27,7 +27,7 @@ export default function Home() {
             ))
           )}
         </div>
-        <div className="absolute left-2 bottom-2 bg-background flex flex-col w-40 border rounded-md p-2">
+        <div className="absolute z-50 left-2 bottom-2 bg-background flex flex-col w-40 border rounded-md p-2">
           <span className="text-sm  flex items-center  after:ml-auto after:inline-block after:w-7 after:h-2 after:bg-primary after:rounded-md after:content-['']">
             Ideal:
           </span>

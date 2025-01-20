@@ -58,6 +58,7 @@
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "use-mask-input": "^3.4.2",
     "uuid": "^11.0.2",
     "vaul": "^0.9.1",
     "ws": "^8.18.0",

@@ -72,7 +72,6 @@ export function FormGenerateChart({
 }: FormGenerateChartProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
-  // const { generatePDF } = useGeneratePDF()
   const reactToPrintFn = useReactToPrint({ contentRef: divRef })
 
   const {

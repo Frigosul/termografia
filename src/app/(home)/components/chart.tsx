@@ -2,11 +2,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useApperanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
-import { Send } from 'lucide-react'
+import { CircleCheck, CircleX, Loader2, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { memo, useMemo, useRef } from 'react'
+import { useForm } from 'react-hook-form'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+import { useHookFormMask } from 'use-mask-input'
 
+import { setSetPoint } from '@/app/http/set-setpoint'
+import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 interface ChartProps {
   dataChart: {
@@ -39,9 +43,12 @@ const Chart = memo(function Chart({
     maxValue,
   },
 }: ChartProps) {
+  const { register, handleSubmit, watch } = useForm()
+  const registerWithMask = useHookFormMask(register)
   const { openModal } = useModalStore()
   const { appearanceMode } = useApperanceStore()
   const session = useSession()
+  const verifyValueInSetpoint = watch('setpoint')
 
   const valueInPercent = Math.min(
     Math.max(
@@ -70,6 +77,40 @@ const Chart = memo(function Chart({
         : ['#2178db', '#93b1e4']
 
   const lastWarning = useRef<string | null>(null)
+  const removeMask = (value: string) => {
+    let result = value.replace(/[^\d,.-]/g, '')
+    if (result.includes(',') && !/\d$/.test(result.split(',')[1] || '')) {
+      result = result.replace(',', '')
+    }
+    return result
+  }
+
+  const setSetpointMutation = useMutation({
+    mutationFn: setSetPoint,
+    onSuccess: async () => {
+      toast.success('Setpoint enviado com sucesso', {
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+    },
+    onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente. ', {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+      console.error(error)
+    },
+  })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function handleSetPoint(data: any) {
+    const setPoint = removeMask(data.setpoint)
+    console.log(setPoint)
+    setSetpointMutation.mutateAsync({
+      id: idSitrad,
+      setpoint: setPoint,
+    })
+  }
 
   useMemo(() => {
     const showTemperatureWarning = (id: string, message: string) => {
@@ -243,18 +284,37 @@ const Chart = memo(function Chart({
               />
             </span>
             {session.data?.role && (
-              <div className="flex items-center justify-between w-full gap-1 mt-2">
+              <form
+                onSubmit={handleSubmit(handleSetPoint)}
+                className="flex items-center justify-between w-full gap-1 mt-2"
+              >
                 <Input
-                  type="number"
+                  type="text"
+                  {...registerWithMask(
+                    'setpoint',
+                    ['9.9', '-9.9', '-999', '9999', '999'],
+                    {
+                      placeholder: '',
+                    },
+                  )}
                   min={minValue}
                   max={maxValue}
                   className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="setpoint"
                 />
-                <Button className="z-30 h-8 px-2">
-                  <Send className="size-4 dark:text-white" />
+                <Button
+                  disabled={
+                    !verifyValueInSetpoint || setSetpointMutation.isPending
+                  }
+                  className="z-30 h-8 px-2"
+                >
+                  {setSetpointMutation.isPending ? (
+                    <Loader2 className="size-5 dark:text-white animate-spin" />
+                  ) : (
+                    <Send className="size-4 dark:text-white" />
+                  )}
                 </Button>
-              </div>
+              </form>
             )}
           </div>
         )}
@@ -368,18 +428,33 @@ const Chart = memo(function Chart({
           </div>
         </div>
         {session.data?.role && (
-          <div className="flex items-center justify-between w-full gap-2 mt-2">
+          <form
+            onSubmit={handleSubmit(handleSetPoint)}
+            className="flex items-center justify-between w-full gap-2 mt-2"
+          >
             <Input
-              type="number"
+              type="text"
+              {...registerWithMask(
+                'setpoint',
+                ['9.9', '-9.9', '-999', '9999', '999'],
+                { placeholder: '' },
+              )}
               min={minValue}
               max={maxValue}
-              className="z-30 flex-1 [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="setpoint"
             />
-            <Button className="z-30 h-8 px-2">
-              <Send className="size-4 dark:text-white" />
+            <Button
+              disabled={!verifyValueInSetpoint || setSetpointMutation.isPending}
+              className="z-30 h-8 px-2"
+            >
+              {setSetpointMutation.isPending ? (
+                <Loader2 className="size-5 dark:text-white animate-spin" />
+              ) : (
+                <Send className="size-4 dark:text-white" />
+              )}
             </Button>
-          </div>
+          </form>
         )}
       </div>
     )

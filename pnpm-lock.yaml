@@ -152,6 +152,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.5(ts-node@10.9.2(@types/node@20.14.10)(typescript@5.5.3)))
+      use-mask-input:
+        specifier: ^3.4.2
+        version: 3.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uuid:
         specifier: ^11.0.2
         version: 11.0.2
@@ -4160,6 +4163,13 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  use-mask-input@3.4.2:
+    resolution: {integrity: sha512-d+lYFl/6rsmdya3bZfMoMqZYC5uSKDPtWp/BD+FQ6KRsAKaPfRO1Z/jvagrytKCpvIrpER3i/WKC/4baIzlr+A==}
+    engines: {node: '>=16', npm: '>=7'}
+    peerDependencies:
+      react: '>=16.4 || 17 || 18 || 20'
+      react-dom: '>=16.4 || 17 || 18 || 20'
 
   use-sidecar@1.1.2:
     resolution: {integrity: sha512-epTbsLuzZ7lPClpz2TyryBfztm7m+28DlEv2ZCQ3MDr5ssiwyOwGH/e5F9CkfWjJ1t4clvI58yF822/GUkjjhw==}
@@ -8634,6 +8644,11 @@ snapshots:
       tslib: 2.6.3
     optionalDependencies:
       '@types/react': 18.3.3
+
+  use-mask-input@3.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   use-sidecar@1.1.2(@types/react@18.3.3)(react@18.3.1):
     dependencies:
