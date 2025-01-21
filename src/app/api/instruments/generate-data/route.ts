@@ -157,34 +157,34 @@ export async function POST(request: NextRequest) {
       currentDate = currentDate.add(10, 'seconds')
     }
 
-    let existingRecords = []
+    // let existingRecords = []
 
-    if (instrument.type === 'press') {
-      existingRecords = await prisma.pressure.findMany({
-        where: {
-          instruments: {
-            some: { instrument_id: instrumentId },
-          },
-          createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
-        },
-      })
-    } else if (instrument.type === 'temp') {
-      existingRecords = await prisma.temperature.findMany({
-        where: {
-          instruments: {
-            some: { instrument_id: instrumentId },
-          },
-          createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
-        },
-      })
-    }
+    // if (instrument.type === 'press') {
+    //   existingRecords = await prisma.pressure.findMany({
+    //     where: {
+    //       instruments: {
+    //         some: { instrument_id: instrumentId },
+    //       },
+    //       createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
+    //     },
+    //   })
+    // } else if (instrument.type === 'temp') {
+    //   existingRecords = await prisma.temperature.findMany({
+    //     where: {
+    //       instruments: {
+    //         some: { instrument_id: instrumentId },
+    //       },
+    //       createdAt: { in: sensorData.map((d) => dayjs(d.time).toDate()) },
+    //     },
+    //   })
+    // }
 
-    if (existingRecords.length > 0) {
-      return NextResponse.json(
-        { error: 'Records already exist for the provided dates.' },
-        { status: 409 },
-      )
-    }
+    // if (existingRecords.length > 0) {
+    //   return NextResponse.json(
+    //     { error: 'Records already exist for the provided dates.' },
+    //     { status: 409 },
+    //   )
+    // }
 
     for (const record of sensorData) {
       await prisma.instrument.update({
