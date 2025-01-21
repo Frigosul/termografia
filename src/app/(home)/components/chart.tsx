@@ -332,7 +332,7 @@ const Chart = memo(function Chart({
         </div>
         <div className="flex items-center justify-center gap-2">
           <div
-            className={`flex flex-col h-20 justify-between ${type === 'press' && 'mt-4'}`}
+            className={`flex flex-col h-20 justify-between ${type === 'press' ? 'mt-4' : model === 78 && 'mt-4'}`}
           >
             <span className="text-xs text-muted-foreground font-light">
               min: {minValue}
