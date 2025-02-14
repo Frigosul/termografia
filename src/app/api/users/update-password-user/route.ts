@@ -1,13 +1,14 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
-const prisma = new PrismaClient()
 
 export async function PATCH(req: NextRequest) {
   try {
     const userId = String(req.nextUrl.searchParams.get('userId')!)
     const { newPassword, oldPassword } = await req.json()
-    const existingUser = await prisma.user.findUnique({ where: { id: userId } })
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    })
     if (!existingUser) {
       return NextResponse.json({ message: 'User not exist' }, { status: 404 })
     }

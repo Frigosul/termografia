@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(req: NextRequest) {
   const { unions } = await req.json()
-  const prisma = new PrismaClient()
 
   if (!unions) {
     return NextResponse.json({ message: 'Missing data' }, { status: 400 })

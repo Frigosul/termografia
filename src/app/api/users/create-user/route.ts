@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
 import { NextRequest, NextResponse } from 'next/server'
-const prisma = new PrismaClient()
 
 export async function POST(req: NextRequest) {
   const { name, email, password, userRole } = await req.json()
@@ -31,9 +30,11 @@ export async function POST(req: NextRequest) {
         userRole,
       },
     })
-
-    return NextResponse.json({ user }, { status: 201 })
+    console.log(user)
+    return NextResponse.json({ message: 'Created user', user }, { status: 201 })
   } catch (error) {
+    console.log(error)
+
     return NextResponse.json(
       { error: 'Error creating user', details: error },
       { status: 500 },

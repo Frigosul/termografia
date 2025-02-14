@@ -1,11 +1,12 @@
 import { ListDataResponse } from '@/app/http/list-data'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 
-const prisma = new PrismaClient()
-
 export async function POST(req: NextRequest) {
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json([], { status: 200 })
+  }
   const { local, graphVariation, tableVariation, startDate, endDate } =
     await req.json()
   if (!local || !graphVariation || !startDate || !endDate) {

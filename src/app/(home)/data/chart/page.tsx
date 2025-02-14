@@ -29,7 +29,7 @@ export default function PageChart() {
   })
 
   const divPdfRef = useRef<HTMLDivElement>(null)
-  console.log(dataChart)
+
   return (
     <ScrollArea className="flex-1">
       <main className="p-4 sm:p-6 md:p-6 max-w-screen-xl">

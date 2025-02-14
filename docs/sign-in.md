@@ -1,4 +1,5 @@
 # Termografia - Sign-In
+
 - [Voltar](./index.md)
 
 ## Endpoint
@@ -17,9 +18,9 @@ Este endpoint é utilizado para realizar o login de um usuário na plataforma, a
 
 ### Headers
 
-| Key           | Value               | Description                        |
-|---------------|---------------------|------------------------------------|
-| `Content-Type`| `application/json`  | Define o formato dos dados da requisição |
+| Key            | Value              | Description                              |
+| -------------- | ------------------ | ---------------------------------------- |
+| `Content-Type` | `application/json` | Define o formato dos dados da requisição |
 
 ### Request Body
 
@@ -41,8 +42,11 @@ A resposta deste endpoint retorna um **token JWT**, que deve ser enviado no cabe
 ```bash
 Authorization: Bearer jwt_token
 ```
+
 # Response
+
 ### Response Body (200 - Success)
+
 Caso o login seja bem-sucedido, a resposta será:
 
 ```json
@@ -55,7 +59,9 @@ Caso o login seja bem-sucedido, a resposta será:
   }
 }
 ```
+
 # Response Body (400 - Bad Request)
+
 ### Caso haja um erro na requisição, como um e-mail ou senha incorretos:
 
 ```json

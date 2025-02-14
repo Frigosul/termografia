@@ -5,9 +5,10 @@
   "private": false,
   "scripts": {
     "dev": "next dev",
-    "start": "next start",
+    "start": "next start -p 3030",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "git pull origin main && pnpm install && npx prisma migrate deploy && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -55,6 +56,7 @@
     "react-maskedinput": "^4.0.1",
     "react-to-print": "^3.0.2",
     "recharts": "2.13.0-alpha.5",
+    "sharp": "^0.33.5",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",

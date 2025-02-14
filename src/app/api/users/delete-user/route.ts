@@ -1,13 +1,14 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 import { NextRequest, NextResponse } from 'next/server'
-const prisma = new PrismaClient()
 
 export async function DELETE(req: NextRequest) {
   const userId = String(req.nextUrl.searchParams.get('userId')!)
 
   try {
-    const existingUser = await prisma.user.findUnique({ where: { id: userId } })
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    })
     if (!existingUser) {
       return NextResponse.json({ message: 'User not exist' }, { status: 404 })
     }

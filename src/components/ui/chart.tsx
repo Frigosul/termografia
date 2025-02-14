@@ -363,5 +363,5 @@ export {
   ChartStyle,
   ChartTooltip,
   // eslint-disable-next-line prettier/prettier
-  ChartTooltipContent
+  ChartTooltipContent,
 }

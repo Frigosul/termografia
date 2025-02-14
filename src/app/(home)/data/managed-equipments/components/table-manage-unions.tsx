@@ -316,7 +316,9 @@ export function TableManagedUnions() {
                     variant="ghost"
                     className="group"
                     onClick={async () => {
-                      await deleteUnionMutation.mutateAsync({ unionId: row.id })
+                      await deleteUnionMutation.mutateAsync({
+                        unionId: row.id,
+                      })
                     }}
                   >
                     <Trash2 className="size-5 group-hover:text-red-600 transition-colors" />

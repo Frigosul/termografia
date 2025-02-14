@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-const prisma = new PrismaClient()
 
 interface CreateUnionInstrumentType {
   name: string
@@ -9,6 +8,10 @@ interface CreateUnionInstrumentType {
 }
 
 export async function POST(request: NextRequest) {
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json([], { status: 200 })
+  }
+
   const body: CreateUnionInstrumentType = await request.json()
   const { name, firstInstrument, secondInstrument } = body
 
