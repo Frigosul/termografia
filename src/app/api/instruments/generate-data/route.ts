@@ -1,10 +1,11 @@
+import { prisma } from '@/lib/prisma'
+import {Temperature,Pressure} from "@prisma/client"
 import { GenerateDataModeType } from '@/types/generate-data-mode'
-import { Pressure, PrismaClient, Temperature } from '@prisma/client'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
-const prisma = new PrismaClient()
+
 
 interface SensorData {
   id: string
