@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await bcryptjs.compare(password, user.password)
     if (!isPasswordValid) {
       return NextResponse.json(
         { message: 'Email or password invalid' },

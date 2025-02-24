@@ -108,7 +108,9 @@ export function ChartTemperature({
         <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
           <span>
             Empresa:{' '}
-            <span className="capitalize">Frigosul frigorífico Sul LTDA.</span>{' '}
+            <span className="capitalize">
+              Frigosul frigorífico Sul LTDA.
+            </span>{' '}
           </span>
           <span>
             CNPJ: <span>02.591.772/0001-70</span>{' '}

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -20,7 +20,7 @@ export async function PUT(req: NextRequest) {
     if (!existingUser) {
       return NextResponse.json({ message: 'User not exist' }, { status: 404 })
     }
-    const hashedPassword = await bcrypt.hash(password, 8)
+    const hashedPassword = await bcryptjs.hash(password, 8)
     if (password) {
       const updateUser = await prisma.user.update({
         where: { id: userId },
