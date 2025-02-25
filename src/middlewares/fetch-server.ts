@@ -9,6 +9,7 @@ export async function fetchServer(
 
   const response = await fetch(input, {
     ...init,
+    cache: 'no-store',
     headers: {
       ...init?.headers,
       ...(tokenJwt && { Authorization: `Bearer ${tokenJwt}` }),

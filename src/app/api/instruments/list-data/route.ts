@@ -2,6 +2,7 @@ import { ListDataResponse } from '@/app/http/list-data'
 import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   const { local, graphVariation, tableVariation, startDate, endDate } =
