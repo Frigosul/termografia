@@ -8,10 +8,6 @@ interface CreateUnionInstrumentType {
 }
 
 export async function POST(request: NextRequest) {
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json([], { status: 200 })
-  }
-
   const body: CreateUnionInstrumentType = await request.json()
   const { name, firstInstrument, secondInstrument } = body
 

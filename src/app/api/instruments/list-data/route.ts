@@ -4,9 +4,6 @@ import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json([], { status: 200 })
-  }
   const { local, graphVariation, tableVariation, startDate, endDate } =
     await req.json()
   if (!local || !graphVariation || !startDate || !endDate) {

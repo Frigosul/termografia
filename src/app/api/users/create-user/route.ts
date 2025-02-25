@@ -30,11 +30,8 @@ export async function POST(req: NextRequest) {
         userRole,
       },
     })
-    console.log(user)
     return NextResponse.json({ message: 'Created user', user }, { status: 201 })
   } catch (error) {
-    console.log(error)
-
     return NextResponse.json(
       { error: 'Error creating user', details: error },
       { status: 500 },

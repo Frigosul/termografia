@@ -1,9 +1,6 @@
 import { httpInstance } from '@/lib/http-instance'
 import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json([], { status: 200 })
-  }
   const { setpoint, model, id } = await req.json()
   try {
     const dataBody = {

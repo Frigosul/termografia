@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { Temperature, Pressure } from '@prisma/client'
 import { GenerateDataModeType } from '@/types/generate-data-mode'
+import { Pressure, Temperature } from '@prisma/client'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
@@ -25,9 +25,6 @@ interface GenerateDataRequest {
 }
 
 export async function POST(request: NextRequest) {
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json([], { status: 200 })
-  }
   try {
     const body: GenerateDataRequest = await request.json()
     const {
