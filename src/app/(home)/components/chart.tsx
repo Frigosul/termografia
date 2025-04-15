@@ -1,13 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useApperanceStore } from '@/stores/useAppearanceStore'
+import { useAppearanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
 import { CircleCheck, CircleX, Loader2, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { memo, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
-import { useHookFormMask } from 'use-mask-input'
 
 import { setSetPoint } from '@/app/http/set-setpoint'
 import { useMutation } from '@tanstack/react-query'
@@ -44,9 +43,8 @@ const Chart = memo(function Chart({
   },
 }: ChartProps) {
   const { register, handleSubmit, watch, reset } = useForm()
-  const registerWithMask = useHookFormMask(register)
   const { openModal } = useModalStore()
-  const { appearanceMode } = useApperanceStore()
+  const { appearanceMode } = useAppearanceStore()
   const session = useSession()
   const verifyValueInSetpoint = watch('setpoint')
 
@@ -54,7 +52,7 @@ const Chart = memo(function Chart({
     Math.max(
       (((type === 'press' ? pressure : temperature) - minValue) /
         (maxValue - minValue)) *
-        100,
+      100,
       0,
     ),
     100,
@@ -292,13 +290,7 @@ const Chart = memo(function Chart({
               >
                 <Input
                   type="text"
-                  {...registerWithMask(
-                    'setpoint',
-                    ['9.9', '-9.9', '-999', '9999', '999'],
-                    {
-                      placeholder: 'setpoint',
-                    },
-                  )}
+                  {...register('setpoint')}
                   min={minValue}
                   max={maxValue}
                   className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -441,11 +433,7 @@ const Chart = memo(function Chart({
           >
             <Input
               type="text"
-              {...registerWithMask(
-                'setpoint',
-                ['9.9', '-9.9', '-999', '9999', '999'],
-                { placeholder: 'setpoint' },
-              )}
+              {...register('setpoint')}
               min={minValue}
               max={maxValue}
               className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

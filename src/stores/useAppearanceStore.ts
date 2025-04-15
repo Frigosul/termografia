@@ -5,7 +5,7 @@ interface AppearanceStoreProps {
   onModeAppearance: (appearance: 'simple' | 'graph') => void
 }
 
-export const useApperanceStore = create<AppearanceStoreProps>((set) => ({
+export const useAppearanceStore = create<AppearanceStoreProps>((set) => ({
   appearanceMode: 'graph',
   onModeAppearance: (appearance) => {
     set(() => ({

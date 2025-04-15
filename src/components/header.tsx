@@ -1,6 +1,6 @@
 'use client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useApperanceStore } from '@/stores/useAppearanceStore'
+import { useAppearanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
 import { getInitials } from '@/utils/return-initials'
 import { UserRolesType } from '@/utils/user-roles'
@@ -19,7 +19,7 @@ import {
 
 export function Header() {
   const { openModal } = useModalStore()
-  const { appearanceMode, onModeAppearance } = useApperanceStore()
+  const { appearanceMode, onModeAppearance } = useAppearanceStore()
   const { data: session } = useSession()
   const userName = session?.user?.name ?? ''
 
@@ -39,7 +39,7 @@ export function Header() {
             <Avatar className="size-9 flex items-center justify-center">
               <AvatarImage
                 className="rounded-full"
-                // src="https://github.com/joaoeduardodias.png"
+              // src="https://github.com/joaoeduardodias.png"
               />
               <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
                 {getInitials(userName)}
