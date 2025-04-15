@@ -76,7 +76,6 @@ const Chart = memo(function Chart({
 
   const lastWarning = useRef<string | null>(null)
 
-
   const setSetpointMutation = useMutation({
     mutationFn: setSetPoint,
     onSuccess: async () => {
@@ -97,7 +96,6 @@ const Chart = memo(function Chart({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetPoint(data: any) {
-
     setSetpointMutation.mutateAsync({
       id: idSitrad,
       setpoint: data.setpoint,
@@ -135,7 +133,6 @@ const Chart = memo(function Chart({
       lastWarning.current = null
     }
   }, [valueInPercent, type, name])
-
 
   if (appearanceMode === 'graph') {
     return (

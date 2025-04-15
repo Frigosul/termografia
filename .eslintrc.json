@@ -1,7 +1,6 @@
 {
-  "extends": ["next/core-web-vitals", "@rocketseat/eslint-config/next"],
-  "rules": {
-    "@typescript-eslint/prefer-promise-reject-errors": "off",
-    "prefer-promise-reject-errors": "off"
-  }
+  "extends": [
+    "@rocketseat/eslint-config/next",
+    "next/core-web-vitals"
+  ]
 }
