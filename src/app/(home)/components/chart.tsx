@@ -52,7 +52,7 @@ const Chart = memo(function Chart({
     Math.max(
       (((type === 'press' ? pressure : temperature) - minValue) /
         (maxValue - minValue)) *
-      100,
+        100,
       0,
     ),
     100,

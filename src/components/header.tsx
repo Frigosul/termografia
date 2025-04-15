@@ -39,7 +39,7 @@ export function Header() {
             <Avatar className="size-9 flex items-center justify-center">
               <AvatarImage
                 className="rounded-full"
-              // src="https://github.com/joaoeduardodias.png"
+                // src="https://github.com/joaoeduardodias.png"
               />
               <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
                 {getInitials(userName)}
