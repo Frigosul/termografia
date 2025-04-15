@@ -52,7 +52,7 @@ const Chart = memo(function Chart({
     Math.max(
       (((type === 'press' ? pressure : temperature) - minValue) /
         (maxValue - minValue)) *
-        100,
+      100,
       0,
     ),
     100,
@@ -75,13 +75,7 @@ const Chart = memo(function Chart({
         : ['#2178db', '#93b1e4']
 
   const lastWarning = useRef<string | null>(null)
-  const removeMask = (value: string) => {
-    let result = value.replace(/[^\d,.-]/g, '')
-    if (result.includes(',') && !/\d$/.test(result.split(',')[1] || '')) {
-      result = result.replace(',', '')
-    }
-    return result
-  }
+
 
   const setSetpointMutation = useMutation({
     mutationFn: setSetPoint,
@@ -103,11 +97,10 @@ const Chart = memo(function Chart({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetPoint(data: any) {
-    const setPoint = removeMask(data.setpoint)
 
     setSetpointMutation.mutateAsync({
       id: idSitrad,
-      setpoint: setPoint,
+      setpoint: data.setpoint,
       model,
     })
   }
@@ -143,7 +136,6 @@ const Chart = memo(function Chart({
     }
   }, [valueInPercent, type, name])
 
-  console.log(name, model, status)
 
   if (appearanceMode === 'graph') {
     return (

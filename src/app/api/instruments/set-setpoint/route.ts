@@ -4,7 +4,7 @@ export async function POST(req: NextRequest) {
   const { setpoint, model, id } = await req.json()
   try {
     const dataBody = {
-      code: model === 72 ? 'F31' : 'F01',
+      code: model === 72 ? 'F31' : model === 73 ? 'SET' : 'F01',
       value: setpoint,
       showSpc: true,
     }
