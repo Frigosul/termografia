@@ -143,6 +143,8 @@ const Chart = memo(function Chart({
     }
   }, [valueInPercent, type, name])
 
+  console.log(name, model, status)
+
   if (appearanceMode === 'graph') {
     return (
       <div
@@ -243,14 +245,14 @@ const Chart = memo(function Chart({
                   >
                     VENT.
                     <div
-                      className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
                     />
                   </Button>
                 ) : (
                   <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
                     VENT.
                     <div
-                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`size-3 lg:size-4 rounded-full bg-zinc-400`}
                     />
                   </span>
                 )}
