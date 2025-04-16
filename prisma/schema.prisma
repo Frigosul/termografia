@@ -32,6 +32,7 @@ model Instrument {
   error          String?
   maxValue       Float                    @default(20)
   minValue       Float                    @default(-20)
+  setPoint       Float                    @default(0)
   isActive       Boolean                  @default(true)
   idSitrad       Int                      @default(0)
   temperatures   InstrumentsTemperature[]

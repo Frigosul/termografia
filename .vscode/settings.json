@@ -1,7 +1,10 @@
 {
   "cSpell.words": [
     "apexcharts",
+    "autoincrement",
+    "datasource",
     "datepicker",
+    "debian",
     "DEGE",
     "dyan",
     "Dyan",
@@ -23,6 +26,7 @@
     "supersecretkey",
     "tailwindcss",
     "tanstack",
+    "uuid",
     "vaul"
   ]
 }

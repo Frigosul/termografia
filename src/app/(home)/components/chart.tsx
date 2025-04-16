@@ -24,6 +24,7 @@ interface ChartProps {
     error: string | null
     maxValue: number
     minValue: number
+    setPoint: number
   }
 }
 
@@ -40,6 +41,7 @@ const Chart = memo(function Chart({
     error,
     minValue,
     maxValue,
+    setPoint,
   },
 }: ChartProps) {
   const { register, handleSubmit, watch, reset } = useForm()
@@ -149,12 +151,12 @@ const Chart = memo(function Chart({
             <PieChart>
               <Pie
                 data={!error ? data : [{ value: 0 }, { value: 100 }]}
-                startAngle={180} // Inicia o arco do topo da metade esquerda
-                endAngle={0} // Termina no topo da metade direita
-                innerRadius="80%" // Raio interno
-                outerRadius="100%" // Raio externo
-                dataKey="value" // Valor do gráfico
-                stroke="none" // Sem bordas
+                startAngle={180}
+                endAngle={0}
+                innerRadius="80%"
+                outerRadius="100%"
+                dataKey="value"
+                stroke="none"
                 max={maxValue}
                 min={minValue}
               >
@@ -193,6 +195,7 @@ const Chart = memo(function Chart({
           </div>
           <div className="w-[90%]  max-w-[210px] flex justify-between items-center text-xs tracking-tighter leading-4 text-muted-foreground">
             <span className="w-6 text-center">{minValue}</span>
+            <span className="w-6 text-center">{setPoint}</span>
             <span className="w-6 text-center">{maxValue}</span>
           </div>
         </div>
@@ -312,6 +315,9 @@ const Chart = memo(function Chart({
       >
         <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize">
           <strong className="font-normal text-xl mb-4">{name}</strong>
+        </div>
+        <div className="w-full text-center">
+          <span className="text-xs text-muted-foreground font-light">SetPoint: {setPoint}</span>
         </div>
         <div className="flex items-center justify-center gap-2">
           <div
