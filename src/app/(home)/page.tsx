@@ -7,7 +7,9 @@ import { DialogOptions } from './components/dialog-options'
 import { SkeletonChart } from './components/skeleton-chart'
 
 export default function Home() {
+  // const { data, isLoading, error } = useWebSocket('ws://localhost:8080')
   const { data, isLoading, error } = useWebSocket('ws://192.168.4.176:8080')
+  console.log(data)
 
   return (
     <ScrollArea className="relative flex-1">
