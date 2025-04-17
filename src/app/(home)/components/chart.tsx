@@ -25,6 +25,7 @@ interface ChartProps {
     maxValue: number
     minValue: number
     setPoint: number
+    differential: number
   }
 }
 
@@ -42,6 +43,7 @@ const Chart = memo(function Chart({
     minValue,
     maxValue,
     setPoint,
+    differential,
   },
 }: ChartProps) {
   const { register, handleSubmit, watch, reset } = useForm()
@@ -185,7 +187,7 @@ const Chart = memo(function Chart({
                   'bar'
                 )
               ) : (
-                <span className="flex w-28 text-base text-red-700 dark:text-red-500 flex-wrap">
+                <span className="flex w-28 h-8 text-base text-red-700 dark:text-red-500 flex-wrap">
                   {isSensorError
                     ? 'Erro de sensor'
                     : error && 'Falha de comunicação'}
@@ -195,7 +197,8 @@ const Chart = memo(function Chart({
           </div>
           <div className="w-[90%]  max-w-[210px] flex justify-between items-center text-xs tracking-tighter leading-4 text-muted-foreground">
             <span className="w-6 text-center">{minValue}</span>
-            <span className="w-6 text-center">{setPoint}</span>
+            <span className=" text-center">S: {setPoint}</span>
+            <span className=" text-center">d: {differential}</span>
             <span className="w-6 text-center">{maxValue}</span>
           </div>
         </div>
@@ -316,8 +319,9 @@ const Chart = memo(function Chart({
         <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize">
           <strong className="font-normal text-xl mb-4">{name}</strong>
         </div>
-        <div className="w-full text-center">
+        <div className="w-full flex justify-between px-2">
           <span className="text-xs text-muted-foreground font-light">SetPoint: {setPoint}</span>
+          <span className="text-xs text-muted-foreground font-light">Dif: {differential}</span>
         </div>
         <div className="flex items-center justify-center gap-2">
           <div
@@ -330,7 +334,7 @@ const Chart = memo(function Chart({
               {!isSensorError && !error ? (
                 Number(type === 'press' ? pressure : temperature)
               ) : (
-                <span className="flex w-28 text-base text-red-700 dark:text-red-500 flex-wrap">
+                <span className="flex w-20  text-base text-red-700 dark:text-red-500 flex-wrap">
                   {isSensorError
                     ? 'Erro de sensor'
                     : error && 'Falha de comunicação'}
