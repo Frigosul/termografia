@@ -44,7 +44,6 @@ export function TableManagedEquipments() {
   } = useQuery<RowData[]>({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
-    staleTime: 1000 * 60 * 60, // 1 hour
   })
   const [data, setData] = useState<RowData[]>([])
   const [filteredData, setFilteredData] = useState<RowData[]>([])
@@ -289,7 +288,7 @@ export function TableManagedEquipments() {
                   }
                 >
                   {editCell.rowId === row.id &&
-                  editCell.field === 'minValue' ? (
+                    editCell.field === 'minValue' ? (
                     <input
                       className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="text"
@@ -310,7 +309,7 @@ export function TableManagedEquipments() {
                   }
                 >
                   {editCell.rowId === row.id &&
-                  editCell.field === 'maxValue' ? (
+                    editCell.field === 'maxValue' ? (
                     <input
                       className="bg-transparent w-full h-full  text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="text"
@@ -332,7 +331,7 @@ export function TableManagedEquipments() {
                   }
                 >
                   {editCell.rowId === row.id &&
-                  editCell.field === 'displayOrder' ? (
+                    editCell.field === 'displayOrder' ? (
                     <input
                       className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="text"

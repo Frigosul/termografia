@@ -24,7 +24,7 @@ import { CreateUnionInstruments } from './create-union-instruments'
 interface RowData {
   id: string
   name: string
-  fisrtInstrument: string
+  firstInstrument: string
   secondInstrument: string
   isActive: boolean
 }
@@ -38,7 +38,6 @@ export function TableManagedUnions() {
   } = useQuery<RowData[]>({
     queryKey: ['list-unions'],
     queryFn: getUnions,
-    staleTime: 1000 * 60, // 1 minute
   })
   const [data, setData] = useState<RowData[]>([])
   const [filteredData, setFilteredData] = useState<RowData[]>([])
@@ -291,7 +290,7 @@ export function TableManagedUnions() {
                   )}
                 </TableCell>
                 <TableCell className="border text-center w-44 p-0 h-4">
-                  {row.fisrtInstrument}
+                  {row.firstInstrument}
                 </TableCell>
                 <TableCell className="border text-center w-44 p-0 h-4">
                   {row.secondInstrument}

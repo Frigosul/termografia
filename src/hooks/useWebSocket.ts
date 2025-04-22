@@ -1,39 +1,55 @@
-import { Instrument } from '@/types/instrument'
-import { useEffect, useState } from 'react'
+import { Instrument } from "@/types/instrument";
+import { useEffect, useRef, useState } from "react";
 
 export const useWebSocket = (url: string) => {
-  const [data, setData] = useState<Instrument[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [data, setData] = useState<Instrument[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const ws = new WebSocket(url)
+  const connect = () => {
+    const ws = new WebSocket(url);
+    wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log('Connected to WebSocket server')
-      setError(false)
-    }
+      console.log("Connected to WebSocket server");
+      setError(false);
+    };
 
     ws.onmessage = (event) => {
-      const instruments: Instrument[] = JSON.parse(event.data)
-      setData(instruments)
-      setIsLoading(false)
-    }
+      const instruments: Instrument[] = JSON.parse(event.data);
+      setData(instruments);
+      setIsLoading(false);
+    };
 
     ws.onerror = () => {
-      console.error('WebSocket error observed')
-      setError(true)
-    }
+      console.error("WebSocket error observed");
+      setError(true);
+    };
 
-    ws.onclose = () => {
-      console.log('Disconnected from WebSocket server')
-      setError(true)
-    }
+    ws.onclose = (event) => {
+      console.log(`Disconnected from WebSocket server: ${event.reason}`);
+      setError(true);
+
+      // Tentativa de reconexão após 5 segundos
+      reconnectTimeout.current = setTimeout(() => {
+        console.log("Trying to reconnect to WebSocket...");
+        connect();
+      }, 5000);
+    };
+  };
+
+  useEffect(() => {
+    connect();
 
     return () => {
-      ws.close()
-    }
-  }, [url])
+      wsRef.current?.close();
+      if (reconnectTimeout.current) {
+        clearTimeout(reconnectTimeout.current);
+      }
+    };
+  }, [url]);
 
-  return { data, isLoading, error }
-}
+  return { data, isLoading, error };
+};
