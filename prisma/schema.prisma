@@ -53,6 +53,7 @@ model Temperature {
   userUpdatedAt String?
   instruments   InstrumentsTemperature[]
 
+  @@index([updatedAt, id], name: "idx_temperatures_updated_at")
   @@map("temperatures")
 }
 
@@ -75,6 +76,7 @@ model Pressure {
   userUpdatedAt String?
   instruments   InstrumentsPressure[]
 
+  @@index([updatedAt, id], name: "idx_pressures_updated_at")
   @@map("pressures")
 }
 
