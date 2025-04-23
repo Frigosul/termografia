@@ -1,5 +1,6 @@
 'use client'
 import { createUnionInstrumentFn } from '@/app/http/create-union-instrument'
+import { getInstruments } from '@/app/http/get-instruments'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,11 +20,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useInstrumentsStore } from '@/stores/useInstrumentsStore'
 import { useModalStore } from '@/stores/useModalStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CircleCheck, CircleX } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -54,10 +54,28 @@ const createUnionInstrument = z
 
 type CreateUnionInstrument = z.infer<typeof createUnionInstrument>
 
+interface RowData {
+  id: string
+  idSitrad: number
+  name: string
+  type: 'temp' | 'press'
+  maxValue: number
+  minValue: number
+  isActive: boolean
+  displayOrder: number
+}
+
 export function CreateUnionInstruments() {
   const { modals, closeModal, toggleModal } = useModalStore()
   const queryClient = useQueryClient()
-  const { instrumentList, isLoading } = useInstrumentsStore()
+  const {
+    data: instrumentList,
+    isLoading,
+    isError,
+  } = useQuery<RowData[]>({
+    queryKey: ['list-instruments'],
+    queryFn: getInstruments,
+  })
 
   const {
     register,
@@ -95,7 +113,7 @@ export function CreateUnionInstruments() {
       }
     },
   })
-  function handleCreateUnionInstrunent(data: CreateUnionInstrument) {
+  function handleCreateUnionInstrument(data: CreateUnionInstrument) {
     createUnionInstrumentMutation.mutateAsync({
       name: data.name,
       firstInstrument: data.firstInstrument,
@@ -119,7 +137,7 @@ export function CreateUnionInstruments() {
           </DialogTitle>
         </DialogHeader>
         <form
-          onSubmit={handleSubmit(handleCreateUnionInstrunent)}
+          onSubmit={handleSubmit(handleCreateUnionInstrument)}
           className="gap-2 grid grid-cols-form md:grid-cols-2 justify-center lg:justify-between gap-x-4"
         >
           <div className="space-y-2">
