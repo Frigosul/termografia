@@ -168,7 +168,7 @@ const Chart = memo(function Chart({
               </Pie>
             </PieChart>
           </ResponsiveContainer>
-          <div className="flex flex-col text-center  mt-[-9.5rem]">
+          <div className="flex flex-col text-center mt-[-9.5rem]">
             <p
               className={`${error ? 'sr-only' : 'not-sr-only'} text-center text-sm text-blue-800 dark:text-blue-500`}
             >
@@ -186,13 +186,12 @@ const Chart = memo(function Chart({
                 ) : (
                   'bar'
                 )
-              ) : (
-                <span className="flex w-28 h-8 text-base text-red-700 dark:text-red-500 flex-wrap">
-                  {isSensorError
-                    ? 'Erro de sensor'
-                    : error && 'Falha de comunicação'}
-                </span>
-              )}
+              ) : isSensorError ?
+                <span className="flex w-28 h-8 text-base text-red-700 dark:text-red-500 flex-wrap">Erro de sensor</span>
+                : error &&
+                <span className='flex w-28 h-[3.2rem] text-base text-red-700 dark:text-red-500 flex-wrap'>Falha de comunicação</span>
+
+              }
             </p>
           </div>
           <div className="w-[90%]  max-w-[210px] flex justify-between items-center text-xs tracking-tighter leading-4 text-muted-foreground">
