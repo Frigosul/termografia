@@ -20,11 +20,6 @@ export const useWebSocket = (url: string) => {
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
-      if (message.type === "ping") {
-        console.log("Mensagem de teste recebida:", message.payload);
-        return; // ignore
-      }
-
       if (message.type === "data") {
         const instruments: Instrument[] = message.payload;
         setData(instruments);
