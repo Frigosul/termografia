@@ -25,6 +25,7 @@ interface ChartProps {
     maxValue: number
     minValue: number
     setPoint: number
+    process: string
     differential: number
   }
 }
@@ -42,6 +43,7 @@ const Chart = memo(function Chart({
     error,
     minValue,
     maxValue,
+    process,
     setPoint,
     differential,
   },
@@ -144,11 +146,16 @@ const Chart = memo(function Chart({
         className={`border-2 rounded-md  ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
       >
         <div className="flex flex-col items-center justify-center">
-          <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize mb-2">
+          <div className={`w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize ${!process && 'mb-7'}`}>
             <strong className="font-normal text-xl mb-4 capitalize">
               {name}
             </strong>
           </div>
+          {process && (
+            <span className='text-center text-muted-foreground text-sm mb-2'>- {process} -</span>
+          )
+
+          }
           <ResponsiveContainer width="93%" height={200}>
             <PieChart>
               <Pie

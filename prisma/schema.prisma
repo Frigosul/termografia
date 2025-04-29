@@ -36,6 +36,7 @@ model Instrument {
   differential   Float                    @default(0)
   isActive       Boolean                  @default(true)
   idSitrad       Int                      @default(0)
+  process        String?
   temperatures   InstrumentsTemperature[]
   pressures      InstrumentsPressure[]
   unionsAsFirst  UnionInstruments[]       @relation("FirstInstrumentRelation")
