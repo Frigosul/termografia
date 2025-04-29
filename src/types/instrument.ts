@@ -13,6 +13,7 @@ export interface Instrument {
   maxValue: number;
   minValue: number;
   setPoint: number;
+  process: string;
   differential: number;
   instrumentCreatedAt: Date;
 }
