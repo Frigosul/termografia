@@ -41,6 +41,7 @@ model Instrument {
   unionsAsFirst  UnionInstruments[]       @relation("FirstInstrumentRelation")
   unionsAsSecond UnionInstruments[]       @relation("SecondInstrumentRelation")
 
+  @@index([name, id], name: "idx_instruments_name")
   @@map("instruments")
 }
 

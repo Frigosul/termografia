@@ -24,7 +24,7 @@ export function Header() {
   const userName = session?.user?.name ?? ''
 
   return (
-    <header className="flex justify-between items-center py-3 shadow-sm px-6 lg:justify-end border-b">
+    <header className="flex justify-between items-center py-4 shadow-md px-6 lg:justify-end border-b">
       <p className="sr-only text-xl capitalize tracking-tight font-medium lg:not-sr-only lg:mr-auto">
         SulTerm
       </p>
@@ -39,7 +39,7 @@ export function Header() {
             <Avatar className="size-9 flex items-center justify-center">
               <AvatarImage
                 className="rounded-full"
-                // src="https://github.com/joaoeduardodias.png"
+              // src="https://github.com/joaoeduardodias.png"
               />
               <AvatarFallback className="flex items-center text-sm justify-center bg-slate-500/50 rounded-full size-8">
                 {getInitials(userName)}

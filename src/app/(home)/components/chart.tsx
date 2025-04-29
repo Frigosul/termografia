@@ -113,7 +113,7 @@ const Chart = memo(function Chart({
         id,
         position: 'bottom-right',
         closeButton: true,
-        duration: 200000,
+        duration: 100000,
       })
     }
 
@@ -220,7 +220,7 @@ const Chart = memo(function Chart({
                 >
                   DEGE.
                   <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
                   />
                 </Button>
                 {model !== 73 ? (
@@ -256,7 +256,7 @@ const Chart = memo(function Chart({
                 <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
                   DEGE.
                   <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
                   />
                 </span>
                 <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
@@ -363,7 +363,7 @@ const Chart = memo(function Chart({
                   >
                     DEGE.
                     <div
-                      className={`!size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`!size-3 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
                     />
                   </Button>
                   {model !== 73 ? (
@@ -399,7 +399,7 @@ const Chart = memo(function Chart({
                   <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between h-6 gap-3">
                     DEGE.
                     <div
-                      className={`size-3 rounded-full ${status.includes('deg') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+                      className={`size-3 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
                     />
                   </span>
                   <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between h-6 gap-3">

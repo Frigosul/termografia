@@ -7,47 +7,61 @@ export const useWebSocket = (url: string) => {
   const [error, setError] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const reconnectDelay = useRef(5000);
 
   const connect = () => {
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
+    try {
+      const ws = new WebSocket(url);
+      wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log("Connected to WebSocket server");
-      setError(false);
-    };
+      ws.onopen = () => {
+        console.log("Connected to WebSocket server");
+        setError(false);
+      };
 
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
 
-      if (message.type === "data") {
-        const instruments: Instrument[] = message.payload;
-        setData(instruments);
-        setIsLoading(false);
-      }
-    };
+        if (message.type === "data") {
+          const instruments: Instrument[] = message.payload;
+          setData(instruments);
+          setIsLoading(false);
+        }
+      };
 
-    ws.onerror = () => {
-      console.error("WebSocket error observed");
+      ws.onerror = () => {
+        console.error("WebSocket error observed");
+        setError(true);
+      };
+
+      ws.onclose = (event) => {
+        console.log(`Disconnected from WebSocket server: ${event.reason}`);
+        setError(true);
+
+        // Tentativa de reconexão com um atraso exponencial
+        if (reconnectTimeout.current) {
+          clearTimeout(reconnectTimeout.current);
+        }
+
+        reconnectTimeout.current = setTimeout(() => {
+          console.log("Trying to reconnect to WebSocket...");
+          connect();
+          reconnectDelay.current *= 2;
+        }, reconnectDelay.current);
+      };
+    } catch (error) {
+      console.error("Error creating WebSocket connection:", error);
       setError(true);
-    };
-
-    ws.onclose = (event) => {
-      console.log(`Disconnected from WebSocket server: ${event.reason}`);
-      setError(true);
-
-      // Tentativa de reconexão após 5 segundos
-      reconnectTimeout.current = setTimeout(() => {
-        console.log("Trying to reconnect to WebSocket...");
-        connect();
-      }, 5000);
-    };
+    }
   };
 
   useEffect(() => {
-    connect();
+    const timeout = setTimeout(() => {
+      connect();
+    }, 1000);
 
     return () => {
+      clearTimeout(timeout);
       wsRef.current?.close();
       if (reconnectTimeout.current) {
         clearTimeout(reconnectTimeout.current);
