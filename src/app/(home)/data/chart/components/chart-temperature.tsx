@@ -124,7 +124,7 @@ export function ChartTemperature({
           </span>
         </div>
       </div>
-      <div className="relative border border-card-foreground rounded-md py-4 overflow-auto print:px-0 print:h-[40rem]">
+      <div className="relative border border-card-foreground rounded-md py-4 overflow-auto print:p-0 print:h-auto print:border-none print:overflow-hidden">
         <div className="absolute print:right-2 right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
           <div className="flex justify-between">
             <span>Local: </span>
@@ -141,7 +141,7 @@ export function ChartTemperature({
         </div>
         <ChartContainer
           config={chartConfig}
-          className="h-[54.5rem] print:h-full w-full"
+          className="w-full  print:scale-105"
         >
           <LineChart
             data={formattedData}

@@ -50,7 +50,7 @@ export default function PageChart() {
           dataChart && (
             <div
               ref={divPdfRef}
-              className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full"
+              className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full print:bg-transparent print:shadow-none break-inside-avoid"
             >
               <>
                 <ChartTemperature
