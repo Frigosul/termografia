@@ -87,9 +87,8 @@ export function ChartPressure({
           <span>{formattedDateOpen}</span>
         </div>
       </div>
-      <ChartContainer config={chartConfig} className="h-64 print:h-full w-full">
+      <ChartContainer config={chartConfig} className="h-64 print:h-[25rem] w-full">
         <LineChart
-          width={500}
           data={formattedData}
           margin={{
             top: 5,

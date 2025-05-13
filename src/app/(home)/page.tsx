@@ -14,7 +14,7 @@ export default function Home() {
       <DialogOptions />
 
       <main>
-        <div className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 `}>
+        <div className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 mb-4`}>
           {error ? (
             <AlertError />
           ) : isLoading ? (

@@ -1,4 +1,5 @@
 import { formattedTime } from '@/utils/formatted-time'
+import { useEffect } from 'react'
 
 interface TableProps {
   minValue?: number
@@ -12,6 +13,8 @@ interface TableProps {
     pressure: number
   }[]
 }
+
+
 
 export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   if (!minValue || !maxValue) {
@@ -29,10 +32,45 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
     minValue = Number(minAndMaxValue.minValue.toFixed(2))
     maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
   }
+
+
+  useEffect(() => {
+    const columns = document.querySelectorAll(".data-column")
+    let currentPageHeight = 0
+    const a4Height = 1122
+    const chartHeight = 30 * 16
+    const firstPageAvailableHeight = a4Height - chartHeight
+    let isFirstPage = true
+    let lastColOnPage: Element | null = null
+
+    columns.forEach((col, index) => {
+      const colHeight = col.getBoundingClientRect().height
+      const availableHeight = isFirstPage ? firstPageAvailableHeight : a4Height
+
+      if (currentPageHeight + colHeight > availableHeight) {
+        if (lastColOnPage) {
+          if (lastColOnPage) {
+            lastColOnPage.classList.add("border-b")
+          }
+        }
+
+        col.classList.add("break-before-page")
+        currentPageHeight = colHeight
+        isFirstPage = false
+      } else {
+        currentPageHeight += colHeight
+      }
+
+      lastColOnPage = col
+    })
+
+  }, [])
+
   return (
-    <div className="print:block print:break-before-page print:pt-4">
-      <div className="border border-card-foreground mt-4 rounded-md overflow-hidden">
-        <div className="flex flex-wrap">
+
+    <div className="print:pt-4">
+      <div className="mt-4 overflow-hidden ">
+        <div className="flex flex-wrap print:max-h-a4-body print:overflow-hidden print:break-after-auto">
           {Array.from({ length: Math.ceil(data.length / 8) }).map(
             (_, columnIndex) => {
               const startIndex = columnIndex * 8
@@ -50,9 +88,9 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
                 return (
                   <div
                     key={columnIndex}
-                    className="flex flex-col w-[9rem] border-r border-dashed border-card-foreground"
+                    className="flex flex-col w-[9rem] print:w-[5.63rem] data-column break-inside-avoid border-x last:border-x-0 border-dashed border-card-foreground"
                   >
-                    <div className="flex justify-between items-center px-5 py-1 border-y border-dashed border-muted-foreground">
+                    <div className="flex justify-between items-center px-5 py-1 print:!px-4 border-y border-b border-dashed border-muted-foreground">
                       <span className="text-xs">Hora</span>
                       <span className="text-xs">ºC</span>
                       {columnData[0].pressure !== null && (
@@ -87,7 +125,7 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
                 return (
                   <div
                     key={columnIndex}
-                    className="flex flex-col w-[9rem] border-r border-dashed border-card-foreground"
+                    className="flex flex-col w-[9rem] print:w-[5.63rem] data-column break-inside-avoid border-x last:border-x-0 last:border-l-0 last:border-r border-dashed border-card-foreground"
                   >
                     <div className="flex justify-between items-center px-5 py-1 border-y border-dashed border-muted-foreground">
                       <span className="text-xs">Hora</span>

@@ -72,7 +72,25 @@ export function FormGenerateChart({
 }: FormGenerateChartProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
-  const reactToPrintFn = useReactToPrint({ contentRef: divRef })
+  const reactToPrintFn = useReactToPrint({
+    documentTitle: 'Gráfico',
+    contentRef: divRef,
+    pageStyle: `
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        margin: 0;
+      }
+    }
+  `
+
+  })
 
   const {
     register,
@@ -109,15 +127,15 @@ export function FormGenerateChart({
     })
   }
   const startDateValue = watch('startDate')
-  const instrumendSelectedId = watch('local')
+  const instrumentSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId || !instrumentList) return
+    if (!instrumentSelectedId || !instrumentList) return
     const instrument = instrumentList.find(
-      (instrument) => instrument.id === instrumendSelectedId,
+      (instrument) => instrument.id === instrumentSelectedId,
     )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId, instrumentList])
+  }, [instrumentSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
@@ -411,7 +429,7 @@ export function FormGenerateChart({
                   <Input
                     id="startDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(initialDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
@@ -439,7 +457,7 @@ export function FormGenerateChart({
                   <Input
                     id="endDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
@@ -483,6 +501,7 @@ export function FormGenerateChart({
             disabled={isPending}
             type="button"
             onClick={() => reactToPrintFn()}
+            // onClick={() => window.print()}
             variant="outline"
             className="h-8 min-w-32 mb-4"
           >
