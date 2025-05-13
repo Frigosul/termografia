@@ -126,7 +126,6 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
                   <div
                     key={columnIndex}
                     className="flex flex-col w-[9rem] print:w-[5.63rem] data-column break-inside-avoid border-x last:border-x-0 last:border-l-0 last:border-r border-dashed border-card-foreground"
-
                   >
                     <div className="flex justify-between items-center px-5 py-1 border-y border-dashed border-muted-foreground">
                       <span className="text-xs">Hora</span>
