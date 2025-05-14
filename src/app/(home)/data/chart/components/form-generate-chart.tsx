@@ -79,12 +79,12 @@ export function FormGenerateChart({
     @media print {
       @page {
         size: A4;
-        margin: 0;
+        margin: 5px;
         padding: 0;
       }
       body {
         font-family: Arial, sans-serif;
-        padding: 20px;
+        padding: 0;
         margin: 0;
       }
     }
@@ -493,7 +493,7 @@ export function FormGenerateChart({
           <Button
             disabled={isPending}
             type="submit"
-            className="h-8 min-w-32 mb-4"
+            className="h-8 min-w-[8.9rem] mb-4"
           >
             Gerar
           </Button>
@@ -501,9 +501,8 @@ export function FormGenerateChart({
             disabled={isPending}
             type="button"
             onClick={() => reactToPrintFn()}
-            // onClick={() => window.print()}
             variant="outline"
-            className="h-8 min-w-32 mb-4"
+            className="h-8 min-w-[8.9rem] mb-4"
           >
             Imprimir
           </Button>

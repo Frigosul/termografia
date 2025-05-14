@@ -48,11 +48,6 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
       const availableHeight = isFirstPage ? firstPageAvailableHeight : a4Height
 
       if (currentPageHeight + colHeight > availableHeight) {
-        if (lastColOnPage) {
-          if (lastColOnPage) {
-            lastColOnPage.classList.add("border-b")
-          }
-        }
 
         col.classList.add("break-before-page")
         currentPageHeight = colHeight
@@ -65,104 +60,60 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
     })
 
   }, [])
+  const rowsPerColumn = 8
+  const hasPressure = pressure && pressure.length > 0
+
+  // Mapeia pressão por horário para acesso rápido
+  const pressureMap = hasPressure ? new Map(
+    pressure.map((item) => [item.time, item.pressure])
+  ) : null
+
+  const mergedData = data.map((temp) => ({
+    time: temp.time,
+    value: temp.value,
+    pressure: hasPressure ? pressureMap?.get(temp.time) : undefined,
+  }))
+
+
+  const columns = Array.from(
+    { length: Math.ceil(data.length / rowsPerColumn) },
+    (_, colIndex) =>
+      mergedData.slice(colIndex * rowsPerColumn, (colIndex + 1) * rowsPerColumn)
+  )
 
   return (
-
-    <div className="print:pt-4">
-      <div className="mt-4 overflow-hidden ">
-        <div className="flex flex-wrap print:max-h-a4-body print:overflow-hidden print:break-after-auto">
-          {Array.from({ length: Math.ceil(data.length / 8) }).map(
-            (_, columnIndex) => {
-              const startIndex = columnIndex * 8
-              const temperatureData = data.slice(startIndex, startIndex + 8)
-              if (pressure) {
-                const pressureData = pressure.slice(startIndex, startIndex + 8)
-                const columnData = temperatureData.map((temp, index) => {
-                  const pressureItem = pressureData[index]
-                  return {
-                    time: temp.time,
-                    value: temp.value,
-                    pressure: pressureItem?.pressure.toFixed(1),
-                  }
-                })
-                return (
-                  <div
-                    key={columnIndex}
-                    className="flex flex-col w-[9rem] print:w-[5.63rem] data-column break-inside-avoid border-x last:border-x-0 border-dashed border-card-foreground"
-                  >
-                    <div className="flex justify-between items-center px-5 py-1 print:!px-4 border-y border-b border-dashed border-muted-foreground">
-                      <span className="text-xs">Hora</span>
-                      <span className="text-xs">ºC</span>
-                      {columnData[0].pressure !== null && (
-                        <span className="text-xs">bar</span>
-                      )}
-                    </div>
-
-                    {columnData.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          data-column={index + 1}
-                          className="border-dashed border-muted-foreground h-6 px-4 flex items-center justify-between"
-                        >
-                          <span className="text-xs tracking-wide dark:font-light">
-                            {formattedTime(item.time)}
-                          </span>
-                          <span className="text-xs tracking-wide dark:font-light">
-                            {item.value}
-                          </span>
-                          {columnData[0].pressure !== null && (
-                            <span className="text-xs tracking-wide dark:font-light">
-                              / {item.pressure}
-                            </span>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              } else {
-                return (
-                  <div
-                    key={columnIndex}
-                    className="flex flex-col w-[9rem] print:w-[5.63rem] data-column break-inside-avoid border-x last:border-x-0 last:border-l-0 last:border-r border-dashed border-card-foreground"
-                  >
-                    <div className="flex justify-between items-center px-5 py-1 border-y border-dashed border-muted-foreground">
-                      <span className="text-xs">Hora</span>
-                      <span className="text-xs">ºC</span>
-                    </div>
-
-                    {temperatureData.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          data-column={index + 1}
-                          className="border-dashed border-muted-foreground h-6 px-4 flex items-center justify-between"
-                        >
-                          <span className="text-xs tracking-wide dark:font-light">
-                            {formattedTime(item.time)}
-                          </span>
-                          <span className="text-xs tracking-wide dark:font-light">
-                            {item.value}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              }
-            },
-          )}
+    <div className="flex flex-wrap gap-2 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none">
+      {columns.map((columnData, colIdx) => (
+        <div
+          key={colIdx}
+          className="min-w-[120px] border-dashed border-r pr-2 last:border-none print:break-inside-avoid"
+        >
+          <div className="flex justify-between px-2 font-bold  border-b border-white pb-1 mb-1 text-center">
+            <div>Hora</div>
+            <div>°C</div>
+            {hasPressure && <div>Bar</div>}
+          </div>
+          {columnData.map((item, rowIdx) => (
+            <div
+              key={rowIdx}
+              className={`flex justify-between px-2 text-sm py-0.5 border-b border-dashed border-muted-foreground ${rowIdx === rowsPerColumn - 1 || rowIdx === columnData.length - 1
+                ? "border-b border-white"
+                : ""
+                }`}
+            >
+              <div>{formattedTime(item.time)}</div>
+              <div>{item.value.toFixed(1)}</div>
+              {hasPressure && (
+                <div>
+                  {item.pressure !== undefined
+                    ? item.pressure.toFixed(1)
+                    : "-"}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <div className="border-t border-dashed border-card-foreground py-2 text-xs tracking-wider w-full flex justify-start gap-4">
-          <span className="ml-4">
-            Valor Máximo: <span className="font-semibold">{maxValue} ºC</span>
-          </span>
-          <span>
-            Valor Mínimo: <span className="font-semibold">{minValue} ºC</span>
-          </span>
-        </div>
-      </div>
+      ))}
     </div>
   )
 }
