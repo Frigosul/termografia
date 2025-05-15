@@ -16,8 +16,9 @@ import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
 import { useModalStore } from '@/stores/useModalStore'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import Fuse from 'fuse.js'
 import { CircleCheck, CircleX, Search, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { CreateUnionInstruments } from './create-union-instruments'
 
@@ -51,17 +52,25 @@ export function TableManagedUnions() {
     }
   }, [unions])
 
-  useDebounce(
-    () => {
-      setFilteredData(
-        data.filter((item) =>
-          item.name.toLowerCase().includes(search.toLowerCase()),
-        ),
-      )
-    },
-    [data, search],
-    100,
-  )
+  const fuse = useMemo(() => {
+    return new Fuse(data, {
+      keys: ['name'],
+      threshold: 0.3,
+    });
+  }, [data]);
+
+
+  const handleFilter = useCallback(() => {
+    if (!search.trim()) {
+      setFilteredData(data);
+    } else {
+      const results = fuse.search(search);
+      setFilteredData(results.map((res) => res.item));
+    }
+  }, [fuse, search, data]);
+
+  useDebounce(handleFilter, [handleFilter, fuse], 100);
+
 
   const updatedUnionsMutation = useMutation({
     mutationFn: updateUnions,

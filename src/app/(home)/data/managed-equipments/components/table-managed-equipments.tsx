@@ -21,8 +21,9 @@ import {
 import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import Fuse from 'fuse.js'
 import { CircleCheck, CircleX, EllipsisVertical, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 interface RowData {
@@ -57,18 +58,25 @@ export function TableManagedEquipments() {
 
   const [search, setSearch] = useState<string>('')
 
-  // DeBounce Function
-  useDebounce(
-    () => {
-      setFilteredData(
-        data.filter((item) =>
-          item.name.toLowerCase().includes(search.toLowerCase()),
-        ),
-      )
-    },
-    [data, search],
-    100,
-  )
+
+  const fuse = useMemo(() => {
+    return new Fuse(data, {
+      keys: ['name'],
+      threshold: 0.3,
+    });
+  }, [data]);
+
+  const handleFilter = useCallback(() => {
+    if (!search.trim()) {
+      setFilteredData(data);
+    } else {
+      const results = fuse.search(search);
+      setFilteredData(results.map((res) => res.item));
+    }
+  }, [fuse, search, data]);
+
+  useDebounce(handleFilter, [handleFilter, fuse], 100);
+
 
   const updatedInstrumentsMutation = useMutation({
     mutationFn: updateInstruments,
@@ -193,8 +201,13 @@ export function TableManagedEquipments() {
     return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null
   }
 
+
+
   if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
   if (isLoading) return <SkeletonTable />
+
+
+
 
   return (
     <div className="flex-grow flex flex-col max-h-[40vh] max-w-screen-2xl overflow-hidden">
@@ -270,7 +283,7 @@ export function TableManagedEquipments() {
                 >
                   {editCell.rowId === row.id && editCell.field === 'name' ? (
                     <input
-                      className="bg-transparent w-full h-full   m-0"
+                      className="bg-transparent w-full h-full m-0"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'name')}

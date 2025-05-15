@@ -84,7 +84,7 @@ export function FormGenerateChart({
       }
       body {
         font-family: Arial, sans-serif;
-        padding: 0;
+        padding: 10px;
         margin: 0;
       }
     }
