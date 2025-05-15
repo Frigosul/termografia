@@ -1,19 +1,19 @@
-import { fetchServer } from '@/middlewares/fetch-server'
-import { UserRolesType } from '@/utils/user-roles'
+import { fetchServer } from "@/middlewares/fetch-server";
+import { UserRolesType } from "@/utils/user-roles";
 
 type UserResponse = {
-  id: string
-  name: string
-  userRole: UserRolesType
-  email: string
-}
+  id: string;
+  name: string;
+  userRole: UserRolesType;
+  email: string;
+};
 type UserRequest = {
-  userId: string
-  name: string
-  userRole: UserRolesType
-  email: string
-  password?: string
-}
+  userId: string;
+  name: string;
+  userRole: UserRolesType;
+  email: string;
+  password?: string;
+};
 
 export async function updateUser({
   userId,
@@ -25,9 +25,9 @@ export async function updateUser({
   const response = await fetchServer(
     `/api/users/update-user?userId=${userId}`,
     {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         name,
@@ -35,15 +35,15 @@ export async function updateUser({
         email,
         password,
       }),
-    },
-  )
+    }
+  );
   if (!response.ok) {
-    const error = await response.json()
+    const error = await response.json();
     return Promise.reject({
       status: response.status,
-      message: error.message || 'Error api',
-    })
+      message: error.message || "Error api",
+    });
   }
-  const data = await response.json()
-  return data
+  const data = await response.json();
+  return data;
 }
