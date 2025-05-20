@@ -16,7 +16,14 @@ jobs:
       - name: Testar conexão SSH
         run: |
           ssh -v joao@192.168.4.40 echo "Conectado com sucesso"
-   
+
+      - name: Configurar chave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 192.168.4.40 >> ~/.ssh/known_hosts
+
 
       - name: Fazer deploy na rede local
         run: |
