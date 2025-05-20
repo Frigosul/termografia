@@ -1,13 +1,12 @@
-import { UserRolesType } from '@/utils/user-roles'
 import { create } from 'zustand'
 
-interface UserData {
-  id: string
-  name?: string
-  role?: UserRolesType
-  email?: string
-  password?: string
-}
+// interface UserData {
+//   id: string
+//   name?: string
+//   role?: UserRolesType
+//   email?: string
+//   password?: string
+// }
 interface AlertData {
   action: 'Deg' | 'Vent'
   name: string
@@ -16,15 +15,11 @@ interface AlertData {
   model: number
 }
 
-interface UseModalStoreProps {
+interface UseModalStoreProps<T = unknown> {
   modals: { [key: string]: boolean }
-  userData: UserData | null
+  data: T | null
   alertData: AlertData | null
-  openModal: (
-    modalName: string,
-    userData?: UserData,
-    alertData?: AlertData,
-  ) => void
+  openModal: (modalName: string, data?: unknown, alertData?: AlertData) => void
   closeModal: (modalName: string) => void
   toggleModal: (modalName: string) => void
 }
@@ -32,11 +27,11 @@ interface UseModalStoreProps {
 export const useModalStore = create<UseModalStoreProps>((set) => ({
   modals: {},
   alertData: null,
-  userData: null,
-  openModal: (modalName, userData?, alertData?) => {
+  data: null,
+  openModal: (modalName, data?, alertData?) => {
     set((state) => ({
       modals: { ...state.modals, [modalName]: true },
-      userData: userData || state.userData,
+      data: data || state.data,
       alertData: alertData || state.alertData,
     }))
   },

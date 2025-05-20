@@ -1,22 +1,22 @@
 import { fetchServer } from '@/middlewares/fetch-server'
 
 type SetFunctionsSitradRequest = {
-  setpoint: string
+  differential: string
   model: number
   id: number
 }
 
-export async function setSetPoint({
-  setpoint,
+export async function setDifferential({
+  differential,
   model,
   id,
 }: SetFunctionsSitradRequest) {
-  const response = await fetchServer(`/api/instruments/set-setpoint`, {
+  const response = await fetchServer(`/api/instruments/set-differential`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ setpoint, model, id }),
+    body: JSON.stringify({ differential, model, id }),
   })
 
   if (!response.ok) {

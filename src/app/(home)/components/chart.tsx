@@ -100,7 +100,6 @@ const Chart = memo(function Chart({
     },
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetPoint(data: any) {
     setSetpointMutation.mutateAsync({
       id: idSitrad,
@@ -143,7 +142,8 @@ const Chart = memo(function Chart({
   if (appearanceMode === 'graph') {
     return (
       <div
-        className={`border-2 rounded-md  ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
+
+        className={`border-2 rounded-md ${session.data?.role === 'manage' && "cursor-pointer"} ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
       >
         <div className="flex flex-col items-center justify-center">
           <div className={`w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize ${!process && 'mb-7'}`}>
@@ -210,70 +210,18 @@ const Chart = memo(function Chart({
         </div>
         {type === 'temp' && model !== 78 && (
           <div className="flex justify-between px-1  lg:p-2 flex-wrap">
-            {session.data?.role === 'manage' ? (
-              <>
-                <Button
-                  variant="outline"
-                  className="text-sm px-0 z-30 gap-3 h-7"
-                  onClick={() =>
-                    openModal('alert-confirm', undefined, {
-                      instrumentId: idSitrad,
-                      action: 'Deg',
-                      name,
-                      model,
-                      active: !!status.includes('deg'),
-                    })
-                  }
-                >
-                  DEGE.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
-                  />
-                </Button>
-                {model !== 73 ? (
-                  <Button
-                    variant="outline"
-                    className="text-sm px-0 z-30 gap-3 h-7"
-                    onClick={() =>
-                      openModal('alert-confirm', undefined, {
-                        instrumentId: idSitrad,
-                        action: 'Vent',
-                        name,
-                        model,
-                        active: !!status.includes('vent'),
-                      })
-                    }
-                  >
-                    VENT.
-                    <div
-                      className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                    />
-                  </Button>
-                ) : (
-                  <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
-                    VENT.
-                    <div
-                      className={`size-3 lg:size-4 rounded-full bg-zinc-400`}
-                    />
-                  </span>
-                )}
-              </>
-            ) : (
-              <>
-                <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
-                  DEGE.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
-                  />
-                </span>
-                <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
-                  VENT.
-                  <div
-                    className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
-                  />
-                </span>
-              </>
-            )}
+            <span className="text-xs  w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
+              DEGE.
+              <div
+                className={`size-3 lg:size-4 rounded-full ${status.includes('deg') ? 'bg-red-500' : 'bg-zinc-400'}`}
+              />
+            </span>
+            <span className="text-xs w-16 lg:w-[70px]  font-normal lg:text-sm flex items-center justify-between  gap-3">
+              VENT.
+              <div
+                className={`size-3 lg:size-4 rounded-full ${status.includes('vent') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
+              />
+            </span>
             <span className="text-xs w-16 lg:w-[70px] font-normal lg:text-sm flex items-center justify-between  gap-3">
               RESF.
               <div
@@ -286,7 +234,7 @@ const Chart = memo(function Chart({
                 className={`size-3 lg:size-4 rounded-full ${status.includes('port') ? 'bg-emerald-500' : 'bg-zinc-400'}`}
               />
             </span>
-            {session.data?.role === 'manage' && model !== 78 && (
+            {/* {session.data?.role === 'manage' && model !== 78 && (
               <form
                 onSubmit={handleSubmit(handleSetPoint)}
                 className="flex items-center justify-between w-full gap-1 mt-2"
@@ -312,7 +260,7 @@ const Chart = memo(function Chart({
                   )}
                 </Button>
               </form>
-            )}
+            )} */}
           </div>
         )}
       </div>
@@ -320,7 +268,7 @@ const Chart = memo(function Chart({
   } else {
     return (
       <div
-        className={`border-2 rounded-md p-2 ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
+        className={`border-2 rounded-md p-2 ${session.data?.role === 'manage' && "cursor-pointer"} ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
       >
         <div className="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize">
           <strong className="font-normal text-xl mb-4">{name}</strong>
