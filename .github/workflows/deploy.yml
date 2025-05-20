@@ -13,10 +13,6 @@ jobs:
       - name: Checar código
         uses: actions/checkout@v3
 
-      - name: Testar conexão SSH
-        run: |
-          ssh -v joao@192.168.4.40 echo "Conectado com sucesso"
-
       - name: Configurar chave SSH
         run: |
           mkdir -p ~/.ssh
@@ -24,10 +20,13 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 192.168.4.40 >> ~/.ssh/known_hosts
 
+      - name: Testar conexão SSH
+        run: |
+          ssh -v joao@192.168.4.40 echo "Conectado com sucesso"
 
       - name: Fazer deploy na rede local
         run: |
-         ssh joao@192.168.4.40 << 'EOF'
+          ssh joao@192.168.4.40 << 'EOF'
           set -e
           set -x
           source ~/.bashrc
@@ -36,5 +35,4 @@ jobs:
           pnpm install
           pnpm build
           pm2 restart termo-web
-         EOF
-
+          EOF
