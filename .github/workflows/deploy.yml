@@ -1,4 +1,4 @@
-name: Local Deploy
+name: Deploy vm-linux
 
 on:
   push:

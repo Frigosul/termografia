@@ -30,6 +30,7 @@
     "tailwindcss",
     "tanstack",
     "uuid",
-    "vaul"
+    "vaul",
+    "webfactory"
   ]
 }
