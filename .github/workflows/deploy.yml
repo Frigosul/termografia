@@ -16,7 +16,7 @@ jobs:
       - name: Configurar ssh-agent com chave privada
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Conectar e executar comandos no servidor
         run: ssh -T joao@192.168.4.40 "uptime && echo OK"
