@@ -22,6 +22,11 @@ jobs:
       - name: Verificar chave gerada
         run: |
          ssh-keygen -y -f ~/.ssh/id_ed25519
+
+      - name: Testar conectividade com o servidor
+        run: ping -c 4 192.168.4.40
+
+
       - name: Testar conexão SSH
         run: ssh -o StrictHostKeyChecking=no -T joao@192.168.4.40 echo "SSH OK"
 
