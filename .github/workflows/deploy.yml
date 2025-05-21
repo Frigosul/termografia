@@ -18,16 +18,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          
+
       - name: Verificar chave gerada
         run: |
          ssh-keygen -y -f ~/.ssh/id_ed25519
- 
-
-      - name: Testar conexão SSH
-        run: |
-          ssh -v joao@192.168.4.40 echo "Conectado com sucesso"
-
+      
       - name: Fazer deploy na rede local
         run: |
           ssh -o LogLevel=DEBUG joao@192.168.4.40 "bash -s" <<'EOF'
