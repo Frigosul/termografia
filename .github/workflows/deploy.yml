@@ -23,8 +23,9 @@ jobs:
         run: |
          ssh-keygen -y -f ~/.ssh/id_ed25519
 
-      - name: Testar conectividade com o servidor
-        run: ping -c 4 192.168.4.40
+      - name: Testar porta SSH
+        run: nc -zv 192.168.4.40 22
+
 
 
       - name: Testar conexão SSH
