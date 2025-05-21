@@ -18,7 +18,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 192.168.4.40 >> ~/.ssh/known_hosts
+          
+      - name: Verificar chave gerada
+        run: |
+         ssh-keygen -y -f ~/.ssh/id_ed25519
+ 
 
       - name: Testar conexão SSH
         run: |
