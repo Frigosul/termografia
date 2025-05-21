@@ -18,10 +18,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Conectar e executar comandos no servidor
-        run: ssh -T joao@192.168.4.40 "uptime && echo OK"
-
-
+      
       - name: Fazer deploy na rede local
         run: |
           ssh joao@192.168.4.40 <<'EOF'
@@ -29,6 +26,7 @@ jobs:
           cd /home/joao/termografia
           git pull
           pnpm install --frozen-lockfile --reporter=append-only
+          pnpm prisma migrate deploy
           pnpm build
           pm2 restart termo-web
           echo "DEPLOY CONCLUÍDO"
