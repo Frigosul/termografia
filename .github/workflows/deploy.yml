@@ -22,7 +22,10 @@ jobs:
       - name: Verificar chave gerada
         run: |
          ssh-keygen -y -f ~/.ssh/id_ed25519
-      
+      - name: Testar conexão SSH
+        run: ssh -o StrictHostKeyChecking=no -T joao@192.168.4.40 echo "SSH OK"
+
+
       - name: Fazer deploy na rede local
         run: |
           ssh -o LogLevel=DEBUG -tt joao@192.168.4.40 <<'EOF'
