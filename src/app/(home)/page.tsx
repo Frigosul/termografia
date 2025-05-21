@@ -7,14 +7,18 @@ import { DialogOptions } from './components/dialog-options'
 import { SkeletonChart } from './components/skeleton-chart'
 
 export default function Home() {
-  const { data, isLoading, error } = useWebSocket(String(process.env.NEXT_PUBLIC_WEBSOCKET_URL))
+  const { data, isLoading, error } = useWebSocket(
+    String(process.env.NEXT_PUBLIC_WEBSOCKET_URL),
+  )
 
   return (
     <ScrollArea className="relative flex-1">
       <DialogOptions />
 
       <main>
-        <div className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 mb-4`}>
+        <div
+          className={`grid grid-cols-home px-2 justify-center gap-2 pt-3 mb-4`}
+        >
           {error ? (
             <AlertError />
           ) : isLoading ? (
@@ -27,7 +31,6 @@ export default function Home() {
             ))
           )}
         </div>
-
       </main>
     </ScrollArea>
   )

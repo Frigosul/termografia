@@ -58,25 +58,23 @@ export function TableManagedEquipments() {
 
   const [search, setSearch] = useState<string>('')
 
-
   const fuse = useMemo(() => {
     return new Fuse(data, {
       keys: ['name'],
       threshold: 0.3,
-    });
-  }, [data]);
+    })
+  }, [data])
 
   const handleFilter = useCallback(() => {
     if (!search.trim()) {
-      setFilteredData(data);
+      setFilteredData(data)
     } else {
-      const results = fuse.search(search);
-      setFilteredData(results.map((res) => res.item));
+      const results = fuse.search(search)
+      setFilteredData(results.map((res) => res.item))
     }
-  }, [fuse, search, data]);
+  }, [fuse, search, data])
 
-  useDebounce(handleFilter, [handleFilter, fuse], 100);
-
+  useDebounce(handleFilter, [handleFilter, fuse], 100)
 
   const updatedInstrumentsMutation = useMutation({
     mutationFn: updateInstruments,
@@ -201,13 +199,8 @@ export function TableManagedEquipments() {
     return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null
   }
 
-
-
   if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
   if (isLoading) return <SkeletonTable />
-
-
-
 
   return (
     <div className="flex-grow flex flex-col max-h-[40vh] max-w-screen-2xl overflow-hidden">

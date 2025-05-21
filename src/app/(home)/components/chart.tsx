@@ -146,16 +146,18 @@ const Chart = memo(function Chart({
         className={`border-2 rounded-md  ${isSensorError || (error && 'border-red-500/60 opacity-80 bg-red-200/10 dark:bg-red-200/20')}`}
       >
         <div className="flex flex-col items-center justify-center">
-          <div className={`w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize ${!process && 'mb-7'}`}>
+          <div
+            className={`w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-2 capitalize ${!process && 'mb-7'}`}
+          >
             <strong className="font-normal text-xl mb-4 capitalize">
               {name}
             </strong>
           </div>
           {process && (
-            <span className='text-center text-muted-foreground text-sm mb-2'>- {process} -</span>
-          )
-
-          }
+            <span className="text-center text-muted-foreground text-sm mb-2">
+              - {process} -
+            </span>
+          )}
           <ResponsiveContainer width="93%" height={200}>
             <PieChart>
               <Pie
@@ -193,12 +195,17 @@ const Chart = memo(function Chart({
                 ) : (
                   'bar'
                 )
-              ) : isSensorError ?
-                <span className="flex w-28 h-8 text-base text-red-700 dark:text-red-500 flex-wrap">Erro de sensor</span>
-                : error &&
-                <span className='flex w-28 h-[3.2rem] text-base text-red-700 dark:text-red-500 flex-wrap'>Falha de comunicação</span>
-
-              }
+              ) : isSensorError ? (
+                <span className="flex w-28 h-8 text-base text-red-700 dark:text-red-500 flex-wrap">
+                  Erro de sensor
+                </span>
+              ) : (
+                error && (
+                  <span className="flex w-28 h-[3.2rem] text-base text-red-700 dark:text-red-500 flex-wrap">
+                    Falha de comunicação
+                  </span>
+                )
+              )}
             </p>
           </div>
           <div className="w-[90%]  max-w-[210px] flex justify-between items-center text-xs tracking-tighter leading-4 text-muted-foreground">
@@ -326,8 +333,12 @@ const Chart = memo(function Chart({
           <strong className="font-normal text-xl mb-4">{name}</strong>
         </div>
         <div className="w-full flex justify-between px-2">
-          <span className="text-xs text-muted-foreground font-light">SetPoint: {setPoint}</span>
-          <span className="text-xs text-muted-foreground font-light">Dif: {differential}</span>
+          <span className="text-xs text-muted-foreground font-light">
+            SetPoint: {setPoint}
+          </span>
+          <span className="text-xs text-muted-foreground font-light">
+            Dif: {differential}
+          </span>
         </div>
         <div className="flex items-center justify-center gap-2">
           <div
