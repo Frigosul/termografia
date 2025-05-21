@@ -24,8 +24,7 @@ jobs:
 
       - name: Fazer deploy na rede local
         run: |
-          ssh -o LogLevel=DEBUG joao@192.168.4.40 <<'EOF'
-          set -e
+          ssh joao@192.168.4.40 <<'EOF'
           echo "INICIANDO DEPLOY"
           cd /home/joao/termografia
           git pull
