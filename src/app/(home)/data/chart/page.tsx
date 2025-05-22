@@ -83,8 +83,11 @@ export default function PageChart() {
                 />
               </>
 
-              <div className="flex gap-2 h-32 mt-4">
-                <Card className="bg-transparent flex-1 print:w-96">
+              <div
+                className="flex gap-2 h-32 mt-4 print:break-inside-avoid"
+                style={{ breakInside: 'avoid', pageBreakInside: 'avoid' }}
+              >
+                <Card className="bg-transparent flex-1 print:flex-2">
                   <CardContent className="border border-card-foreground rounded-md px-2 h-full print:w-96">
                     <span className="text-xs">
                       {' '}

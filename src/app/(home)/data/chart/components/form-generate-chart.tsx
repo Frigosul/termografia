@@ -88,8 +88,7 @@ export function FormGenerateChart({
         margin: 0;
       }
     }
-  `
-
+  `,
   })
 
   const {

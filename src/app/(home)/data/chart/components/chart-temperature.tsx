@@ -20,6 +20,13 @@ import {
   YAxis,
 } from 'recharts'
 
+import { Roboto } from 'next/font/google'
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400'],
+})
+
 const chartConfig = {
   desktop: {
     label: 'Desktop',
@@ -98,8 +105,9 @@ export function ChartTemperature({
   const formattedDateOpen = formattedDateTime(dateOpen)
 
   return (
-    <div>
-      <div className="flex flex-col gap-3 md:gap-0 md:flex-row justify-between mb-4 px-4 print:flex-row">
+    <>
+      {/* div header */}
+      <div className="flex flex-col gap-3 md:gap-0 md:flex-row justify-between mb-4 h-16 px-4 print:flex-row">
         <Image
           src={logo}
           alt="Logo Frigosul"
@@ -124,25 +132,24 @@ export function ChartTemperature({
           </span>
         </div>
       </div>
-      <div className="relative border border-card-foreground rounded-md py-4 overflow-auto print:border-none print:overflow-hidden">
-        <div className="absolute print:right-2 right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
+
+      {/* div chart */}
+      <div className="border border-muted-foreground rounded-md py-2 px-0 overflow-auto w-screen-xl h-[44.5rem] print:h-[445px] print:w-[730px] print:overflow-hidden print:border-none">
+        <div className="text-center text-sm justify-center items-center !bg-muted dark:!bg-slate-800 font-light flex gap-2">
           <div className="flex justify-between">
-            <span>Local: </span>
+            <span className="mr-2">Local:</span>
             <span>{local}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Fechamento: </span>
+          <div className="flex justify-center items-center">
+            <span className="mr-2">Fechamento:</span>
             <span>{formattedDateClose}</span>
           </div>
-          <div className="flex justify-between">
-            <span>Abertura: </span>
+          <div className="flex justify-center items-center">
+            <span className="mr-2">Abertura:</span>
             <span>{formattedDateOpen}</span>
           </div>
         </div>
-        <ChartContainer
-          config={chartConfig}
-          className="w-full  print:scale-105"
-        >
+        <ChartContainer config={chartConfig}>
           <LineChart
             data={formattedData}
             margin={{
@@ -158,16 +165,21 @@ export function ChartTemperature({
             />
             <XAxis
               dataKey="time"
-              tickMargin={20}
-              fontWeight={400}
-              height={55}
+              fontWeight={300}
+              height={60}
               angle={90}
               interval={0}
+              orientation="bottom"
               stroke="hsl(var(--card-foreground))"
+              tick={{
+                textAnchor: 'start',
+                fontFamily: roboto.style.fontFamily,
+                style: { fontSize: 13, fontWeight: 400 },
+              }}
               label={{
                 value: 'Horário',
                 position: 'bottom',
-                offset: -5,
+                offset: -7,
                 style: {
                   textAnchor: 'middle',
                   fontSize: 12,
@@ -215,6 +227,6 @@ export function ChartTemperature({
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }

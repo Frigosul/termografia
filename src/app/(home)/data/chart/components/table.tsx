@@ -14,8 +14,6 @@ interface TableProps {
   }[]
 }
 
-
-
 export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   if (!minValue || !maxValue) {
     const minAndMaxValue = data.reduce(
@@ -33,40 +31,34 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
     maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
   }
 
-
   useEffect(() => {
-    const columns = document.querySelectorAll(".data-column")
+    const columns = document.querySelectorAll('.data-column')
     let currentPageHeight = 0
     const a4Height = 1122
     const chartHeight = 30 * 16
     const firstPageAvailableHeight = a4Height - chartHeight
     let isFirstPage = true
-    let lastColOnPage: Element | null = null
 
-    columns.forEach((col, index) => {
+    columns.forEach((col) => {
       const colHeight = col.getBoundingClientRect().height
       const availableHeight = isFirstPage ? firstPageAvailableHeight : a4Height
 
       if (currentPageHeight + colHeight > availableHeight) {
-
-        col.classList.add("break-before-page")
+        col.classList.add('break-before-page')
         currentPageHeight = colHeight
         isFirstPage = false
       } else {
         currentPageHeight += colHeight
       }
-
-      lastColOnPage = col
     })
-
   }, [])
   const rowsPerColumn = 8
   const hasPressure = pressure && pressure.length > 0
 
   // Mapeia pressão por horário para acesso rápido
-  const pressureMap = hasPressure ? new Map(
-    pressure.map((item) => [item.time, item.pressure])
-  ) : null
+  const pressureMap = hasPressure
+    ? new Map(pressure.map((item) => [item.time, item.pressure]))
+    : null
 
   const mergedData = data.map((temp) => ({
     time: temp.time,
@@ -74,11 +66,13 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
     pressure: hasPressure ? pressureMap?.get(temp.time) : undefined,
   }))
 
-
   const columns = Array.from(
     { length: Math.ceil(data.length / rowsPerColumn) },
     (_, colIndex) =>
-      mergedData.slice(colIndex * rowsPerColumn, (colIndex + 1) * rowsPerColumn)
+      mergedData.slice(
+        colIndex * rowsPerColumn,
+        (colIndex + 1) * rowsPerColumn,
+      ),
   )
 
   return (
@@ -97,17 +91,15 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
             <div
               key={rowIdx}
               className={`flex justify-between px-2 text-sm py-0.5 border-b border-dashed border-muted-foreground ${rowIdx === rowsPerColumn - 1 || rowIdx === columnData.length - 1
-                ? "border-b border-white"
-                : ""
+                  ? 'border-b border-white'
+                  : ''
                 }`}
             >
               <div>{formattedTime(item.time)}</div>
               <div>{item.value.toFixed(1)}</div>
               {hasPressure && (
                 <div>
-                  {item.pressure !== undefined
-                    ? item.pressure.toFixed(1)
-                    : "-"}
+                  {item.pressure !== undefined ? item.pressure.toFixed(1) : '-'}
                 </div>
               )}
             </div>
