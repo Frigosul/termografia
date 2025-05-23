@@ -55,7 +55,6 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   const rowsPerColumn = 8
   const hasPressure = pressure && pressure.length > 0
 
-  // Mapeia pressão por horário para acesso rápido
   const pressureMap = hasPressure
     ? new Map(pressure.map((item) => [item.time, item.pressure]))
     : null

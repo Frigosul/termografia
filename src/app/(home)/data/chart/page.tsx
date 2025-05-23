@@ -32,7 +32,7 @@ export default function PageChart() {
 
   return (
     <ScrollArea className="flex-1">
-      <main className="p-4 sm:p-6 md:p-6 max-w-screen-xl">
+      <main className="p-4 sm:p-6 md:p-6 max-w-screen-xl flex-1">
         <div className="w-full">
           <h2 className="font-normal tracking-tight text-foreground mb-2 text-sm md:text-base">
             Gerar gráfico
@@ -50,7 +50,7 @@ export default function PageChart() {
           dataChart && (
             <div
               ref={divPdfRef}
-              className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full print:bg-transparent print:shadow-none break-inside-avoid"
+              className="dark:bg-slate-800 shadow-sm bg-muted p-4 rounded-md w-full print:bg-transparent print:p-0 print:w-[730px] print:shadow-none break-inside-avoid"
             >
               <>
                 <ChartTemperature

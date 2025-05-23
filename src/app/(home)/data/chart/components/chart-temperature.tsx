@@ -134,7 +134,7 @@ export function ChartTemperature({
       </div>
 
       {/* div chart */}
-      <div className="border border-muted-foreground rounded-md py-2 px-0 overflow-auto w-screen-xl h-[44.5rem] print:h-[445px] print:w-[730px] print:overflow-hidden print:border-none">
+      <div className="border border-muted-foreground rounded-md py-2 px-0 overflow-auto w-screen-xl print:border-none">
         <div className="text-center text-sm justify-center items-center !bg-muted dark:!bg-slate-800 font-light flex gap-2">
           <div className="flex justify-between">
             <span className="mr-2">Local:</span>

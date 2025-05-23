@@ -75,19 +75,29 @@ export function FormGenerateChart({
   const reactToPrintFn = useReactToPrint({
     documentTitle: 'Gráfico',
     contentRef: divRef,
+
     pageStyle: `
     @media print {
       @page {
         size: A4;
         margin: 5px;
         padding: 0;
-      }
-      body {
+      } 
+     body {
         font-family: Arial, sans-serif;
         padding: 10px;
-        margin: 0;
+        background: transparent;
+        color: #000;
+        
+      }    
+    .recharts-wrapper,
+    .recharts-surface{
+      @media print {
+        width: calc(100%)!important;
+        height: calc(100%)!important;
       }
-    }
+    }      
+  }  
   `,
   })
 
@@ -500,6 +510,7 @@ export function FormGenerateChart({
             disabled={isPending}
             type="button"
             onClick={() => reactToPrintFn()}
+            // onClick={() => window.print()}
             variant="outline"
             className="h-8 min-w-[8.9rem] mb-4"
           >
