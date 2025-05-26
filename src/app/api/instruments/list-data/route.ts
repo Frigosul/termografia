@@ -1,23 +1,21 @@
-import { ListDataResponse } from "@/app/http/list-data";
-import { prisma } from "@/lib/prisma";
-import dayjs from "dayjs";
-import { NextRequest, NextResponse } from "next/server";
-export const dynamic = "force-dynamic";
+import { ListDataResponse } from '@/app/http/list-data'
+import { prisma } from '@/lib/prisma'
+import dayjs from 'dayjs'
+import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   const { local, graphVariation, tableVariation, startDate, endDate } =
-    await req.json();
+    await req.json()
   if (!local || !graphVariation || !startDate || !endDate) {
-    return NextResponse.json({ message: "Missing data!" }, { status: 400 });
+    return NextResponse.json({ message: 'Missing data!' }, { status: 400 })
   }
 
-  const formattedStartDate = dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss[Z]");
+  const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
   const formattedEndDate = dayjs(endDate)
-    .add(1, "minute")
-    .format("YYYY-MM-DDTHH:mm:ss[Z]");
-  const formattedEndDateNotAdd = dayjs(endDate).format(
-    "YYYY-MM-DDTHH:mm:ss[Z]"
-  );
+    .add(1, 'minute')
+    .format('YYYY-MM-DDTHH:mm:ss[Z]')
+  const formattedEndDateNotAdd = dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
 
   const union = await prisma.unionInstruments.findUnique({
     where: { id: local },
@@ -48,7 +46,7 @@ export async function POST(req: NextRequest) {
             },
             orderBy: {
               temperature: {
-                createdAt: "asc",
+                createdAt: 'asc',
               },
             },
           },
@@ -74,7 +72,7 @@ export async function POST(req: NextRequest) {
             },
             orderBy: {
               pressure: {
-                createdAt: "asc",
+                createdAt: 'asc',
               },
             },
           },
@@ -104,7 +102,7 @@ export async function POST(req: NextRequest) {
             },
             orderBy: {
               temperature: {
-                createdAt: "asc",
+                createdAt: 'asc',
               },
             },
           },
@@ -130,54 +128,52 @@ export async function POST(req: NextRequest) {
             },
             orderBy: {
               pressure: {
-                createdAt: "asc",
+                createdAt: 'asc',
               },
             },
           },
         },
       },
     },
-  });
+  })
 
   type FilterByIntervalItem = {
-    id: string;
-    editValue: number;
-    createdAt: Date;
-    userUpdatedAt: string | null;
-    updatedAt: Date | null;
-  };
+    id: string
+    editValue: number
+    createdAt: Date
+    userUpdatedAt: string | null
+    updatedAt: Date | null
+  }
 
-  type FilterByIntervalType<T extends "temperature" | "pressure"> = {
-    [K in T]: FilterByIntervalItem;
-  }[];
+  type FilterByIntervalType<T extends 'temperature' | 'pressure'> = {
+    [K in T]: FilterByIntervalItem
+  }[]
 
-  function filterByInterval<T extends "temperature" | "pressure">({
+  function filterByInterval<T extends 'temperature' | 'pressure'>({
     data,
     intervalMinutes,
     key,
   }: {
-    data: FilterByIntervalType<T>;
-    intervalMinutes: number;
-    key: T;
+    data: FilterByIntervalType<T>
+    intervalMinutes: number
+    key: T
   }) {
-    let lastTime: number | null = null;
-    const filtered: FilterByIntervalType<T> = [];
+    let lastTime: number | null = null
+    const filtered: FilterByIntervalType<T> = []
 
     for (const item of data) {
-      const tempTime = dayjs(item[key].createdAt).valueOf();
+      const tempTime = dayjs(item[key].createdAt).valueOf()
 
       if (!lastTime || tempTime >= lastTime + intervalMinutes * 60 * 1000) {
-        filtered.push(item);
-        lastTime = tempTime;
+        filtered.push(item)
+        lastTime = tempTime
       }
     }
 
     if (data.length > 0) {
-      const lastTempTime = dayjs(
-        data[data.length - 1][key].createdAt
-      ).valueOf();
+      const lastTempTime = dayjs(data[data.length - 1][key].createdAt).valueOf()
       if (filtered.length === 0 || lastTempTime > lastTime!) {
-        filtered.push(data[data.length - 1]);
+        filtered.push(data[data.length - 1])
       }
     }
 
@@ -185,34 +181,34 @@ export async function POST(req: NextRequest) {
       (item, index, self) =>
         index ===
         self.findIndex((r) =>
-          dayjs(r[key].createdAt).isSame(dayjs(item[key].createdAt), "minute")
-        )
-    );
+          dayjs(r[key].createdAt).isSame(dayjs(item[key].createdAt), 'minute'),
+        ),
+    )
   }
 
   if (union) {
     const temp =
       union.firstInstrument.temperatures.length > 1
         ? union.firstInstrument.temperatures
-        : union.secondInstrument.temperatures;
+        : union.secondInstrument.temperatures
     const press =
       union.firstInstrument.pressures.length > 1
         ? union.firstInstrument.pressures
-        : union.secondInstrument.pressures;
+        : union.secondInstrument.pressures
     const chartTemperature = filterByInterval({
       data: temp,
       intervalMinutes: graphVariation,
-      key: "temperature",
-    });
+      key: 'temperature',
+    })
     const chartPressure = filterByInterval({
       data: press,
       intervalMinutes: graphVariation,
-      key: "pressure",
-    });
+      key: 'pressure',
+    })
     const response: ListDataResponse = {
       id: union.id,
       name: union.name,
-      chartType: "temp/press",
+      chartType: 'temp/press',
       dateClose: formattedStartDate,
       dateOpen: formattedEndDateNotAdd,
       chartTemperature: chartTemperature.map((temp) => ({
@@ -229,34 +225,34 @@ export async function POST(req: NextRequest) {
         updatedUserAt: press.pressure.userUpdatedAt,
         updatedAt: String(press.pressure.updatedAt),
       })),
-    };
+    }
 
     if (tableVariation) {
       const tableTemperatureRange = filterByInterval({
         data: temp,
         intervalMinutes: tableVariation,
-        key: "temperature",
-      });
+        key: 'temperature',
+      })
       const tablePressureRange = filterByInterval({
         data: press,
         intervalMinutes: tableVariation,
-        key: "pressure",
-      });
+        key: 'pressure',
+      })
       response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
         id: temp.temperature.id,
         time: temp.temperature.createdAt.toISOString(),
         value: temp.temperature.editValue,
         updatedAt: String(temp.temperature.updatedAt),
         updatedUserAt: String(temp.temperature.userUpdatedAt),
-      }));
+      }))
       response.tablePressureRange = tablePressureRange.map((press) => ({
         id: press.pressure.id,
         time: press.pressure.createdAt.toISOString(),
         pressure: press.pressure.editValue,
-      }));
+      }))
     }
 
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json(response, { status: 200 })
   }
 
   const data = await prisma.instrument.findUnique({
@@ -289,7 +285,7 @@ export async function POST(req: NextRequest) {
         },
         orderBy: {
           temperature: {
-            createdAt: "asc",
+            createdAt: 'asc',
           },
         },
       },
@@ -315,35 +311,32 @@ export async function POST(req: NextRequest) {
         },
         orderBy: {
           pressure: {
-            createdAt: "asc",
+            createdAt: 'asc',
           },
         },
       },
     },
-  });
+  })
 
   if (!data) {
-    return NextResponse.json(
-      { message: "Data is not locale" },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: 'Data is not locale' }, { status: 400 })
   }
 
   const chartTemperature = filterByInterval({
     data: data.temperatures,
     intervalMinutes: graphVariation,
-    key: "temperature",
-  });
+    key: 'temperature',
+  })
   const chartPressure = filterByInterval({
     data: data.pressures,
     intervalMinutes: graphVariation,
-    key: "pressure",
-  });
+    key: 'pressure',
+  })
 
   const response: ListDataResponse = {
     id: data.id,
     name: data.name,
-    chartType: data.type === "press" ? "temp/press" : "temp",
+    chartType: data.type === 'press' ? 'temp/press' : 'temp',
     dateClose: formattedStartDate,
     dateOpen: formattedEndDateNotAdd,
     chartTemperature: chartTemperature.map((temp) => ({
@@ -360,22 +353,22 @@ export async function POST(req: NextRequest) {
       updatedUserAt: press.pressure.userUpdatedAt,
       updatedAt: String(press.pressure.updatedAt),
     })),
-  };
+  }
 
   if (tableVariation) {
     const tableTemperatureRange = filterByInterval({
       data: data.temperatures,
       intervalMinutes: tableVariation,
-      key: "temperature",
-    });
+      key: 'temperature',
+    })
     response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
       id: temp.temperature.id,
       time: temp.temperature.createdAt.toISOString(),
       value: temp.temperature.editValue,
       updatedAt: String(temp.temperature.updatedAt),
       updatedUserAt: String(temp.temperature.userUpdatedAt),
-    }));
+    }))
   }
 
-  return NextResponse.json(response, { status: 200 });
+  return NextResponse.json(response, { status: 200 })
 }

@@ -21,7 +21,8 @@ model User {
 
 model Instrument {
   id             String                   @id @default(uuid())
-  name           String                   @unique
+  name           String
+  normalizedName String                   @unique
   type           String?                  @default("temp")
   model          Int?
   status         String
