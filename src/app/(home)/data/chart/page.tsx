@@ -17,6 +17,7 @@ export default function PageChart() {
   const generateChartMutation = useMutation({
     mutationKey: ['generate-chart'],
     mutationFn: listData,
+
     onSuccess: (data) => {
       setDataChart(data)
     },
