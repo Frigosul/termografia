@@ -56,21 +56,19 @@ export function TableManagedUnions() {
     return new Fuse(data, {
       keys: ['name'],
       threshold: 0.3,
-    });
-  }, [data]);
-
+    })
+  }, [data])
 
   const handleFilter = useCallback(() => {
     if (!search.trim()) {
-      setFilteredData(data);
+      setFilteredData(data)
     } else {
-      const results = fuse.search(search);
-      setFilteredData(results.map((res) => res.item));
+      const results = fuse.search(search)
+      setFilteredData(results.map((res) => res.item))
     }
-  }, [fuse, search, data]);
+  }, [fuse, search, data])
 
-  useDebounce(handleFilter, [handleFilter, fuse], 100);
-
+  useDebounce(handleFilter, [handleFilter, fuse], 100)
 
   const updatedUnionsMutation = useMutation({
     mutationFn: updateUnions,

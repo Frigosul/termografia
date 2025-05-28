@@ -158,32 +158,41 @@ export async function POST(req: NextRequest) {
     intervalMinutes: number
     key: T
   }) {
-    let lastTime: number | null = null
-    const filtered: FilterByIntervalType<T> = []
+    if (data.length === 0) return []
 
-    for (const item of data) {
-      const tempTime = dayjs(item[key].createdAt).valueOf()
-
-      if (!lastTime || tempTime >= lastTime + intervalMinutes * 60 * 1000) {
-        filtered.push(item)
-        lastTime = tempTime
-      }
-    }
-
-    if (data.length > 0) {
-      const lastTempTime = dayjs(data[data.length - 1][key].createdAt).valueOf()
-      if (filtered.length === 0 || lastTempTime > lastTime!) {
-        filtered.push(data[data.length - 1])
-      }
-    }
-
-    return filtered.filter(
-      (item, index, self) =>
-        index ===
-        self.findIndex((r) =>
-          dayjs(r[key].createdAt).isSame(dayjs(item[key].createdAt), 'minute'),
-        ),
+    const sortedData = [...data].sort(
+      (a, b) =>
+        dayjs(a[key].createdAt).valueOf() - dayjs(b[key].createdAt).valueOf(),
     )
+
+    const result: FilterByIntervalType<T> = []
+
+    let index = 0
+    let currentTime = dayjs(sortedData[0][key].createdAt)
+      .second(0)
+      .millisecond(0)
+    const endTime = dayjs(sortedData[sortedData.length - 1][key].createdAt)
+
+    while (index < sortedData.length && currentTime.isBefore(endTime)) {
+      const dataTime = dayjs(sortedData[index][key].createdAt)
+
+      if (dataTime.isSame(currentTime)) {
+        result.push(sortedData[index])
+        currentTime = currentTime.add(intervalMinutes, 'minute')
+        index++
+      } else if (dataTime.isAfter(currentTime)) {
+        // Gap detectado: atualiza currentTime para o próximo timestamp e reinicia o intervalo
+        currentTime = dataTime.second(0).millisecond(0)
+        result.push(sortedData[index])
+        currentTime = currentTime.add(intervalMinutes, 'minute')
+        index++
+      } else {
+        // Timestamp está antes do esperado (duplicado ou já foi considerado)
+        index++
+      }
+    }
+
+    return result
   }
 
   if (union) {

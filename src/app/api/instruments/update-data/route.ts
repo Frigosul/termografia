@@ -1,11 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(req: NextRequest) {
   const { value } = await req.json()
-  const prisma = new PrismaClient()
-  console.log(value)
   if (!value) {
     return NextResponse.json({ message: 'Missing data' }, { status: 400 })
   }
@@ -14,12 +12,12 @@ export async function PUT(req: NextRequest) {
       value.map(
         async ({
           id,
-          temperature,
+          value: temperature,
           updatedUserAt,
           updatedAt,
         }: {
           id: string
-          temperature: number
+          value: number
           updatedAt: string
           updatedUserAt: string
         }) => {

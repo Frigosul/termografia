@@ -28,7 +28,7 @@ export async function GET() {
     return {
       id: unionInstrument.id,
       name: unionInstrument.name,
-      fisrtInstrument: unionInstrument.firstInstrument.name,
+      firstInstrument: unionInstrument.firstInstrument.name,
       secondInstrument: unionInstrument.secondInstrument.name,
       isActive: unionInstrument.isActive,
     }
