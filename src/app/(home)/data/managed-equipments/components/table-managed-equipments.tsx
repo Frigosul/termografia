@@ -1,6 +1,6 @@
+import { Spinner } from '@/app/(home)/components/spinner'
 import { getInstruments } from '@/app/http/get-instruments'
 import { updateInstruments } from '@/app/http/update-instruments'
-import { SkeletonTable } from '@/components/skeleton-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -200,7 +200,12 @@ export function TableManagedEquipments() {
   }
 
   if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
-  if (isLoading) return <SkeletonTable />
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-200px)] max-w-screen-2xl">
+        <Spinner size={62} />
+      </div>
+    )
 
   return (
     <div className="flex-grow flex flex-col max-h-[40vh] max-w-screen-2xl overflow-hidden">

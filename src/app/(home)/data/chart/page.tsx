@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import { CircleX } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { Spinner } from '../../components/spinner'
 import { ChartPressure } from './components/chart-pressure'
 import { ChartTemperature } from './components/chart-temperature'
 import { FormGenerateChart } from './components/form-generate-chart'
@@ -45,7 +46,9 @@ export default function PageChart() {
         </div>
 
         {generateChartMutation.isPending ? (
-          <p>Carregando...</p>
+          <div className="flex items-center justify-center h-[calc(100vh-200px)] w-full">
+            <Spinner size={62} />
+          </div>
         ) : (
           dataChart && (
             <div

@@ -204,6 +204,7 @@ export function ChartTemperature({
               ticks={Array.from({ length: interval }).map(
                 (_, i) => minValue + i,
               )}
+              tickFormatter={(value) => String(value.toFixed(1))}
               interval={variation ? variation - 1 : 0}
               stroke="hsl(var(--card-foreground))"
             />

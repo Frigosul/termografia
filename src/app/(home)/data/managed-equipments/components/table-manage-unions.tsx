@@ -1,7 +1,7 @@
+import { Spinner } from '@/app/(home)/components/spinner'
 import { deleteUnion } from '@/app/http/delete-union'
 import { getUnions } from '@/app/http/get-unions'
 import { updateUnions } from '@/app/http/update-unions'
-import { SkeletonTable } from '@/components/skeleton-table'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -206,7 +206,12 @@ export function TableManagedUnions() {
     return nextIndex >= 0 && nextIndex < data.length ? data[nextIndex].id : null
   }
   if (isError) return <p>Erro encontrado, por favor tente novamente.</p>
-  if (isLoading) return <SkeletonTable />
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-200px)] max-w-screen-2xl">
+        <Spinner size={62} />
+      </div>
+    )
 
   return (
     <div className="flex-grow flex flex-col max-h-[50vh] max-w-screen-2xl overflow-hidden">

@@ -74,7 +74,7 @@ export function TableUpdateData({ data }: TableProps) {
     },
   })
 
-  const { control, register, handleSubmit } = useForm<SearchData>({
+  const { control, register } = useForm<SearchData>({
     resolver: zodResolver(searchDataSchema),
   })
 
@@ -89,10 +89,6 @@ export function TableUpdateData({ data }: TableProps) {
   })
 
   const [inputValue, setInputValue] = useState<string>('')
-
-  function handleSearchData(data: SearchData) {
-    console.log(data)
-  }
 
   function handleDoubleClick(
     rowId: string,
@@ -122,11 +118,11 @@ export function TableUpdateData({ data }: TableProps) {
           prevData?.data.map((item) => {
             return item.id === rowId
               ? {
-                  ...item,
-                  [field]: field === 'value' ? Number(inputValue) : inputValue,
-                  updatedUserAt: String(session?.user?.name),
-                  updatedAt: dayjs().format('YYYY-MM-DDTHH:mm'),
-                }
+                ...item,
+                [field]: field === 'value' ? Number(inputValue) : inputValue,
+                updatedUserAt: String(session?.user?.name),
+                updatedAt: dayjs().format('YYYY-MM-DDTHH:mm'),
+              }
               : item
           }) || [],
       }))
@@ -216,10 +212,7 @@ export function TableUpdateData({ data }: TableProps) {
             Cancelar
           </Button>
         </div>
-        <form
-          className="flex items-center justify-center gap-2"
-          onSubmit={handleSubmit(handleSearchData)}
-        >
+        <form className="flex items-center justify-center gap-2">
           <Input
             {...register('hour')}
             placeholder="Hora"

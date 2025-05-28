@@ -1,11 +1,11 @@
 'use client'
 import { listData, ListDataResponse } from '@/app/http/list-data'
-import { SkeletonTable } from '@/components/skeleton-table'
 import { TableEditValues } from '@/components/table-edit-values'
 import { useMutation } from '@tanstack/react-query'
 import { CircleX } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Spinner } from '../../components/spinner'
 import { FormUpdatedData } from './components/form-update-data'
 
 export default function PageManagedData() {
@@ -24,11 +24,10 @@ export default function PageManagedData() {
       })
     },
   })
-  console.log(dataValue?.chartType)
 
   return (
     <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
-      <div className="w-full max-w-screen-2xl">
+      <div className="w-full max-w-screen-xl">
         <h2 className="font-normal tracking-tight text-foreground mb-2 text-sm md:text-base">
           Editar dados
         </h2>
@@ -39,7 +38,9 @@ export default function PageManagedData() {
       </div>
 
       {updateDataMutation.isPending ? (
-        <SkeletonTable />
+        <div className="flex items-center justify-center h-[calc(100vh-300px)] w-full">
+          <Spinner size={62} />
+        </div>
       ) : (
         dataValue?.chartTemperature && (
           <TableEditValues

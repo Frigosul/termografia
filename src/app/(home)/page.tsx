@@ -4,7 +4,7 @@ import { useWebSocket } from '@/hooks/useWebSocket'
 import { AlertError } from './components/alert'
 import { Chart } from './components/chart'
 import { DialogOptions } from './components/dialog-options'
-import { SkeletonChart } from './components/skeleton-chart'
+import { Spinner } from './components/spinner'
 
 export default function Home() {
   const { data, isLoading, error } = useWebSocket(
@@ -22,9 +22,9 @@ export default function Home() {
           {error ? (
             <AlertError />
           ) : isLoading ? (
-            Array.from({ length: 7 }).map((_, index) => (
-              <SkeletonChart key={index} />
-            ))
+            <div className="flex items-center justify-center col-span-full h-[calc(100vh-100px)]">
+              <Spinner size={62} />
+            </div>
           ) : (
             data?.map((instrument) => (
               <Chart key={instrument.id} dataChart={instrument} />

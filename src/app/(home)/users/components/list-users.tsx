@@ -13,7 +13,7 @@ import { useModalStore } from '@/stores/useModalStore'
 import { userRoles, UserRolesType } from '@/utils/user-roles'
 import { useQuery } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
-import { SkeletonTable } from './skeleton-table'
+import { Spinner } from '../../components/spinner'
 
 export function ListUsers() {
   const { openModal } = useModalStore()
@@ -40,7 +40,9 @@ export function ListUsers() {
       </TableHeader>
       <TableBody className="overflow-y-auto">
         {isLoading ? (
-          <SkeletonTable />
+          <div className="flex items-center justify-center h-[calc(100vh-200px)] w-full">
+            <Spinner size={62} />
+          </div>
         ) : error ? (
           <p>Erro encontrado, tente novamente.</p>
         ) : (
