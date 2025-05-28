@@ -161,7 +161,11 @@ const Chart = memo(function Chart({
           <ResponsiveContainer width="93%" height={200}>
             <PieChart>
               <Pie
-                data={!error ? data : [{ value: 0 }, { value: 100 }]}
+                data={
+                  !error && !isSensorError
+                    ? data
+                    : [{ value: 0 }, { value: 100 }]
+                }
                 startAngle={180}
                 endAngle={0}
                 innerRadius="80%"
