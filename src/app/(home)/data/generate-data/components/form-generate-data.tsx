@@ -76,11 +76,9 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   })
 
   function handleGenerateStandards(data: GenerateStandards) {
-    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
-    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
-    const defrostDataUtc = dayjs(data.defrostDate)
-      .utc()
-      .format('YYYY-MM-DDTHH:mm')
+    const startDataUtc = dayjs(data.startDate).format('YYYY-MM-DDTHH:mm')
+    const endDataUtc = dayjs(data.endDate).format('YYYY-MM-DDTHH:mm')
+    const defrostDataUtc = dayjs(data.defrostDate).format('YYYY-MM-DDTHH:mm')
     mutate({
       endDate: endDataUtc,
       startDate: startDataUtc,
@@ -92,15 +90,15 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   }
 
   const startDateValue = watch('startDate')
-  const instrumendSelectedId = watch('local')
+  const instrumentSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId || !instrumentList) return
+    if (!instrumentSelectedId || !instrumentList) return
     const instrument = instrumentList.find(
-      (instrument) => instrument.id === instrumendSelectedId,
+      (instrument) => instrument.id === instrumentSelectedId,
     )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId, instrumentList])
+  }, [instrumentSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
@@ -315,7 +313,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   <Input
                     id="startDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(initialDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
@@ -343,7 +341,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   <Input
                     id="defrostDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(minDefrostDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
@@ -369,7 +367,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   <Input
                     id="endDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
