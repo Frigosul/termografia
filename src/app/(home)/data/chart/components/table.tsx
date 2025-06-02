@@ -75,13 +75,13 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   )
 
   return (
-    <div className="flex flex-wrap gap-2 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none">
+    <div className="flex flex-wrap gap-1 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none">
       {columns.map((columnData, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[120px] border-dashed border-r pr-2 last:border-none print:break-inside-avoid"
+          className="min-w-[100px] border-dashed border-r pr-1 last:border-none print:break-inside-avoid"
         >
-          <div className="flex justify-between px-2 font-bold  border-b border-white pb-1 mb-1 text-center">
+          <div className="flex justify-between px-1  border-b border-card-foreground mb-1 text-center text-xs">
             <div>Hora</div>
             <div>°C</div>
             {hasPressure && <div>Bar</div>}
@@ -89,8 +89,10 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
           {columnData.map((item, rowIdx) => (
             <div
               key={rowIdx}
-              className={`flex justify-between px-2 text-sm py-0.5 border-b border-dashed border-muted-foreground ${rowIdx === rowsPerColumn - 1 || rowIdx === columnData.length - 1
-                  ? 'border-b border-white'
+              className={`flex justify-between px-1 text-xs py-0.5 border-b border-dashed border-muted-foreground 
+                  ${rowIdx === rowsPerColumn - 1 ||
+                  rowIdx === columnData.length - 1
+                  ? 'border-b border-card-foreground'
                   : ''
                 }`}
             >

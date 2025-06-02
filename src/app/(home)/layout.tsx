@@ -24,7 +24,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
               Acima de 90%:
             </span>
           </div>
-          <Separator orientation='vertical' className='h-10' />
+          <Separator orientation="vertical" className="h-10" />
           <div className="ml-4 w-full justify-center text-center items-center">
             <span>SulTerm | suporte2.apms@frigosul.com.br</span>
           </div>
