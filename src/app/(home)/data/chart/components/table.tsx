@@ -1,4 +1,4 @@
-import { formattedTime } from '@/utils/formatted-time'
+import { formattedDateHour } from '@/utils/formatted-datehour'
 import { useEffect } from 'react'
 
 interface TableProps {
@@ -75,11 +75,11 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   )
 
   return (
-    <div className="flex flex-wrap gap-1 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none">
+    <div className="flex flex-wrap gap-1 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none print:scale-90">
       {columns.map((columnData, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[100px] border-dashed border-r pr-1 last:border-none print:break-inside-avoid"
+          className="min-w-[130px] border-dashed border-r pr-1 last:border-none print:break-inside-avoid"
         >
           <div className="flex justify-between px-1  border-b border-card-foreground mb-1 text-center text-xs">
             <div>Hora</div>
@@ -96,7 +96,7 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
                   : ''
                 }`}
             >
-              <div>{formattedTime(item.time)}</div>
+              <div>{formattedDateHour(item.time)}</div>
               <div>{item.value.toFixed(1)}</div>
               {hasPressure && (
                 <div>
