@@ -56,7 +56,7 @@ model Temperature {
   userUpdatedAt String?
   instruments   InstrumentsTemperature[]
 
-  @@index([updatedAt, id], name: "idx_temperatures_updated_at")
+  @@index([createdAt, id], name: "idx_temperatures_created_at")
   @@map("temperatures")
 }
 
@@ -79,7 +79,7 @@ model Pressure {
   userUpdatedAt String?
   instruments   InstrumentsPressure[]
 
-  @@index([updatedAt, id], name: "idx_pressures_updated_at")
+  @@index([createdAt, id], name: "idx_pressures_created_at")
   @@map("pressures")
 }
 
