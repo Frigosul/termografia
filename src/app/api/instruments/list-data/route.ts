@@ -263,69 +263,78 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response, { status: 200 })
   }
+  const [instrument, temperatures, pressures] = await Promise.all([
+    prisma.instrument.findUnique({
+      where: { id: local },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+      },
+    }),
 
-  const data = await prisma.instrument.findUnique({
-    where: {
-      id: local,
-    },
-    select: {
-      id: true,
-      name: true,
-      type: true,
-      temperatures: {
-        where: {
-          temperature: {
-            createdAt: {
-              gte: formattedStartDate,
-              lte: formattedEndDate,
-            },
-          },
-        },
-        include: {
-          temperature: {
-            select: {
-              id: true,
-              editValue: true,
-              createdAt: true,
-              userUpdatedAt: true,
-              updatedAt: true,
-            },
-          },
-        },
-        orderBy: {
-          temperature: {
-            createdAt: 'asc',
+    prisma.instrumentsTemperature.findMany({
+      where: {
+        instrument_id: local,
+        temperature: {
+          createdAt: {
+            gte: formattedStartDate,
+            lte: formattedEndDate,
           },
         },
       },
-      pressures: {
-        where: {
-          pressure: {
-            createdAt: {
-              gte: formattedStartDate,
-              lte: formattedEndDate,
-            },
-          },
-        },
-        include: {
-          pressure: {
-            select: {
-              id: true,
-              editValue: true,
-              createdAt: true,
-              userUpdatedAt: true,
-              updatedAt: true,
-            },
-          },
-        },
-        orderBy: {
-          pressure: {
-            createdAt: 'asc',
+      select: {
+        temperature: {
+          select: {
+            id: true,
+            editValue: true,
+            createdAt: true,
+            userUpdatedAt: true,
+            updatedAt: true,
           },
         },
       },
-    },
-  })
+      orderBy: {
+        temperature: {
+          createdAt: 'asc',
+        },
+      },
+    }),
+
+    prisma.instrumentsPressure.findMany({
+      where: {
+        instrument_id: local,
+        pressure: {
+          createdAt: {
+            gte: formattedStartDate,
+            lte: formattedEndDate,
+          },
+        },
+      },
+      select: {
+        pressure: {
+          select: {
+            id: true,
+            editValue: true,
+            createdAt: true,
+            userUpdatedAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+      orderBy: {
+        pressure: {
+          createdAt: 'asc',
+        },
+      },
+    }),
+  ])
+
+  const data = {
+    ...instrument,
+    temperatures,
+    pressures,
+  }
 
   if (!data) {
     return NextResponse.json({ message: 'Data is not locale' }, { status: 400 })
@@ -343,8 +352,8 @@ export async function POST(req: NextRequest) {
   })
 
   const response: ListDataResponse = {
-    id: data.id,
-    name: data.name,
+    id: data.id!,
+    name: data.name!,
     chartType: data.type === 'press' ? 'temp/press' : 'temp',
     dateClose: formattedStartDate,
     dateOpen: formattedEndDateNotAdd,
