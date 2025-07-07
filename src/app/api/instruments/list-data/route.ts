@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Missing data!' }, { status: 400 })
   }
 
-  const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
+  const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.m[Z]')
   const formattedEndDate = dayjs(endDate)
     .add(1, 'minute')
     .format('YYYY-MM-DDTHH:mm:ss[Z]')
