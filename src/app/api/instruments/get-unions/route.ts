@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const unionInstruments = await prisma.unionInstruments.findMany({
+  const joinInstrument = await prisma.joinInstrument.findMany({
     select: {
       id: true,
       name: true,
@@ -24,7 +24,7 @@ export async function GET() {
     },
   })
 
-  const formattedUnionInstruments = unionInstruments.map((unionInstrument) => {
+  const formattedUnionInstruments = joinInstrument.map((unionInstrument) => {
     return {
       id: unionInstrument.id,
       name: unionInstrument.name,

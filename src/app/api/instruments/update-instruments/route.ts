@@ -15,7 +15,7 @@ export async function PUT(req: NextRequest) {
           name,
           minValue,
           maxValue,
-          displayOrder,
+          orderDisplay,
           type,
           isActive,
           idSitrad,
@@ -23,11 +23,11 @@ export async function PUT(req: NextRequest) {
           id: string
           idSitrad: number
           name: string
-          type: 'temp' | 'press'
+          type: 'TEMPERATURE' | 'PRESSURE'
           maxValue: number
           minValue: number
           isActive: boolean
-          displayOrder: number
+          orderDisplay: number
         }) => {
           const existInstrument = await prisma.instrument.findUnique({
             where: { id },
@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest) {
               await prisma.instrument.update({
                 where: { id },
                 data: {
-                  displayOrder,
+                  orderDisplay,
                   isActive,
                   maxValue,
                   minValue,
@@ -60,7 +60,7 @@ export async function PUT(req: NextRequest) {
             await prisma.instrument.update({
               where: { id },
               data: {
-                displayOrder,
+                orderDisplay,
                 isActive,
                 maxValue,
                 minValue,

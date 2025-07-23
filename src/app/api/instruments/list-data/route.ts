@@ -142,14 +142,16 @@ export async function POST(req: NextRequest) {
         time: temp.createdAt.toISOString(),
         value: temp.editData,
         updatedUserAt: temp.userEditData,
-        updatedAt: temp.updatedAt,
+        updatedAt: String(temp.updatedAt),
+        originalValue: temp.editData,
       })),
       chartPressure: chartPressure!.map((press) => ({
         id: press.id,
         time: press.createdAt.toISOString(),
         value: press.editData!,
         updatedUserAt: press.userEditData,
-        updatedAt: press.updatedAt,
+        updatedAt: String(press.updatedAt),
+        originalValue: press.editData,
       })),
     }
 
@@ -185,7 +187,8 @@ export async function POST(req: NextRequest) {
         id: temp.id,
         time: temp.createdAt.toISOString(),
         value: temp.editData,
-        updatedAt: temp.updatedAt,
+        updatedAt: String(temp.updatedAt),
+        originalValue: temp.editData,
         updatedUserAt: temp.userEditData,
       }))
 
@@ -203,7 +206,6 @@ export async function POST(req: NextRequest) {
     instrumentData?.instrumentData,
     graphVariation,
   )
-
 
   let chartPressure: DataItem[] = []
   if (instrumentData.type === 'PRESSURE') {
@@ -224,14 +226,16 @@ export async function POST(req: NextRequest) {
       time: temp.createdAt.toISOString(),
       value: temp.editData,
       updatedUserAt: temp.userEditData,
-      updatedAt: temp.updatedAt,
+      updatedAt: String(temp.updatedAt),
+      originalValue: temp.editData,
     })),
     chartPressure: chartPressure.map((press) => ({
       id: press.id,
       time: press.createdAt.toISOString(),
       value: press.editData!,
       updatedUserAt: press.userEditData,
-      updatedAt: press.updatedAt,
+      updatedAt: String(press.updatedAt),
+      originalValue: press.editData,
     })),
   }
 
@@ -249,7 +253,8 @@ export async function POST(req: NextRequest) {
       id: temp.id,
       time: temp.createdAt.toISOString(),
       value: temp.editData,
-      updatedAt: temp.updatedAt,
+      updatedAt: String(temp.updatedAt),
+      originalValue: temp.editData,
       updatedUserAt: temp.userEditData,
     }))
 

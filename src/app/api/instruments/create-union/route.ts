@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     )
   }
   try {
-    const existingUnionInstrument = await prisma.unionInstruments.findUnique({
+    const existingUnionInstrument = await prisma.joinInstrument.findUnique({
       where: {
         name,
       },
@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const unionInstrument = await prisma.unionInstruments.create({
+    const unionInstrument = await prisma.joinInstrument.create({
       data: {
         name,
-        first_instrument_id: firstInstrument,
-        second_instrument_id: secondInstrument,
+        firstInstrumentId: firstInstrument,
+        secondInstrumentId: secondInstrument,
       },
     })
 

@@ -19,13 +19,13 @@ export async function PUT(req: NextRequest) {
           name: string
           isActive: boolean
         }) => {
-          const existUnion = await prisma.unionInstruments.findUnique({
+          const existUnion = await prisma.joinInstrument.findUnique({
             where: { id },
           })
           if (!existUnion) {
             return { message: 'Union not exist', status: 400 }
           }
-          await prisma.unionInstruments.update({
+          await prisma.joinInstrument.update({
             where: { id },
             data: {
               name,
