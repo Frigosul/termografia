@@ -1,390 +1,262 @@
 import { ListDataResponse } from '@/app/http/list-data'
 import { prisma } from '@/lib/prisma'
-import dayjs from 'dayjs'
+import { convertToUTC } from '@/utils/date-timezone-converter'
+import { filterByInterval, type DataItem } from '@/utils/filter-by-interval'
 import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   const { local, graphVariation, tableVariation, startDate, endDate } =
     await req.json()
+
   if (!local || !graphVariation || !startDate || !endDate) {
     return NextResponse.json({ message: 'Missing data!' }, { status: 400 })
   }
 
-  const formattedStartDate = dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.m[Z]')
-  const formattedEndDate = dayjs(endDate)
-    .add(1, 'minute')
-    .format('YYYY-MM-DDTHH:mm:ss[Z]')
-  const formattedEndDateNotAdd = dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]')
-
-  const union = await prisma.unionInstruments.findUnique({
-    where: { id: local },
+  const instrumentData = await prisma.instrument.findUnique({
+    where: {
+      id: local,
+    },
     select: {
       id: true,
       name: true,
-      firstInstrument: {
+      type: true,
+      instrumentData: {
         select: {
-          temperatures: {
-            where: {
-              temperature: {
-                createdAt: {
-                  gte: formattedStartDate,
-                  lte: formattedEndDate,
-                },
-              },
-            },
-            include: {
-              temperature: {
-                select: {
-                  id: true,
-                  editValue: true,
-                  createdAt: true,
-                  userUpdatedAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-            orderBy: {
-              temperature: {
-                createdAt: 'asc',
-              },
-            },
-          },
-          pressures: {
-            where: {
-              pressure: {
-                createdAt: {
-                  gte: formattedStartDate,
-                  lte: formattedEndDate,
-                },
-              },
-            },
-            include: {
-              pressure: {
-                select: {
-                  id: true,
-                  editValue: true,
-                  createdAt: true,
-                  userUpdatedAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-            orderBy: {
-              pressure: {
-                createdAt: 'asc',
-              },
-            },
-          },
+          editData: true,
+          createdAt: true,
+          updatedAt: true,
+          userEditData: true,
+          id: true,
         },
-      },
-      secondInstrument: {
-        select: {
-          temperatures: {
-            where: {
-              temperature: {
-                createdAt: {
-                  gte: formattedStartDate,
-                  lte: formattedEndDate,
-                },
-              },
-            },
-            include: {
-              temperature: {
-                select: {
-                  id: true,
-                  editValue: true,
-                  createdAt: true,
-                  userUpdatedAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-            orderBy: {
-              temperature: {
-                createdAt: 'asc',
-              },
-            },
-          },
-          pressures: {
-            where: {
-              pressure: {
-                createdAt: {
-                  gte: formattedStartDate,
-                  lte: formattedEndDate,
-                },
-              },
-            },
-            include: {
-              pressure: {
-                select: {
-                  id: true,
-                  editValue: true,
-                  createdAt: true,
-                  userUpdatedAt: true,
-                  updatedAt: true,
-                },
-              },
-            },
-            orderBy: {
-              pressure: {
-                createdAt: 'asc',
-              },
-            },
+        where: {
+          createdAt: {
+            gte: convertToUTC(startDate),
+            lte: convertToUTC(endDate),
           },
         },
       },
     },
   })
+  if (!instrumentData) {
+    const joinInstrumentData = await prisma.joinInstrument.findUnique({
+      where: {
+        id: local,
+      },
+      select: {
+        id: true,
+        name: true,
+        firstInstrument: {
+          select: {
+            type: true,
+          },
+          include: {
+            instrumentData: {
+              select: {
+                editData: true,
+                createdAt: true,
+                updatedAt: true,
+                userEditData: true,
+                id: true,
+              },
+              where: {
+                createdAt: {
+                  gte: convertToUTC(startDate),
+                  lte: convertToUTC(endDate),
+                },
+              },
+            },
+          },
+        },
+        secondInstrument: {
+          select: {
+            type: true,
+          },
+          include: {
+            instrumentData: {
+              select: {
+                editData: true,
+                createdAt: true,
+                updatedAt: true,
+                userEditData: true,
+                id: true,
+              },
+              where: {
+                createdAt: {
+                  gte: convertToUTC(startDate),
+                  lte: convertToUTC(endDate),
+                },
+              },
+            },
+          },
+        },
+      },
+    })
 
-  type FilterByIntervalItem = {
-    id: string
-    editValue: number
-    createdAt: Date
-    userUpdatedAt: string | null
-    updatedAt: Date | null
-  }
-
-  type FilterByIntervalType<T extends 'temperature' | 'pressure'> = {
-    [K in T]: FilterByIntervalItem
-  }[]
-
-  function filterByInterval<T extends 'temperature' | 'pressure'>({
-    data,
-    intervalMinutes,
-    key,
-  }: {
-    data: FilterByIntervalType<T>
-    intervalMinutes: number
-    key: T
-  }) {
-    if (data.length === 0) return []
-
-    const sortedData = [...data].sort(
-      (a, b) =>
-        dayjs(a[key].createdAt).valueOf() - dayjs(b[key].createdAt).valueOf(),
-    )
-
-    const result: FilterByIntervalType<T> = []
-
-    let index = 0
-    let currentTime = dayjs(sortedData[0][key].createdAt)
-      .second(0)
-      .millisecond(0)
-    const endTime = dayjs(sortedData[sortedData.length - 1][key].createdAt)
-
-    while (index < sortedData.length && currentTime.isBefore(endTime)) {
-      const dataTime = dayjs(sortedData[index][key].createdAt)
-
-      if (dataTime.isSame(currentTime)) {
-        result.push(sortedData[index])
-        currentTime = currentTime.add(intervalMinutes, 'minute')
-        index++
-      } else if (dataTime.isAfter(currentTime)) {
-        // Gap detectado: atualiza currentTime para o próximo timestamp e reinicia o intervalo
-        currentTime = dataTime.second(0).millisecond(0)
-        result.push(sortedData[index])
-        currentTime = currentTime.add(intervalMinutes, 'minute')
-        index++
-      } else {
-        // Timestamp está antes do esperado (duplicado ou já foi considerado)
-        index++
-      }
+    if (!joinInstrumentData) {
+      return NextResponse.json({ Message: 'Local not found' }, { status: 400 })
+    }
+    interface chartTemperaturePressure {
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      editData: number
+      userEditData: string | null
     }
 
-    return result
-  }
+    let chartTemperature: chartTemperaturePressure[] = []
 
-  if (union) {
-    const temp =
-      union.firstInstrument.temperatures.length > 1
-        ? union.firstInstrument.temperatures
-        : union.secondInstrument.temperatures
-    const press =
-      union.firstInstrument.pressures.length > 1
-        ? union.firstInstrument.pressures
-        : union.secondInstrument.pressures
-    const chartTemperature = filterByInterval({
-      data: temp,
-      intervalMinutes: graphVariation,
-      key: 'temperature',
-    })
-    const chartPressure = filterByInterval({
-      data: press,
-      intervalMinutes: graphVariation,
-      key: 'pressure',
-    })
+    if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
+      chartTemperature = filterByInterval(
+        joinInstrumentData.firstInstrument.instrumentData as [],
+        graphVariation,
+      )
+    } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
+      chartTemperature = filterByInterval(
+        joinInstrumentData.secondInstrument.instrumentData as [],
+        graphVariation,
+      )
+    }
+    let chartPressure: chartTemperaturePressure[] = []
+
+    if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
+      chartPressure = filterByInterval(
+        joinInstrumentData.firstInstrument.instrumentData as [],
+        graphVariation,
+      )
+    } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
+      chartPressure = filterByInterval(
+        joinInstrumentData.secondInstrument.instrumentData as [],
+        graphVariation,
+      )
+    }
+
     const response: ListDataResponse = {
-      id: union.id,
-      name: union.name,
+      id: local,
+      name: joinInstrumentData.name,
       chartType: 'temp/press',
-      dateClose: formattedStartDate,
-      dateOpen: formattedEndDateNotAdd,
-      chartTemperature: chartTemperature.map((temp) => ({
-        id: temp.temperature.id,
-        time: temp.temperature.createdAt.toISOString(),
-        value: temp.temperature.editValue,
-        updatedUserAt: temp.temperature.userUpdatedAt,
-        updatedAt: String(temp.temperature.updatedAt),
+      dateClose: startDate,
+      dateOpen: endDate,
+      chartTemperature: chartTemperature!.map((temp) => ({
+        id: temp.id,
+        time: temp.createdAt.toISOString(),
+        value: temp.editData,
+        updatedUserAt: temp.userEditData,
+        updatedAt: temp.updatedAt,
       })),
-      chartPressure: chartPressure.map((press) => ({
-        id: press.pressure.id,
-        time: press.pressure.createdAt.toISOString(),
-        value: press.pressure.editValue,
-        updatedUserAt: press.pressure.userUpdatedAt,
-        updatedAt: String(press.pressure.updatedAt),
+      chartPressure: chartPressure!.map((press) => ({
+        id: press.id,
+        time: press.createdAt.toISOString(),
+        value: press.editData!,
+        updatedUserAt: press.userEditData,
+        updatedAt: press.updatedAt,
       })),
     }
 
     if (tableVariation) {
-      const tableTemperatureRange = filterByInterval({
-        data: temp,
-        intervalMinutes: tableVariation,
-        key: 'temperature',
-      })
-      const tablePressureRange = filterByInterval({
-        data: press,
-        intervalMinutes: tableVariation,
-        key: 'pressure',
-      })
+      let tableTemperatureRange: chartTemperaturePressure[] = []
+
+      if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
+        tableTemperatureRange = filterByInterval(
+          joinInstrumentData.firstInstrument.instrumentData as [],
+          graphVariation,
+        )
+      } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
+        tableTemperatureRange = filterByInterval(
+          joinInstrumentData.secondInstrument.instrumentData as [],
+          graphVariation,
+        )
+      }
+      let tablePressureRange: chartTemperaturePressure[] = []
+
+      if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
+        tablePressureRange = filterByInterval(
+          joinInstrumentData.firstInstrument.instrumentData as [],
+          graphVariation,
+        )
+      } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
+        tablePressureRange = filterByInterval(
+          joinInstrumentData.secondInstrument.instrumentData as [],
+          graphVariation,
+        )
+      }
+
       response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
-        id: temp.temperature.id,
-        time: temp.temperature.createdAt.toISOString(),
-        value: temp.temperature.editValue,
-        updatedAt: String(temp.temperature.updatedAt),
-        updatedUserAt: String(temp.temperature.userUpdatedAt),
+        id: temp.id,
+        time: temp.createdAt.toISOString(),
+        value: temp.editData,
+        updatedAt: temp.updatedAt,
+        updatedUserAt: temp.userEditData,
       }))
+
       response.tablePressureRange = tablePressureRange.map((press) => ({
-        id: press.pressure.id,
-        time: press.pressure.createdAt.toISOString(),
-        pressure: press.pressure.editValue,
+        id: press.id,
+        time: press.createdAt.toISOString(),
+        pressure: press.editData!,
       }))
     }
 
     return NextResponse.json(response, { status: 200 })
   }
-  const [instrument, temperatures, pressures] = await Promise.all([
-    prisma.instrument.findUnique({
-      where: { id: local },
-      select: {
-        id: true,
-        name: true,
-        type: true,
-      },
-    }),
 
-    prisma.instrumentsTemperature.findMany({
-      where: {
-        instrument_id: local,
-        temperature: {
-          createdAt: {
-            gte: formattedStartDate,
-            lte: formattedEndDate,
-          },
-        },
-      },
-      select: {
-        temperature: {
-          select: {
-            id: true,
-            editValue: true,
-            createdAt: true,
-            userUpdatedAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      orderBy: {
-        temperature: {
-          createdAt: 'asc',
-        },
-      },
-    }),
+  const chartTemperature = filterByInterval(
+    instrumentData?.instrumentData,
+    graphVariation,
+  )
 
-    prisma.instrumentsPressure.findMany({
-      where: {
-        instrument_id: local,
-        pressure: {
-          createdAt: {
-            gte: formattedStartDate,
-            lte: formattedEndDate,
-          },
-        },
-      },
-      select: {
-        pressure: {
-          select: {
-            id: true,
-            editValue: true,
-            createdAt: true,
-            userUpdatedAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      orderBy: {
-        pressure: {
-          createdAt: 'asc',
-        },
-      },
-    }),
-  ])
 
-  const data = {
-    ...instrument,
-    temperatures,
-    pressures,
+  let chartPressure: DataItem[] = []
+  if (instrumentData.type === 'PRESSURE') {
+    chartPressure = filterByInterval(
+      instrumentData?.instrumentData,
+      graphVariation,
+    )
   }
-
-  if (!data) {
-    return NextResponse.json({ message: 'Data is not locale' }, { status: 400 })
-  }
-
-  const chartTemperature = filterByInterval({
-    data: data.temperatures,
-    intervalMinutes: graphVariation,
-    key: 'temperature',
-  })
-  const chartPressure = filterByInterval({
-    data: data.pressures,
-    intervalMinutes: graphVariation,
-    key: 'pressure',
-  })
 
   const response: ListDataResponse = {
-    id: data.id!,
-    name: data.name!,
-    chartType: data.type === 'press' ? 'temp/press' : 'temp',
-    dateClose: formattedStartDate,
-    dateOpen: formattedEndDateNotAdd,
+    id: local,
+    name: instrumentData.name,
+    chartType: instrumentData.type === 'PRESSURE' ? 'temp/press' : 'temp',
+    dateClose: startDate,
+    dateOpen: endDate,
     chartTemperature: chartTemperature.map((temp) => ({
-      id: temp.temperature.id,
-      time: temp.temperature.createdAt.toISOString(),
-      value: temp.temperature.editValue,
-      updatedUserAt: temp.temperature.userUpdatedAt,
-      updatedAt: String(temp.temperature.updatedAt),
+      id: temp.id,
+      time: temp.createdAt.toISOString(),
+      value: temp.editData,
+      updatedUserAt: temp.userEditData,
+      updatedAt: temp.updatedAt,
     })),
     chartPressure: chartPressure.map((press) => ({
-      id: press.pressure.id,
-      time: press.pressure.createdAt.toISOString(),
-      value: press.pressure.editValue,
-      updatedUserAt: press.pressure.userUpdatedAt,
-      updatedAt: String(press.pressure.updatedAt),
+      id: press.id,
+      time: press.createdAt.toISOString(),
+      value: press.editData!,
+      updatedUserAt: press.userEditData,
+      updatedAt: press.updatedAt,
     })),
   }
 
   if (tableVariation) {
-    const tableTemperatureRange = filterByInterval({
-      data: data.temperatures,
-      intervalMinutes: tableVariation,
-      key: 'temperature',
-    })
+    const tableTemperatureRange = filterByInterval(
+      instrumentData?.instrumentData,
+      tableVariation,
+    )
+    const tablePressureRange =
+      instrumentData.type === 'PRESSURE'
+        ? filterByInterval(instrumentData?.instrumentData, tableVariation)
+        : []
+
     response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
-      id: temp.temperature.id,
-      time: temp.temperature.createdAt.toISOString(),
-      value: temp.temperature.editValue,
-      updatedAt: String(temp.temperature.updatedAt),
-      updatedUserAt: String(temp.temperature.userUpdatedAt),
+      id: temp.id,
+      time: temp.createdAt.toISOString(),
+      value: temp.editData,
+      updatedAt: temp.updatedAt,
+      updatedUserAt: temp.userEditData,
+    }))
+
+    response.tablePressureRange = tablePressureRange.map((press) => ({
+      id: press.id,
+      time: press.createdAt.toISOString(),
+      pressure: press.editData!,
     }))
   }
 

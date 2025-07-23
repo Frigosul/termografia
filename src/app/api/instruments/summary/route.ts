@@ -13,10 +13,10 @@ export async function GET() {
       minValue: true,
       maxValue: true,
       isActive: true,
-      displayOrder: true,
+      orderDisplay: true,
     },
     orderBy: {
-      name: 'asc',
+      orderDisplay: 'asc',
     },
   })
 

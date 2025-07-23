@@ -10,14 +10,14 @@ export async function GET() {
       createdAt: true,
     },
     orderBy: {
-      displayOrder: 'asc',
+      orderDisplay: 'asc',
     },
     where: {
       isActive: true,
     },
   })
 
-  const unions = await prisma.unionInstruments.findMany({
+  const unions = await prisma.joinInstrument.findMany({
     select: {
       id: true,
       name: true,

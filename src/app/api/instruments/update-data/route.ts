@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import dayjs from 'dayjs'
+import { convertToUTC } from '@/utils/date-timezone-converter'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function PUT(req: NextRequest) {
@@ -18,21 +18,21 @@ export async function PUT(req: NextRequest) {
         }: {
           id: string
           value: number
-          updatedAt: string
+          updatedAt: Date
           updatedUserAt: string
         }) => {
-          const existTemperature = await prisma.temperature.findUnique({
+          const existTemperature = await prisma.instrumentData.findUnique({
             where: { id },
           })
           if (!existTemperature) {
             return { message: 'Temperature not exists', status: 400 }
-          } else if (existTemperature.editValue !== temperature) {
-            await prisma.temperature.update({
+          } else if (existTemperature.editData !== temperature) {
+            await prisma.instrumentData.update({
               where: { id },
               data: {
-                editValue: temperature,
-                updatedAt: dayjs(updatedAt).toDate(),
-                userUpdatedAt: updatedUserAt,
+                editData: temperature,
+                updatedAt: convertToUTC(updatedAt),
+                userEditData: updatedUserAt,
               },
             })
           }

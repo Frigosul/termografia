@@ -1,16 +1,13 @@
 import { prisma } from '@/lib/prisma'
-import { GenerateDataModeType } from '@/types/generate-data-mode'
-import { Pressure, Temperature } from '@prisma/client'
+import type { GenerateDataModeType } from '@/types/generate-data-mode'
+
+import { convertToUTC } from '@/utils/date-timezone-converter'
+import { filterByInterval } from '@/utils/filter-by-interval'
+
+import { generateSimulatedData, getInitialValue } from '@/utils/generate-data'
 import dayjs from 'dayjs'
 import { NextRequest, NextResponse } from 'next/server'
-import { v4 as uuidv4 } from 'uuid'
-
-interface SensorData {
-  id: string
-  updatedAt: string
-  time: string
-  value: number
-}
+import type { InstrumentData, SensorData } from '../../../../../types'
 
 interface GenerateDataRequest {
   startDate: string
@@ -21,53 +18,92 @@ interface GenerateDataRequest {
   initialValue?: number
   averageValue?: number
   generateMode?: GenerateDataModeType
-  instrumentType: 'temp' | 'press'
+  instrumentType: 'TEMPERATURE' | 'PRESSURE'
 }
 
-function getInitialValue(type: 'temp' | 'press', initialValue?: number) {
-  if (typeof initialValue === 'number') return initialValue
-  return type === 'temp' ? 15 : 0
+interface ValidationResult {
+  isValid: boolean
+  error?: string
 }
 
-function getAvgValue(
-  type: 'temp' | 'press',
-  averageValue: number | undefined,
-  historicalData: Temperature[] | Pressure[],
-) {
-  if (typeof averageValue === 'number') return averageValue
-  if (historicalData.length) {
-    return (
-      historicalData.reduce(
-        (sum: number, record: Pressure | Temperature) => sum + record.value,
-        0,
-      ) / historicalData.length
-    )
+function validateRequestData(body: GenerateDataRequest): ValidationResult {
+  const { startDate, defrostDate, endDate, instrumentId, variation } = body
+
+  if (!startDate || !defrostDate || !endDate || !instrumentId || !variation) {
+    return { isValid: false, error: 'Missing required data.' }
   }
-  return type === 'temp' ? 10 : 3.5
+
+  const start = dayjs(startDate)
+  const end = dayjs(endDate)
+  const defrost = dayjs(defrostDate)
+
+  if (!start.isValid() || !end.isValid() || !defrost.isValid()) {
+    return { isValid: false, error: 'Invalid date format.' }
+  }
+
+  if (start.isAfter(end)) {
+    return { isValid: false, error: 'Start date must be before end date.' }
+  }
+
+  return { isValid: true }
+}
+
+// async function getHistoricalData(instrumentType: string) {
+//   try {
+//     return await prisma.instrumentData.findMany({
+//       where: {
+//         instrument: {
+//           type: instrumentType as 'TEMPERATURE' | 'PRESSURE',
+//         },
+//       },
+//       take: 20,
+//     })
+//   } catch (error) {
+//     console.warn('Failed to fetch historical data:', error)
+//     return []
+//   }
+// }
+
+/**
+ * Formata os dados do sensor para o formato do banco
+ */
+function formatInstrumentData(
+  sensorData: SensorData[],
+  instrumentId: string,
+): InstrumentData[] {
+  return sensorData.map((item) => ({
+    instrumentId,
+    id: item.id,
+    createdAt: convertToUTC(item.time),
+    updatedAt: convertToUTC(item.updatedAt),
+    data: item.value,
+    editData: item.value,
+    userEditData: null,
+  }))
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateDataRequest = await request.json()
+
+    // Validação dos dados de entrada
+    const validation = validateRequestData(body)
+    if (!validation.isValid) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+
     const {
       startDate,
       defrostDate,
       endDate,
       instrumentId,
       variation,
-      averageValue,
+      // averageValue,
       initialValue,
       generateMode = 'n1',
     } = body
 
-    if (!startDate || !defrostDate || !endDate || !instrumentId || !variation) {
-      return NextResponse.json({ error: 'Missing data.' }, { status: 400 })
-    }
-
-    const formattedStartDate = dayjs(startDate)
-    const formattedEndDate = dayjs(endDate).add(1, 'minute')
-    const formattedDefrostDate = dayjs(defrostDate)
-
+    // Busca informações do instrumento
     const instrument = await prisma.instrument.findUnique({
       where: { id: instrumentId },
       select: { type: true },
@@ -76,133 +112,72 @@ export async function POST(request: NextRequest) {
     if (!instrument) {
       return NextResponse.json(
         { message: 'Instrument not found.' },
-        { status: 400 },
+        { status: 404 },
       )
     }
 
-    let historicalData: Temperature[] | Pressure[] = []
-    if (instrument.type === 'press') {
-      historicalData = await prisma.pressure.findMany({
-        where: { instruments: { some: { instrument_id: instrumentId } } },
-        take: 20,
-      })
-    } else {
-      historicalData = await prisma.temperature.findMany({
-        where: { instruments: { some: { instrument_id: instrumentId } } },
-        take: 20,
-      })
-    }
+    // Busca dados históricos para calcular média se necessário
+    // const historicalData = await getHistoricalData(instrument.type)
 
-    if (instrument.type !== 'temp' && instrument.type !== 'press') {
-      return NextResponse.json(
-        { message: 'Invalid instrument type.' },
-        { status: 400 },
-      )
-    }
-    const avgValue = getAvgValue(instrument.type, averageValue, historicalData)
-    let currentValue = getInitialValue(instrument.type, initialValue)
+    // Calcula valores iniciais e médios
+    // const avgValue = getAvgValue(
+    //   instrument.type as 'TEMPERATURE' | 'PRESSURE',
+    //   averageValue,
+    //   historicalData,
+    // )
+    const initValue = getInitialValue(
+      instrument.type as 'TEMPERATURE' | 'PRESSURE',
+      initialValue,
+    )
 
-    const sensorData: SensorData[] = []
-    const variationSensorData: SensorData[] = []
-    let currentDate = formattedStartDate.clone()
-    let lastVariationMinute = -1
-    let pressureCycleStart = currentDate.clone()
-    let pressureCyclePhase: 'initial' | 'varying' | 'zero' = 'initial'
-    const n1Limit = formattedStartDate.clone().add(5, 'hour')
-    const n2Limit = formattedStartDate.clone().add(4, 'hour')
-    const n3Limit = formattedStartDate.clone().add(3, 'hour')
+    const sensorData = generateSimulatedData({
+      startDate,
+      endDate,
+      instrumentType: instrument.type as 'TEMPERATURE' | 'PRESSURE',
+      initialValue: initValue,
 
-    while (currentDate.isBefore(formattedEndDate)) {
-      if (instrument.type === 'temp') {
-        if (generateMode === 'n1') {
-          currentValue = currentDate.isBefore(n1Limit)
-            ? getInitialValue(instrument.type, initialValue) -
-            Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2)
-        } else if (generateMode === 'n2') {
-          currentValue = currentDate.isBefore(n2Limit)
-            ? getInitialValue(instrument.type, initialValue) -
-            Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2)
-        } else if (generateMode === 'n3') {
-          currentValue = currentDate.isBefore(n3Limit)
-            ? getInitialValue(instrument.type, initialValue) -
-            Math.random() * 0.7
-            : avgValue + (Math.random() * 4 - 2)
-        }
-        if (currentDate.isAfter(formattedDefrostDate)) {
-          currentValue += Math.random() * 3
-        }
-      } else if (instrument.type === 'press') {
-        const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
-        if (pressureCyclePhase === 'initial' && minutesInCycle >= 3) {
-          currentValue = 3.5
-          pressureCyclePhase = 'varying'
-        } else if (pressureCyclePhase === 'varying') {
-          currentValue = minutesInCycle < 23 ? 3.5 + Math.random() : 0
-          if (minutesInCycle >= 23) pressureCyclePhase = 'zero'
-        } else if (pressureCyclePhase === 'zero' && minutesInCycle >= 33) {
-          pressureCycleStart = currentDate.clone()
-          pressureCyclePhase = 'initial'
-          currentValue = 0
-        }
+      generateMode,
+      defrostDate,
+    })
+
+    const formatInstrumentDataResult = formatInstrumentData(
+      sensorData,
+      instrumentId,
+    )
+
+    // Aplica filtro de variação
+    const variationSensorData = filterByInterval(
+      formatInstrumentDataResult,
+      variation,
+    )
+
+    const formatReturnData = variationSensorData.map((item) => {
+      return {
+        id: item.id,
+        updatedUserAt: item.userEditData,
+        updatedAt: item.updatedAt,
+        time: item.createdAt,
+        value: item.editData,
       }
-
-      const sensorItem: SensorData = {
-        id: uuidv4(),
-        time: currentDate.format('YYYY-MM-DDTHH:mm:ss'),
-        value: Number(currentValue.toFixed(1)),
-        updatedAt: currentDate.format('YYYY-MM-DDTHH:mm:ss'),
-      }
-      sensorData.push(sensorItem)
-
-      const minutesDiff = currentDate.diff(formattedStartDate, 'minute')
-      if (
-        minutesDiff === 0 || // sempre inclui o valor inicial
-        (minutesDiff > 0 &&
-          minutesDiff % variation === 0 &&
-          minutesDiff !== lastVariationMinute)
-      ) {
-        variationSensorData.push(sensorItem)
-        lastVariationMinute = minutesDiff
-      }
-
-      currentDate = currentDate.add(1, 'minute')
-    }
-
-    for (const record of sensorData) {
-      await prisma.instrument.update({
-        where: { id: instrumentId },
-        data: {
-          temperatures: {
-            create: {
-              temperature: {
-                create: {
-                  id: record.id,
-                  value: record.value,
-                  editValue: record.value,
-                  createdAt: dayjs(record.time).toDate(),
-                  updatedAt: dayjs(record.updatedAt).toDate(),
-                },
-              },
-            },
-          },
-        },
-      })
-    }
+    })
+    await prisma.instrumentData.createMany({
+      data: formatInstrumentDataResult,
+    })
 
     return NextResponse.json(
       {
         message: 'Data successfully generated.',
-        data: variationSensorData,
+        data: formatReturnData,
         instrumentType: instrument.type,
       },
       { status: 201 },
     )
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error generating or saving data:', error)
     return NextResponse.json(
-      { error: 'Internal server error.' },
+      {
+        error: 'Internal server error.',
+      },
       { status: 500 },
     )
   }

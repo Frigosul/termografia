@@ -19,6 +19,7 @@ type TemperatureData = {
   updatedAt: string
   time: string
   value: number
+  originalValue: number
 }
 type PressureData = {
   id: string
@@ -86,6 +87,7 @@ export async function listData({
 
   if (!response.ok) {
     const error = await response.json()
+    // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({
       status: response.status,
       message: error.message || 'Error api',

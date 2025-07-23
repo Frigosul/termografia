@@ -54,10 +54,11 @@ export const TableRowEdit = ({
         {editCell.rowId === row.id && editCell.field === 'value' ? (
           <input
             className="bg-transparent w-full h-full text-center m-0"
-            type="text"
+            type="number"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onBlur={() => handleSave(row.id, 'value')}
+            onFocus={(e) => e.target.select()}
             onKeyDown={(e) => handleKeyDown(e, row.id, 'value')}
             autoFocus
           />

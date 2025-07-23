@@ -303,11 +303,12 @@ const Chart = memo(function Chart({
                 className="flex items-center justify-between w-full gap-1 mt-2"
               >
                 <Input
-                  type="text"
+                  type="number"
                   {...register('setpoint')}
                   min={minValue}
                   max={maxValue}
-                  className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="z-30  h-8 dark:bg-slate-900"
+                  step="0.1"
                   placeholder="setpoint"
                 />
                 <Button
@@ -454,11 +455,12 @@ const Chart = memo(function Chart({
             className="flex items-center justify-between w-full gap-2 mt-2"
           >
             <Input
-              type="text"
+              type="number"
               {...register('setpoint')}
               min={minValue}
               max={maxValue}
-              className="z-30  [appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="z-30  h-8 dark:bg-slate-900"
+              step="0.1"
               placeholder="setpoint"
             />
             <Button

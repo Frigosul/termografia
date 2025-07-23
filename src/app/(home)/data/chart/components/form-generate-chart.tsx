@@ -119,8 +119,6 @@ export function FormGenerateChart({
   })
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
-    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
-    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
     await mutate({
       local: data.local,
       graphVariation: data.graphVariation,
@@ -130,8 +128,8 @@ export function FormGenerateChart({
       variationTemp: data.variationTemp,
       minValue: data.minValue,
       maxValue: data.maxValue,
-      startDate: startDataUtc,
-      endDate: endDataUtc,
+      startDate: data.startDate,
+      endDate: data.endDate,
       description: data.description,
     })
   }
