@@ -34,7 +34,7 @@ interface RowData {
   maxValue: number
   minValue: number
   isActive: boolean
-  displayOrder: number
+  orderDisplay: number
 }
 
 export function TableManagedEquipments() {
@@ -124,7 +124,7 @@ export function TableManagedEquipments() {
             const updatedValue = [
               'minValue',
               'maxValue',
-              'displayOrder',
+              'orderDisplay',
             ].includes(field)
               ? Number(inputValue)
               : inputValue
@@ -178,7 +178,7 @@ export function TableManagedEquipments() {
       'name',
       'minValue',
       'maxValue',
-      'displayOrder',
+      'orderDisplay',
     ]
     const currentIndex = fields.indexOf(currentField)
     const nextIndex = currentIndex + 1
@@ -338,28 +338,28 @@ export function TableManagedEquipments() {
                 <TableCell
                   className="border text-center w-40 p-0 h-4"
                   onDoubleClick={() =>
-                    handleDoubleClick(row.id, 'displayOrder', row.displayOrder)
+                    handleDoubleClick(row.id, 'orderDisplay', row.orderDisplay)
                   }
                 >
                   {editCell.rowId === row.id &&
-                    editCell.field === 'displayOrder' ? (
+                    editCell.field === 'orderDisplay' ? (
                     <input
                       className="bg-transparent w-full h-full text-center m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      onBlur={() => handleSave(row.id, 'displayOrder')}
+                      onBlur={() => handleSave(row.id, 'orderDisplay')}
                       onKeyDown={(e) =>
-                        handleKeyDown(e, row.id, 'displayOrder')
+                        handleKeyDown(e, row.id, 'orderDisplay')
                       }
                       autoFocus
                     />
                   ) : (
-                    row.displayOrder
+                    row.orderDisplay
                   )}
                 </TableCell>
                 <TableCell className="text-center flex justify-between items-center px-4">
-                  {row.type}
+                  {row.type === 'press' ? 'Pressão' : 'Temperatura'}
                   <Popover>
                     <PopoverTrigger>
                       <EllipsisVertical className="size-5" />
