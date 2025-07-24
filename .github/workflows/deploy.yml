@@ -26,8 +26,7 @@ jobs:
           cd /home/joao/termografia
           git pull
           pnpm install --frozen-lockfile --reporter=append-only
-          pnpm prisma migrate deploy
-          pnpm build
+          pnpm run build
           pm2 restart termo-web
           echo "DEPLOY CONCLUÍDO"
           EOF
