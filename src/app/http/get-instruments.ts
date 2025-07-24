@@ -4,12 +4,12 @@ export type InstrumentsResponse = {
   id: string
   idSitrad: number
   name: string
-  type: 'temp' | 'press'
+  type: 'TEMPERATURE' | 'PRESSURE'
   maxValue: number
   minValue: number
   createdAt: string
   isActive: boolean
-  displayOrder: number
+  orderDisplay: number
 }[]
 
 export async function getInstruments(): Promise<InstrumentsResponse> {
@@ -17,6 +17,7 @@ export async function getInstruments(): Promise<InstrumentsResponse> {
 
   if (!response.ok) {
     const error = await response.json()
+    // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({
       status: response.status,
       message: error.message || 'Error api',

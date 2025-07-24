@@ -58,21 +58,18 @@ interface RowData {
   id: string
   idSitrad: number
   name: string
-  type: 'temp' | 'press'
+  type: 'TEMPERATURE' | 'PRESSURE'
   maxValue: number
   minValue: number
+  createdAt: string
   isActive: boolean
-  displayOrder: number
+  orderDisplay: number
 }
 
 export function CreateUnionInstruments() {
   const { modals, closeModal, toggleModal } = useModalStore()
   const queryClient = useQueryClient()
-  const {
-    data: instrumentList,
-    isLoading,
-    isError,
-  } = useQuery<RowData[]>({
+  const { data: instrumentList, isLoading } = useQuery<RowData[]>({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
   })

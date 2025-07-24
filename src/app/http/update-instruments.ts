@@ -5,11 +5,11 @@ type DataRequest = {
     id: string
     idSitrad: number
     name: string
-    type: 'temp' | 'press'
+    type: 'TEMPERATURE' | 'PRESSURE'
     maxValue: number
     minValue: number
     isActive: boolean
-    displayOrder: number
+    orderDisplay: number
   }[]
 }
 
@@ -24,6 +24,7 @@ export async function updateInstruments({ instruments }: DataRequest) {
 
   if (!response.ok) {
     const error = await response.json()
+    // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({
       status: response.status,
       message: error.message || 'Error api',

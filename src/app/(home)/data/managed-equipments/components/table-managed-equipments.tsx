@@ -30,7 +30,7 @@ interface RowData {
   id: string
   idSitrad: number
   name: string
-  type: 'temp' | 'press'
+  type: 'TEMPERATURE' | 'PRESSURE'
   maxValue: number
   minValue: number
   isActive: boolean
@@ -359,7 +359,7 @@ export function TableManagedEquipments() {
                   )}
                 </TableCell>
                 <TableCell className="text-center flex justify-between items-center px-4">
-                  {row.type === 'press' ? 'Pressão' : 'Temperatura'}
+                  {row.type === 'PRESSURE' ? 'Pressão' : 'Temperatura'}
                   <Popover>
                     <PopoverTrigger>
                       <EllipsisVertical className="size-5" />
@@ -367,7 +367,7 @@ export function TableManagedEquipments() {
                     <PopoverContent className="flex flex-col gap-4 w-40">
                       <RadioGroup
                         defaultValue={row.type}
-                        onValueChange={(value: 'temp' | 'press') => {
+                        onValueChange={(value: 'TEMPERATURE' | 'PRESSURE') => {
                           setData((prevData) =>
                             prevData.map((item) =>
                               item.id === row.id
@@ -378,18 +378,21 @@ export function TableManagedEquipments() {
                         }}
                       >
                         <div className="flex items-center">
-                          <RadioGroupItem value="temp" id="temp" />
+                          <RadioGroupItem
+                            value="TEMPERATURE"
+                            id="TEMPERATURE"
+                          />
                           <Label
-                            htmlFor="temp"
+                            htmlFor="TEMPERATURE"
                             className="text-sm ml-2 tracking-wider font-light"
                           >
                             Temperatura
                           </Label>
                         </div>
                         <div className="flex items-center">
-                          <RadioGroupItem value="press" id="press" />
+                          <RadioGroupItem value="PRESSURE" id="PRESSURE" />
                           <Label
-                            htmlFor="press"
+                            htmlFor="PRESSURE"
                             className="text-sm ml-2 tracking-wider font-light"
                           >
                             Pressão
