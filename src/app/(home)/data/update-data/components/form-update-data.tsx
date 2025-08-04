@@ -60,8 +60,8 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
   })
 
   function handleUpdatedDataChart(data: UpdatedDataChart) {
-    const startDataUtc = dayjs(data.startDate).utc().format('YYYY-MM-DDTHH:mm')
-    const endDataUtc = dayjs(data.endDate).utc().format('YYYY-MM-DDTHH:mm')
+    const startDataUtc = dayjs(data.startDate).format('YYYY-MM-DDTHH:mm')
+    const endDataUtc = dayjs(data.endDate).format('YYYY-MM-DDTHH:mm')
 
     mutate({
       endDate: endDataUtc,

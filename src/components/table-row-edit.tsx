@@ -1,4 +1,5 @@
 import { TableCell, TableRow } from '@/components/ui/table'
+import { convertToLocal } from '@/utils/date-timezone-converter'
 import { formattedDateTime } from '@/utils/formatted-datetime'
 interface Row {
   id: string
@@ -45,7 +46,7 @@ export const TableRowEdit = ({
   return (
     <TableRow className="odd:bg-white odd:dark:bg-slate-950  even:bg-slate-50 even:dark:bg-slate-900">
       <TableCell className="border text-center">
-        {formattedDateTime(row.time)}
+        {convertToLocal(row.time).format('DD/MM/YYYY - HH:mm')}
       </TableCell>
       <TableCell
         className="border text-center p-0 h-4"
