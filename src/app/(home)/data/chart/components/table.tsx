@@ -52,7 +52,9 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
       }
     })
   }, [])
-  const rowsPerColumn = 8
+
+  // Reduzindo ainda mais para 5 linhas por coluna para criar mais colunas
+  const rowsPerColumn = 6
   const hasPressure = pressure && pressure.length > 0
 
   const pressureMap = hasPressure
@@ -75,13 +77,13 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
   )
 
   return (
-    <div className="flex flex-wrap gap-1 mt-2 ml-6 print:ml-14 print:bg-transparent print:shadow-none print:scale-90">
+    <div className="flex flex-wrap gap-0.5 mt-2 ml-6 print:ml-0 print:mt-0 print:bg-transparent print:shadow-none print:scale-90 print:w-full">
       {columns.map((columnData, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[130px] border-dashed border-r pr-1 last:border-none print:break-inside-avoid"
+          className="min-w-[120px] max-w-[120px] flex-1 border-dashed border-r pr-0.5 print:pr-0.5 last:border-none print:break-inside-avoid data-column"
         >
-          <div className="flex justify-between px-1  border-b border-card-foreground mb-1 text-center text-xs">
+          <div className="flex justify-between px-0.5 print:px-0.5 border-b border-card-foreground mb-1 print:mb-0 text-center text-xs">
             <div>Hora</div>
             <div>°C</div>
             {hasPressure && <div>Bar</div>}
@@ -89,7 +91,7 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
           {columnData.map((item, rowIdx) => (
             <div
               key={rowIdx}
-              className={`flex justify-between px-1 text-xs py-0.5 border-b border-dashed border-muted-foreground 
+              className={`flex justify-between px-0.5 print:px-0.5 text-xs py-0.5 print:py-0 border-b border-dashed border-muted-foreground print:text-xs
                   ${rowIdx === rowsPerColumn - 1 ||
                   rowIdx === columnData.length - 1
                   ? 'border-b border-card-foreground'

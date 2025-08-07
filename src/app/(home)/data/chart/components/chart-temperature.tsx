@@ -107,13 +107,13 @@ export function ChartTemperature({
   return (
     <>
       {/* div header */}
-      <div className="flex flex-col gap-3 md:gap-0 md:flex-row justify-between mb-4 h-16 px-4 print:flex-row">
+      <div className="flex flex-col gap-3 md:gap-0 md:flex-row justify-between mb-4 h-16 px-4 print:flex-row print:mb-2">
         <Image
           src={logo}
           alt="Logo Frigosul"
-          className="w-full h-10 md:w-52 md:h-full print:w-72"
+          className="w-full h-10 md:w-52 md:h-full print:w-60 print:scale-90"
         />
-        <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light">
+        <div className="flex flex-col gap-1 text-justify text-xs font-semibold dark:font-light  print:scale-75">
           <span>
             Empresa:{' '}
             <span className="capitalize">
