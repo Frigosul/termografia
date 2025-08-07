@@ -1,5 +1,4 @@
 import { formattedDateHour } from '@/utils/formatted-datehour'
-import { useEffect } from 'react'
 
 interface TableProps {
   minValue?: number
@@ -31,30 +30,8 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
     maxValue = Number(minAndMaxValue.maxValue.toFixed(2))
   }
 
-  useEffect(() => {
-    const columns = document.querySelectorAll('.data-column')
-    let currentPageHeight = 0
-    const a4Height = 1122
-    const chartHeight = 30 * 16
-    const firstPageAvailableHeight = a4Height - chartHeight
-    let isFirstPage = true
-
-    columns.forEach((col) => {
-      const colHeight = col.getBoundingClientRect().height
-      const availableHeight = isFirstPage ? firstPageAvailableHeight : a4Height
-
-      if (currentPageHeight + colHeight > availableHeight) {
-        col.classList.add('break-before-page')
-        currentPageHeight = colHeight
-        isFirstPage = false
-      } else {
-        currentPageHeight += colHeight
-      }
-    })
-  }, [])
-
-  // Reduzindo ainda mais para 5 linhas por coluna para criar mais colunas
-  const rowsPerColumn = 6
+  // Reduzindo para 5 linhas por coluna para criar mais colunas
+  const rowsPerColumn = 5
   const hasPressure = pressure && pressure.length > 0
 
   const pressureMap = hasPressure
@@ -81,7 +58,7 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
       {columns.map((columnData, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[120px] max-w-[120px] flex-1 border-dashed border-r pr-0.5 print:pr-0.5 last:border-none print:break-inside-avoid data-column"
+          className="min-w-[120px] max-w-[120px] flex-1 border-dashed border-r pr-0.5 print:pr-0.5 last:border-none print:break-inside-avoid"
         >
           <div className="flex justify-between px-0.5 print:px-0.5 border-b border-card-foreground mb-1 print:mb-0 text-center text-xs">
             <div>Hora</div>
