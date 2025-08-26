@@ -291,6 +291,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                   <Input
                     id="averageTemp"
                     type="number"
+                    step="0.1"
                     className="[appearance:textfield] w-24 h-8  dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('averageTemp', { valueAsNumber: true })}
                   />
