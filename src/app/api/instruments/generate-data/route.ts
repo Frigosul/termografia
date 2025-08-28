@@ -1,13 +1,17 @@
 import { prisma } from '@/lib/prisma'
 import type { GenerateDataModeType } from '@/types/generate-data-mode'
+import { NextRequest, NextResponse } from 'next/server'
+import type { InstrumentData, SensorData } from '../../../../../types'
 
 import { convertToUTC } from '@/utils/date-timezone-converter'
 import { filterByInterval } from '@/utils/filter-by-interval'
+import {
+  generateSimulatedData,
+  getAvgValue,
+  getInitialValue,
+} from '@/utils/generate-data'
 
-import { generateSimulatedData, getInitialValue } from '@/utils/generate-data'
 import dayjs from 'dayjs'
-import { NextRequest, NextResponse } from 'next/server'
-import type { InstrumentData, SensorData } from '../../../../../types'
 
 interface GenerateDataRequest {
   startDate: string
@@ -15,8 +19,8 @@ interface GenerateDataRequest {
   endDate: string
   instrumentId: string
   variation: number
-  initialValue?: number
-  averageValue?: number
+  initialTemp?: number
+  averageTemp?: number
   generateMode?: GenerateDataModeType
   instrumentType: 'TEMPERATURE' | 'PRESSURE'
 }
@@ -48,25 +52,26 @@ function validateRequestData(body: GenerateDataRequest): ValidationResult {
   return { isValid: true }
 }
 
-// async function getHistoricalData(instrumentType: string) {
-//   try {
-//     return await prisma.instrumentData.findMany({
-//       where: {
-//         instrument: {
-//           type: instrumentType as 'TEMPERATURE' | 'PRESSURE',
-//         },
-//       },
-//       take: 20,
-//     })
-//   } catch (error) {
-//     console.warn('Failed to fetch historical data:', error)
-//     return []
-//   }
-// }
+async function getHistoricalData(instrumentType: 'TEMPERATURE' | 'PRESSURE') {
+  try {
+    return await prisma.instrumentData.findMany({
+      where: {
+        instrument: {
+          type: instrumentType as 'TEMPERATURE' | 'PRESSURE',
+        },
+      },
+      select: {
+        data: true,
+        id: true,
+      },
+      take: 20,
+    })
+  } catch (error) {
+    console.warn('Failed to fetch historical data:', error)
+    return []
+  }
+}
 
-/**
- * Formata os dados do sensor para o formato do banco
- */
 function formatInstrumentData(
   sensorData: SensorData[],
   instrumentId: string,
@@ -86,7 +91,6 @@ export async function POST(request: NextRequest) {
   try {
     const body: GenerateDataRequest = await request.json()
 
-    // Validação dos dados de entrada
     const validation = validateRequestData(body)
     if (!validation.isValid) {
       return NextResponse.json({ error: validation.error }, { status: 400 })
@@ -98,12 +102,11 @@ export async function POST(request: NextRequest) {
       endDate,
       instrumentId,
       variation,
-      // averageValue,
-      initialValue,
+      averageTemp,
+      initialTemp,
       generateMode = 'n1',
     } = body
 
-    // Busca informações do instrumento
     const instrument = await prisma.instrument.findUnique({
       where: { id: instrumentId },
       select: { type: true },
@@ -116,18 +119,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Busca dados históricos para calcular média se necessário
-    // const historicalData = await getHistoricalData(instrument.type)
+    const historicalData = await getHistoricalData(instrument.type)
 
-    // Calcula valores iniciais e médios
-    // const avgValue = getAvgValue(
-    //   instrument.type as 'TEMPERATURE' | 'PRESSURE',
-    //   averageValue,
-    //   historicalData,
-    // )
+    const avgValue = getAvgValue(
+      instrument.type as 'TEMPERATURE' | 'PRESSURE',
+      averageTemp,
+      historicalData,
+    )
+
     const initValue = getInitialValue(
       instrument.type as 'TEMPERATURE' | 'PRESSURE',
-      initialValue,
+      initialTemp,
     )
 
     const sensorData = generateSimulatedData({
@@ -135,7 +137,7 @@ export async function POST(request: NextRequest) {
       endDate,
       instrumentType: instrument.type as 'TEMPERATURE' | 'PRESSURE',
       initialValue: initValue,
-
+      averageValue: avgValue,
       generateMode,
       defrostDate,
     })
@@ -145,10 +147,10 @@ export async function POST(request: NextRequest) {
       instrumentId,
     )
 
-    // Aplica filtro de variação
     const variationSensorData = filterByInterval(
       formatInstrumentDataResult,
       variation,
+      endDate,
     )
 
     const formatReturnData = variationSensorData.map((item) => {

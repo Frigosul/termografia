@@ -85,6 +85,9 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
       variation: Number(data.variation),
       defrostDate: defrostDataUtc,
       instrumentId: data.local,
+      averageTemp: data.averageTemp,
+      initialTemp: data.initialTemp,
+      generateMode: data.generateMode as 'n1' | 'n2' | 'n3' | undefined,
       userName: String(session?.user?.name),
     })
   }

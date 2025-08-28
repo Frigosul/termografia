@@ -8,7 +8,7 @@ interface GenerateSimulatedDataParams {
   endDate: string
   instrumentType: 'TEMPERATURE' | 'PRESSURE'
   initialValue: number
-
+  averageValue: number
   generateMode?: GenerateDataModeType
   defrostDate: string
 }
@@ -18,7 +18,7 @@ export function generateSimulatedData({
   endDate,
   instrumentType,
   initialValue,
-
+  averageValue,
   generateMode,
   defrostDate,
 }: GenerateSimulatedDataParams): SensorData[] {
@@ -31,37 +31,34 @@ export function generateSimulatedData({
   let pressureCycleStart = currentDate.clone()
   let pressureCyclePhase: 'initial' | 'varying' | 'zero' = 'initial'
 
-  const n1Limit = dayjs(startDate).add(5, 'hour')
-  const n2Limit = dayjs(startDate).add(4, 'hour')
-  const n3Limit = dayjs(startDate).add(3, 'hour')
+  const n1Limit = dayjs(startDate).add(4, 'hour')
+  const n2Limit = dayjs(startDate).add(3, 'hour')
+  const n3Limit = dayjs(startDate).add(2, 'hour')
+  const minAllowed = averageValue - 2
+  const maxAllowed = averageValue + 2
 
   while (currentDate.isBefore(formattedEndDate)) {
     if (instrumentType === 'TEMPERATURE') {
-      if (
-        generateMode === 'n1' ||
-        generateMode === 'n2' ||
-        generateMode === 'n3'
-      ) {
-        const limit =
-          generateMode === 'n1'
-            ? n1Limit
-            : generateMode === 'n2'
-              ? n2Limit
-              : n3Limit
-        if (currentDate.isBefore(limit)) {
-          currentValue = initialValue - Math.random() * 0.7
-        } else {
-          // Gerar um novo valor com variação mínima de 1 grau
-          const minChange = 1 // Variação mínima de 1 grau
-          const direction = Math.random() < 0.5 ? -1 : 1 // Aleatoriamente para cima ou para baixo
-          const change = minChange + Math.random() * 0.5 // Variação de 1 a 1.5 graus
-          currentValue += direction * change
+      const limit =
+        generateMode === 'n1'
+          ? n1Limit
+          : generateMode === 'n2'
+            ? n2Limit
+            : n3Limit
+      if (currentDate.isBefore(limit)) {
+        currentValue = initialValue - Math.random() * 0.7
+      } else {
+        // Gerar um novo valor com variação mínima de 1 grau
+        const minChange = 1 // Variação mínima de 1 grau
+        const direction = Math.random() < 0.5 ? -1 : 1 // Aleatoriamente para cima ou para baixo
+        const change = minChange + Math.random() * 0.5 // Variação de 1 a 1.5 graus
+        currentValue += direction * change
 
-          // Garantir que o valor se mantenha dentro de um intervalo realista para câmara fria (ex: -5 a 20)
-          if (currentValue > 20) currentValue = 20 - Math.random()
-          if (currentValue < -5) currentValue = -5 + Math.random()
-        }
+        // 🔒 Mantém dentro do intervalo da média
+        if (currentValue > maxAllowed) currentValue = maxAllowed
+        if (currentValue < minAllowed) currentValue = minAllowed
       }
+
       if (currentDate.isAfter(formattedDefrostDate)) {
         currentValue += Math.random() * 3
       }
@@ -110,7 +107,6 @@ export function generateSimulatedData({
       updatedAt: new Date(currentDate.format('YYYY-MM-DDTHH:mm:ss')),
     }
     sensorData.push(sensorItem)
-
     currentDate = currentDate.add(1, 'minute')
   }
 
@@ -125,21 +121,23 @@ export function getInitialValue(
   return type === 'TEMPERATURE' ? 15 : 0
 }
 
+type RecordData = {
+  id: string
+  data: number
+}
+
 export function getAvgValue(
   type: 'TEMPERATURE' | 'PRESSURE',
   averageValue: number | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  historicalData: any[],
+  historicalData: RecordData[],
 ): number {
   if (typeof averageValue === 'number') return averageValue
-  if (historicalData.length) {
-    return (
-      historicalData.reduce(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (sum: number, record: any) => sum + record.value,
-        0,
-      ) / historicalData.length
-    )
+  console.log('avr Data:', averageValue)
+
+  if (historicalData.length > 0) {
+    const sum = historicalData.reduce((acc, record) => acc + record.data, 0)
+    return sum / historicalData.length
   }
+
   return type === 'TEMPERATURE' ? 10 : 3.5
 }

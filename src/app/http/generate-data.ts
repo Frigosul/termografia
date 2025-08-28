@@ -55,6 +55,7 @@ export async function generateData({
   })
   if (!response.ok) {
     const error = await response.json()
+    // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({
       status: response.status,
       message: error.message,

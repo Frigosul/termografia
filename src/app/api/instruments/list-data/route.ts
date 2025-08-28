@@ -110,11 +110,13 @@ export async function POST(req: NextRequest) {
       chartTemperature = filterByInterval(
         joinInstrumentData.firstInstrument.instrumentData as [],
         graphVariation,
+        endDate,
       )
     } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
       chartTemperature = filterByInterval(
         joinInstrumentData.secondInstrument.instrumentData as [],
         graphVariation,
+        endDate,
       )
     }
     let chartPressure: chartTemperaturePressure[] = []
@@ -123,11 +125,13 @@ export async function POST(req: NextRequest) {
       chartPressure = filterByInterval(
         joinInstrumentData.firstInstrument.instrumentData as [],
         graphVariation,
+        endDate,
       )
     } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
       chartPressure = filterByInterval(
         joinInstrumentData.secondInstrument.instrumentData as [],
         graphVariation,
+        endDate,
       )
     }
 
@@ -162,11 +166,13 @@ export async function POST(req: NextRequest) {
         tableTemperatureRange = filterByInterval(
           joinInstrumentData.firstInstrument.instrumentData as [],
           graphVariation,
+          endDate,
         )
       } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
         tableTemperatureRange = filterByInterval(
           joinInstrumentData.secondInstrument.instrumentData as [],
           graphVariation,
+          endDate,
         )
       }
       let tablePressureRange: chartTemperaturePressure[] = []
@@ -175,11 +181,13 @@ export async function POST(req: NextRequest) {
         tablePressureRange = filterByInterval(
           joinInstrumentData.firstInstrument.instrumentData as [],
           graphVariation,
+          endDate,
         )
       } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
         tablePressureRange = filterByInterval(
           joinInstrumentData.secondInstrument.instrumentData as [],
           graphVariation,
+          endDate,
         )
       }
 
@@ -205,6 +213,7 @@ export async function POST(req: NextRequest) {
   const chartTemperature = filterByInterval(
     instrumentData?.instrumentData,
     graphVariation,
+    endDate,
   )
 
   let chartPressure: DataItem[] = []
@@ -212,6 +221,7 @@ export async function POST(req: NextRequest) {
     chartPressure = filterByInterval(
       instrumentData?.instrumentData,
       graphVariation,
+      endDate,
     )
   }
 
@@ -243,6 +253,7 @@ export async function POST(req: NextRequest) {
     const tableTemperatureRange = filterByInterval(
       instrumentData?.instrumentData,
       tableVariation,
+      endDate,
     )
     const tablePressureRange =
       instrumentData.type === 'PRESSURE'

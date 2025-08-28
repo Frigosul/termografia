@@ -30,13 +30,15 @@ export function generateMissingDataItem(
   }
 }
 
-function filterByInterval<T extends DataItem>(
+export function filterByInterval<T extends DataItem>(
   data: T[],
   intervalMinutes: number,
+  endDate?: string,
 ): T[] {
   if (data.length === 0) {
     return []
   }
+  console.log(endDate)
 
   const result: T[] = []
 
@@ -50,16 +52,15 @@ function filterByInterval<T extends DataItem>(
     .second(0)
     .millisecond(0)
 
-  // Calcula o último timestamp a ser considerado para a iteração
-  const lastDataTime = dayjs(sortedData[sortedData.length - 1].createdAt)
+  // Se endDate foi passado, ele define o limite; senão usa o último dado
+  const endLimit = endDate
+    ? dayjs(endDate)
+    : dayjs(sortedData[sortedData.length - 1].createdAt)
 
   let dataIndex = 0
   let lastKnownValue: number | null = null
 
-  while (
-    currentIntervalStart.valueOf() <=
-    lastDataTime.valueOf() + intervalMinutes * 60 * 1000
-  ) {
+  while (currentIntervalStart.valueOf() <= endLimit.valueOf()) {
     const intervalEnd = currentIntervalStart.add(intervalMinutes, 'minute')
     let foundItemInInterval = false
     let itemToPush: T | null = null
@@ -97,7 +98,20 @@ function filterByInterval<T extends DataItem>(
     currentIntervalStart = intervalEnd
   }
 
+  // 🔒 Garante que o último valor seja exatamente no endDate (se passado)
+  if (endDate) {
+    const lastItemTime = dayjs(result[result.length - 1]?.createdAt)
+    const end = dayjs(endDate)
+
+    if (!lastItemTime.isSame(end)) {
+      let generatedItem = generateMissingDataItem(end.toDate(), lastKnownValue)
+      generatedItem = {
+        ...generatedItem,
+        createdAt: end.toDate(),
+      }
+      result.push(generatedItem as T)
+    }
+  }
+
   return result
 }
-
-export { filterByInterval }
