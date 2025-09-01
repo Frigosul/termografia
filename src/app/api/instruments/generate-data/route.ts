@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import type { GenerateDataModeType } from '@/types/generate-data-mode'
+import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import type { InstrumentData, SensorData } from '../../../../../types'
 
@@ -87,6 +88,43 @@ function formatInstrumentData(
   }))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function saveInstrumentData(formatInstrumentDataResult: any[]) {
+  if (formatInstrumentDataResult.length === 0) return
+
+  const values = Prisma.join(
+    formatInstrumentDataResult.map(
+      (d) =>
+        Prisma.sql`(
+        gen_random_uuid(),
+        ${d.createdAt},
+        now(),
+        ${d.instrumentId},
+        ${d.data},
+        ${d.editData},
+        ${d.generateData ?? null},
+        ${d.userEditData ?? null}
+      )`,
+    ),
+  )
+
+  await prisma.$executeRaw`
+   INSERT INTO "instrument_data" (
+    id,
+    created_at,
+    updated_at,
+    instrument_id,
+    data,
+    edit_data,
+    generate_data,
+    user_edit_data
+  )
+  VALUES ${values}
+  ON CONFLICT ("instrument_id", "created_at")
+  DO UPDATE SET "edit_data" = EXCLUDED."edit_data"
+  `
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateDataRequest = await request.json()
@@ -162,9 +200,8 @@ export async function POST(request: NextRequest) {
         value: item.editData,
       }
     })
-    await prisma.instrumentData.createMany({
-      data: formatInstrumentDataResult,
-    })
+
+    await saveInstrumentData(formatInstrumentDataResult)
 
     return NextResponse.json(
       {

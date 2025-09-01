@@ -36,62 +36,66 @@ export function generateSimulatedData({
   const n3Limit = dayjs(startDate).add(2, 'hour')
   const minAllowed = averageValue - 2
   const maxAllowed = averageValue + 2
+  let isFirstValue = true
 
   while (currentDate.isBefore(formattedEndDate)) {
     if (instrumentType === 'TEMPERATURE') {
-      const limit =
-        generateMode === 'n1'
-          ? n1Limit
-          : generateMode === 'n2'
-            ? n2Limit
-            : n3Limit
-      if (currentDate.isBefore(limit)) {
-        currentValue = initialValue - Math.random() * 0.7
+      if (isFirstValue) {
+        currentValue = initialValue // 🔒 garante o valor inicial
       } else {
-        // Gerar um novo valor com variação mínima de 1 grau
-        const minChange = 1 // Variação mínima de 1 grau
-        const direction = Math.random() < 0.5 ? -1 : 1 // Aleatoriamente para cima ou para baixo
-        const change = minChange + Math.random() * 0.5 // Variação de 1 a 1.5 graus
-        currentValue += direction * change
+        const limit =
+          generateMode === 'n1'
+            ? n1Limit
+            : generateMode === 'n2'
+              ? n2Limit
+              : n3Limit
 
-        // 🔒 Mantém dentro do intervalo da média
-        if (currentValue > maxAllowed) currentValue = maxAllowed
-        if (currentValue < minAllowed) currentValue = minAllowed
-      }
+        if (currentDate.isBefore(limit)) {
+          currentValue = initialValue - Math.random() * 0.7
+        } else {
+          const minChange = 1
+          const direction = Math.random() < 0.5 ? -1 : 1
+          const change = minChange + Math.random() * 0.5
+          currentValue += direction * change
 
-      if (currentDate.isAfter(formattedDefrostDate)) {
-        currentValue += Math.random() * 3
+          if (currentValue > maxAllowed) currentValue = maxAllowed
+          if (currentValue < minAllowed) currentValue = minAllowed
+        }
+
+        if (currentDate.isAfter(formattedDefrostDate)) {
+          currentValue += Math.random() * 3
+        }
       }
     } else if (instrumentType === 'PRESSURE') {
-      const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
+      if (isFirstValue) {
+        currentValue = initialValue // 🔒 idem para pressão
+      } else {
+        const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
 
-      if (pressureCyclePhase === 'initial') {
-        if (minutesInCycle >= 3) {
-          currentValue = 3.5 + (Math.random() * 0.5 - 0.25) // Pequena variação
-          pressureCyclePhase = 'varying'
-        }
-      } else if (pressureCyclePhase === 'varying') {
-        // Duração da fase varying mais dinâmica
-        const varyingDuration = 20 + Math.floor(Math.random() * 10) // Entre 20 e 29 minutos
-        if (minutesInCycle < varyingDuration) {
-          currentValue = 3.5 + (Math.random() * 1.5 - 0.75) // Variação maior
-        } else {
-          currentValue = 0
-          pressureCyclePhase = 'zero'
-        }
-      } else if (pressureCyclePhase === 'zero') {
-        // Duração da fase zero mais dinâmica
-        const zeroDuration = 10 + Math.floor(Math.random() * 5) // Entre 10 e 14 minutos
-        if (minutesInCycle >= 23 + zeroDuration) {
-          // 23 é o mínimo da varying, somar a duração da zero
-          pressureCycleStart = currentDate.clone()
-          pressureCyclePhase = 'initial'
-          currentValue = 0
+        if (pressureCyclePhase === 'initial') {
+          if (minutesInCycle >= 3) {
+            currentValue = 3.5 + (Math.random() * 0.5 - 0.25)
+            pressureCyclePhase = 'varying'
+          }
+        } else if (pressureCyclePhase === 'varying') {
+          const varyingDuration = 20 + Math.floor(Math.random() * 10)
+          if (minutesInCycle < varyingDuration) {
+            currentValue = 3.5 + (Math.random() * 1.5 - 0.75)
+          } else {
+            currentValue = 0
+            pressureCyclePhase = 'zero'
+          }
+        } else if (pressureCyclePhase === 'zero') {
+          const zeroDuration = 10 + Math.floor(Math.random() * 5)
+          if (minutesInCycle >= 23 + zeroDuration) {
+            pressureCycleStart = currentDate.clone()
+            pressureCyclePhase = 'initial'
+            currentValue = 0
+          }
         }
       }
     }
 
-    // Garantir que o valor nunca seja NaN ou null
     if (
       isNaN(currentValue) ||
       currentValue === null ||
@@ -107,6 +111,8 @@ export function generateSimulatedData({
       updatedAt: new Date(currentDate.format('YYYY-MM-DDTHH:mm:ss')),
     }
     sensorData.push(sensorItem)
+
+    isFirstValue = false
     currentDate = currentDate.add(1, 'minute')
   }
 

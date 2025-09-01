@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "instruments" ADD COLUMN     "setPoint" DOUBLE PRECISION NOT NULL DEFAULT 0;
