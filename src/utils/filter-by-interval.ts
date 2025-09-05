@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
 export interface DataItem {
@@ -30,15 +31,22 @@ export function generateMissingDataItem(
   }
 }
 
-export function filterByInterval<T extends DataItem>(
-  data: T[],
-  intervalMinutes: number,
-  endDate?: string,
-): T[] {
+interface FilterByIntervalParams<T> {
+  data: T[]
+  intervalMinutes: number
+  endDate: string
+  instrumentId: string
+}
+
+export async function filterByInterval<T extends DataItem>({
+  data,
+  endDate,
+  instrumentId,
+  intervalMinutes,
+}: FilterByIntervalParams<T>): Promise<T[]> {
   if (data.length === 0) {
     return []
   }
-  console.log(endDate)
 
   const result: T[] = []
 
@@ -98,18 +106,52 @@ export function filterByInterval<T extends DataItem>(
     currentIntervalStart = intervalEnd
   }
 
-  // 🔒 Garante que o último valor seja exatamente no endDate (se passado)
   if (endDate) {
-    const lastItemTime = dayjs(result[result.length - 1]?.createdAt)
     const end = dayjs(endDate)
 
-    if (!lastItemTime.isSame(end)) {
+    const lastItem = result[result.length - 1]
+
+    if (!dayjs(lastItem.createdAt).isSame(end)) {
+      // cria novo se for diferente
       let generatedItem = generateMissingDataItem(end.toDate(), lastKnownValue)
-      generatedItem = {
-        ...generatedItem,
-        createdAt: end.toDate(),
-      }
+      generatedItem = { ...generatedItem, createdAt: end.toDate() }
       result.push(generatedItem as T)
+
+      await prisma.instrumentData.upsert({
+        where: {
+          unique_instrument_timestamp: {
+            instrumentId,
+            createdAt: end.toDate(),
+          },
+        },
+        update: {},
+        create: {
+          instrumentId,
+          editData: lastKnownValue ?? generatedItem.editData,
+          data: lastKnownValue ?? generatedItem.editData,
+          createdAt: end.toDate(),
+        },
+      })
+    } else {
+      // já existe: opcionalmente forçar update
+      await prisma.instrumentData.upsert({
+        where: {
+          unique_instrument_timestamp: {
+            instrumentId,
+            createdAt: end.toDate(),
+          },
+        },
+        update: {
+          editData: lastKnownValue ?? lastItem.editData,
+          data: lastKnownValue ?? lastItem.editData,
+        },
+        create: {
+          instrumentId,
+          editData: lastKnownValue ?? lastItem.editData,
+          data: lastKnownValue ?? lastItem.editData,
+          createdAt: end.toDate(),
+        },
+      })
     }
   }
 

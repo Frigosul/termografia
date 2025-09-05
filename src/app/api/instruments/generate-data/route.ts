@@ -185,11 +185,12 @@ export async function POST(request: NextRequest) {
       instrumentId,
     )
 
-    const variationSensorData = filterByInterval(
-      formatInstrumentDataResult,
-      variation,
+    const variationSensorData = await filterByInterval({
+      data: formatInstrumentDataResult,
+      intervalMinutes: variation,
       endDate,
-    )
+      instrumentId,
+    })
 
     const formatReturnData = variationSensorData.map((item) => {
       return {

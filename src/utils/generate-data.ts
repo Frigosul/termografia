@@ -41,7 +41,7 @@ export function generateSimulatedData({
   while (currentDate.isBefore(formattedEndDate)) {
     if (instrumentType === 'TEMPERATURE') {
       if (isFirstValue) {
-        currentValue = initialValue // 🔒 garante o valor inicial
+        currentValue = initialValue
       } else {
         const limit =
           generateMode === 'n1'
@@ -68,7 +68,7 @@ export function generateSimulatedData({
       }
     } else if (instrumentType === 'PRESSURE') {
       if (isFirstValue) {
-        currentValue = initialValue // 🔒 idem para pressão
+        currentValue = initialValue
       } else {
         const minutesInCycle = currentDate.diff(pressureCycleStart, 'minute')
 
@@ -138,7 +138,6 @@ export function getAvgValue(
   historicalData: RecordData[],
 ): number {
   if (typeof averageValue === 'number') return averageValue
-  console.log('avr Data:', averageValue)
 
   if (historicalData.length > 0) {
     const sum = historicalData.reduce((acc, record) => acc + record.data, 0)

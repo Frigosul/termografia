@@ -107,32 +107,36 @@ export async function POST(req: NextRequest) {
     let chartTemperature: chartTemperaturePressure[] = []
 
     if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
-      chartTemperature = filterByInterval(
-        joinInstrumentData.firstInstrument.instrumentData as [],
-        graphVariation,
+      chartTemperature = await filterByInterval({
+        data: joinInstrumentData.firstInstrument.instrumentData,
+        intervalMinutes: graphVariation,
         endDate,
-      )
+        instrumentId: joinInstrumentData.firstInstrument.id,
+      })
     } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
-      chartTemperature = filterByInterval(
-        joinInstrumentData.secondInstrument.instrumentData as [],
-        graphVariation,
+      chartTemperature = await filterByInterval({
+        data: joinInstrumentData.secondInstrument.instrumentData,
+        intervalMinutes: graphVariation,
         endDate,
-      )
+        instrumentId: joinInstrumentData.secondInstrument.id,
+      })
     }
     let chartPressure: chartTemperaturePressure[] = []
 
     if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
-      chartPressure = filterByInterval(
-        joinInstrumentData.firstInstrument.instrumentData as [],
-        graphVariation,
+      chartPressure = await filterByInterval({
+        data: joinInstrumentData.firstInstrument.instrumentData,
+        intervalMinutes: graphVariation,
         endDate,
-      )
+        instrumentId: joinInstrumentData.firstInstrument.id,
+      })
     } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
-      chartPressure = filterByInterval(
-        joinInstrumentData.secondInstrument.instrumentData as [],
-        graphVariation,
+      chartPressure = await filterByInterval({
+        data: joinInstrumentData.secondInstrument.instrumentData,
+        intervalMinutes: graphVariation,
         endDate,
-      )
+        instrumentId: joinInstrumentData.secondInstrument.id,
+      })
     }
 
     const response: ListDataResponse = {
@@ -163,32 +167,36 @@ export async function POST(req: NextRequest) {
       let tableTemperatureRange: chartTemperaturePressure[] = []
 
       if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
-        tableTemperatureRange = filterByInterval(
-          joinInstrumentData.firstInstrument.instrumentData as [],
-          graphVariation,
+        tableTemperatureRange = await filterByInterval({
+          data: joinInstrumentData.firstInstrument.instrumentData,
+          intervalMinutes: tableVariation,
           endDate,
-        )
+          instrumentId: joinInstrumentData.firstInstrument.id,
+        })
       } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
-        tableTemperatureRange = filterByInterval(
-          joinInstrumentData.secondInstrument.instrumentData as [],
-          graphVariation,
+        tableTemperatureRange = await filterByInterval({
+          data: joinInstrumentData.secondInstrument.instrumentData,
+          intervalMinutes: tableVariation,
           endDate,
-        )
+          instrumentId: joinInstrumentData.secondInstrument.id,
+        })
       }
       let tablePressureRange: chartTemperaturePressure[] = []
 
-      if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
-        tablePressureRange = filterByInterval(
-          joinInstrumentData.firstInstrument.instrumentData as [],
-          graphVariation,
+      if (joinInstrumentData?.firstInstrument?.type === 'PRESSURE') {
+        tablePressureRange = await filterByInterval({
+          data: joinInstrumentData.firstInstrument.instrumentData,
+          intervalMinutes: tableVariation,
           endDate,
-        )
-      } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
-        tablePressureRange = filterByInterval(
-          joinInstrumentData.secondInstrument.instrumentData as [],
-          graphVariation,
+          instrumentId: joinInstrumentData.firstInstrument.id,
+        })
+      } else if (joinInstrumentData?.secondInstrument?.type === 'PRESSURE') {
+        tablePressureRange = await filterByInterval({
+          data: joinInstrumentData.secondInstrument.instrumentData,
+          intervalMinutes: tableVariation,
           endDate,
-        )
+          instrumentId: joinInstrumentData.secondInstrument.id,
+        })
       }
 
       response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
@@ -210,19 +218,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(response, { status: 200 })
   }
 
-  const chartTemperature = filterByInterval(
-    instrumentData?.instrumentData,
-    graphVariation,
+  const chartTemperature = await filterByInterval({
+    data: instrumentData?.instrumentData,
+    intervalMinutes: graphVariation,
     endDate,
-  )
+    instrumentId: instrumentData.id,
+  })
 
   let chartPressure: DataItem[] = []
   if (instrumentData.type === 'PRESSURE') {
-    chartPressure = filterByInterval(
-      instrumentData?.instrumentData,
-      graphVariation,
+    chartPressure = await filterByInterval({
+      data: instrumentData?.instrumentData,
+      intervalMinutes: graphVariation,
       endDate,
-    )
+      instrumentId: instrumentData.id,
+    })
   }
 
   const response: ListDataResponse = {
@@ -250,14 +260,20 @@ export async function POST(req: NextRequest) {
   }
 
   if (tableVariation) {
-    const tableTemperatureRange = filterByInterval(
-      instrumentData?.instrumentData,
-      tableVariation,
+    const tableTemperatureRange = await filterByInterval({
+      data: instrumentData?.instrumentData,
+      intervalMinutes: tableVariation,
       endDate,
-    )
+      instrumentId: instrumentData.id,
+    })
     const tablePressureRange =
       instrumentData.type === 'PRESSURE'
-        ? filterByInterval(instrumentData?.instrumentData, tableVariation)
+        ? await filterByInterval({
+          data: instrumentData?.instrumentData,
+          intervalMinutes: tableVariation,
+          endDate,
+          instrumentId: instrumentData.id,
+        })
         : []
 
     response.tableTemperatureRange = tableTemperatureRange.map((temp) => ({
