@@ -28,15 +28,23 @@ export function generateSimulatedData({
   const formattedDefrostDate = dayjs(defrostDate)
 
   let currentValue: number = initialValue
+  let isFirstValue = true
+
+  // PRESSURE
   let pressureCycleStart = currentDate.clone()
   let pressureCyclePhase: 'initial' | 'varying' | 'zero' = 'initial'
 
+  // TEMPERATURE
+  const tolerance = 0.5
+  const maxNormal = averageValue + tolerance
+  const minNormal = averageValue - tolerance
+  const defrostPeak = averageValue + 3
+  let defrostDone = false
+
+  // N-Limits (para modos diferentes)
   const n1Limit = dayjs(startDate).add(4, 'hour')
   const n2Limit = dayjs(startDate).add(3, 'hour')
   const n3Limit = dayjs(startDate).add(2, 'hour')
-  const minAllowed = averageValue - 2
-  const maxAllowed = averageValue + 2
-  let isFirstValue = true
 
   while (currentDate.isBefore(formattedEndDate)) {
     if (instrumentType === 'TEMPERATURE') {
@@ -50,20 +58,32 @@ export function generateSimulatedData({
               ? n2Limit
               : n3Limit
 
+        // aproxima do averageValue antes do limite
         if (currentDate.isBefore(limit)) {
-          currentValue = initialValue - Math.random() * 0.7
-        } else {
-          const minChange = 1
-          const direction = Math.random() < 0.5 ? -1 : 1
-          const change = minChange + Math.random() * 0.5
-          currentValue += direction * change
-
-          if (currentValue > maxAllowed) currentValue = maxAllowed
-          if (currentValue < minAllowed) currentValue = minAllowed
+          if (initialValue > averageValue) {
+            currentValue =
+              initialValue - Math.random() * (initialValue - averageValue)
+          } else if (initialValue < averageValue) {
+            currentValue =
+              initialValue + Math.random() * (averageValue - initialValue)
+          } else {
+            currentValue = initialValue
+          }
         }
 
-        if (currentDate.isAfter(formattedDefrostDate)) {
-          currentValue += Math.random() * 3
+        // Degelo: sobe somente uma vez
+        if (!defrostDone && currentDate.isAfter(formattedDefrostDate)) {
+          currentValue = defrostPeak
+          defrostDone = true
+        } else {
+          // Oscilação normal dentro da faixa média
+          const direction = Math.random() < 0.5 ? -1 : 1
+          const change = Math.random() * 0.1
+          currentValue += direction * change
+
+          // Clamp normal
+          if (currentValue > maxNormal) currentValue = maxNormal
+          if (currentValue < minNormal) currentValue = minNormal
         }
       }
     } else if (instrumentType === 'PRESSURE') {
@@ -96,6 +116,7 @@ export function generateSimulatedData({
       }
     }
 
+    // garante valor válido
     if (
       isNaN(currentValue) ||
       currentValue === null ||
@@ -104,6 +125,7 @@ export function generateSimulatedData({
       currentValue = instrumentType === 'TEMPERATURE' ? initialValue : 0
     }
 
+    // cria item de sensor
     const sensorItem: SensorData = {
       id: uuidv4(),
       time: currentDate.format('YYYY-MM-DDTHH:mm:ss'),
