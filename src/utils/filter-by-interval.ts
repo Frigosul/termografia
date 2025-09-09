@@ -13,17 +13,18 @@ export interface DataItem {
 export function generateMissingDataItem(
   timestamp: Date,
   lastKnownValue: number | null,
+  averageValue?: number,
 ): DataItem {
-  const generatedEditData =
-    lastKnownValue !== null
-      ? lastKnownValue + 0.1 + Math.random() * 0.4 // Entre 0.1 e 0.5
-      : 10.0 + Math.random() * 5 // Valor inicial entre 10 e 15
+  const base = averageValue ?? lastKnownValue ?? 2
+  const variation = 0.05
+
+  const generatedEditData = base * (1 + (Math.random() * 2 - 1) * variation)
 
   return {
     id: uuidv4(),
     createdAt: timestamp,
     updatedAt: timestamp,
-    editData: parseFloat(generatedEditData.toFixed(2)),
+    editData: parseFloat(generatedEditData.toFixed(1)),
     userEditData: null,
   }
 }
@@ -33,6 +34,7 @@ interface FilterByIntervalParams<T> {
   intervalMinutes: number
   endDate: string
   instrumentId: string
+  averageValue?: number
 }
 
 export async function filterByInterval<T extends DataItem>({
@@ -40,6 +42,7 @@ export async function filterByInterval<T extends DataItem>({
   endDate,
   instrumentId,
   intervalMinutes,
+  averageValue,
 }: FilterByIntervalParams<T>): Promise<T[]> {
   if (data.length === 0) return []
 
@@ -59,7 +62,6 @@ export async function filterByInterval<T extends DataItem>({
   let dataIndex = 0
   let lastKnownValue: number | null = null
 
-  // Loop pelos intervalos
   while (currentIntervalStart.valueOf() <= endLimit.valueOf()) {
     const intervalEnd = currentIntervalStart.add(intervalMinutes, 'minute')
     let foundItemInInterval = false
@@ -90,6 +92,7 @@ export async function filterByInterval<T extends DataItem>({
       const generatedItem = generateMissingDataItem(
         currentIntervalStart.toDate(),
         lastKnownValue,
+        averageValue,
       )
       result.push(generatedItem as T)
       lastKnownValue = generatedItem.editData
@@ -98,12 +101,10 @@ export async function filterByInterval<T extends DataItem>({
     currentIntervalStart = intervalEnd
   }
 
-  // Processa o último item no endDate
   if (endDate) {
     const end = dayjs(endDate)
     const lastItem = result[result.length - 1]
 
-    // Busca no banco primeiro
     let finalItem = await prisma.instrumentData.findFirst({
       where: {
         instrumentId,
@@ -114,17 +115,15 @@ export async function filterByInterval<T extends DataItem>({
     let finalValue: number
 
     if (finalItem) {
-      // Valor já existente
       finalValue = finalItem.editData
     } else {
-      // Gera novo item
       const generatedItem = generateMissingDataItem(
         end.toDate(),
         lastKnownValue,
+        averageValue,
       )
       finalValue = generatedItem.editData
 
-      // Salva no banco
       finalItem = await prisma.instrumentData.create({
         data: {
           instrumentId,
@@ -135,7 +134,6 @@ export async function filterByInterval<T extends DataItem>({
       })
     }
 
-    // Só adiciona no array se o último item tiver timestamp diferente
     if (!dayjs(lastItem.createdAt).isSame(end, 'second')) {
       result.push({
         id: finalItem.id,

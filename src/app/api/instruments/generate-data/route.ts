@@ -196,6 +196,7 @@ export async function POST(request: NextRequest) {
       intervalMinutes: variation,
       endDate,
       instrumentId,
+      averageValue: avgValue,
     })
 
     const formatReturnData = variationSensorData.map((item) => {
