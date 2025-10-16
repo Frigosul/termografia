@@ -4,9 +4,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { formattedDateTime } from '@/utils/formatted-datetime'
 import { formattedTime } from '@/utils/formatted-time'
-import dayjs from 'dayjs'
 
 import {
   CartesianGrid,
@@ -50,9 +48,6 @@ interface ChartProps {
 }
 export function ChartPressure({
   data,
-  dateClose,
-  dateOpen,
-  local,
   minValue,
   limit,
   variation,
@@ -68,28 +63,11 @@ export function ChartPressure({
     }
   })
 
-  const formattedDateClose = dayjs(dateClose).format('DD/MM/YYYY - HH:mm')
-  const formattedDateOpen = formattedDateTime(dateOpen)
-
   return (
-    <div className="relative border border-card-foreground rounded-md pt-4  h-72 my-4">
-      <div className="absolute print:right-2 right-[-6.5rem] top-2 md:right-9 md:top-9 md:min-w-60  border border-card-foreground !bg-muted  dark:!bg-slate-800 shadow-sm rounded-md z-20 p-0.5 px-1 md:p-2 md:px-3 text-[10px] md:text-xs font-light flex flex-col gap-1">
-        <div className="flex justify-between">
-          <span>Local: </span>
-          <span>{local}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Fechamento: </span>
-          <span>{formattedDateClose}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Abertura: </span>
-          <span>{formattedDateOpen}</span>
-        </div>
-      </div>
+    <div className="border border-muted-foreground rounded-md pt-4 print:pt-0 h-72 print:h-60 my-4 print:border-none">
       <ChartContainer
         config={chartConfig}
-        className="h-64 print:h-[25rem] w-full"
+        className="h-64 print:h-[25rem] print:mt-[-4rem] w-full"
       >
         <LineChart
           data={formattedData}
