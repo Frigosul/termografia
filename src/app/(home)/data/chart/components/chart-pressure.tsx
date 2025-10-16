@@ -136,9 +136,11 @@ export function ChartPressure({
                 fontWeight: 'normal',
               },
             }}
-            domain={[minValue, maxValue]}
+            // domain={[minValue, maxValue]}
+            domain={[0, 6]}
             ticks={Array.from({ length: interval }).map((_, i) => minValue + i)}
             interval={variation ? variation - 1 : 0}
+            // interval={0}
             stroke="hsl(var(--card-foreground))"
           />
           {limit && <ReferenceLine y={limit} label="Max." stroke="red" />}

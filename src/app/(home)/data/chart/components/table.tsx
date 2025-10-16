@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { formattedDateHour } from '@/utils/formatted-datehour'
 
 interface TableProps {
@@ -58,11 +59,11 @@ export function Table({ minValue, maxValue, data, pressure }: TableProps) {
       {columns.map((columnData, colIdx) => (
         <div
           key={colIdx}
-          className="min-w-[120px] max-w-[120px] flex-1 border-dashed border-r pr-0.5 print:pr-0.5 last:border-none print:break-inside-avoid"
+          className={`${hasPressure ? 'min-w-[150px] max-w-[150px]' : 'min-w-[120px] max-w-[120px]'} flex-1 border-dashed border-r pr-0.5 print:pr-0.5 last:border-none print:break-inside-avoid`}
         >
           <div className="flex justify-between px-0.5 print:px-0.5 border-b border-card-foreground mb-1 print:mb-0 text-center text-xs">
             <div>Hora</div>
-            <div>°C</div>
+            <div className={`${hasPressure && 'ml-8'}`}>°C</div>
             {hasPressure && <div>Bar</div>}
           </div>
           {columnData.map((item, rowIdx) => (

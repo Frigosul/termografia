@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ListDataResponse } from '@/app/http/list-data'
 import { prisma } from '@/lib/prisma'
 import { convertToUTC } from '@/utils/date-timezone-converter'
@@ -47,9 +48,9 @@ export async function POST(req: NextRequest) {
         id: true,
         name: true,
         firstInstrument: {
-          select: {
-            type: true,
-          },
+          // select: {
+          //   type: true,
+          // },
           include: {
             instrumentData: {
               select: {
@@ -69,9 +70,9 @@ export async function POST(req: NextRequest) {
           },
         },
         secondInstrument: {
-          select: {
-            type: true,
-          },
+          // select: {
+          //   type: true,
+          // },
           include: {
             instrumentData: {
               select: {
@@ -123,14 +124,14 @@ export async function POST(req: NextRequest) {
     }
     let chartPressure: chartTemperaturePressure[] = []
 
-    if (joinInstrumentData?.firstInstrument?.type === 'TEMPERATURE') {
+    if (joinInstrumentData?.firstInstrument?.type === 'PRESSURE') {
       chartPressure = await filterByInterval({
         data: joinInstrumentData.firstInstrument.instrumentData,
         intervalMinutes: graphVariation,
         endDate,
         instrumentId: joinInstrumentData.firstInstrument.id,
       })
-    } else if (joinInstrumentData?.secondInstrument?.type === 'TEMPERATURE') {
+    } else if (joinInstrumentData?.secondInstrument?.type === 'PRESSURE') {
       chartPressure = await filterByInterval({
         data: joinInstrumentData.secondInstrument.instrumentData,
         intervalMinutes: graphVariation,
@@ -259,6 +260,7 @@ export async function POST(req: NextRequest) {
     })),
   }
 
+
   if (tableVariation) {
     const tableTemperatureRange = await filterByInterval({
       data: instrumentData?.instrumentData,
@@ -284,6 +286,7 @@ export async function POST(req: NextRequest) {
       originalValue: temp.editData,
       updatedUserAt: temp.userEditData,
     }))
+
 
     response.tablePressureRange = tablePressureRange.map((press) => ({
       id: press.id,
