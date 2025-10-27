@@ -1,3 +1,4 @@
+/* eslint-disable prefer-promise-reject-errors */
 import { fetchServer } from '@/middlewares/fetch-server'
 
 type DataRequest = {

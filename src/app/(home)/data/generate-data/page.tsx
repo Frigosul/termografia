@@ -30,6 +30,26 @@ export default function PageManagedData() {
       })
     },
   })
+  const formattedData = dataValue?.data?.map((value) => {
+    if (dataValue.instrumentType === 'PRESSURE') {
+      return {
+        pressure: value.value,
+        updatedUserAtPress: value.updatedUserAt,
+        updatedAtPress: value.updatedAt,
+        id: value.id,
+        time: value.time,
+      }
+    } else {
+      return {
+        temperature: value.value,
+        updatedUserAtTemp: value.updatedUserAt,
+        updatedAtTemp: value.updatedAt,
+        id: value.id,
+        time: value.time,
+      }
+    }
+  })
+
   return (
     <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
       <div className="w-full max-w-screen-xl">
@@ -48,8 +68,15 @@ export default function PageManagedData() {
           </div>
         ) : (
           dataValue?.data && (
+            // <TableEditValues
+            //   data={formattedData || []}
+            //   instrumentType={dataValue.instrumentType}
+            //   joinInstruments={false}
+            // />
             <TableEditValues
-              data={dataValue?.data}
+              {...(dataValue.instrumentType === 'PRESSURE'
+                ? { dataPressure: formattedData || [] }
+                : { data: formattedData || [] })}
               instrumentType={dataValue.instrumentType}
             />
           )

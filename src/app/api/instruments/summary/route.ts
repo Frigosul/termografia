@@ -19,7 +19,6 @@ export async function GET() {
       orderDisplay: 'asc',
     },
   })
-  console.log(instruments.map((i) => i.name))
 
   return NextResponse.json(instruments, { status: 200 })
 }

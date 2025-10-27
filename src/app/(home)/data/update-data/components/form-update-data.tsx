@@ -1,5 +1,5 @@
 'use client'
-import { getInstruments } from '@/app/http/get-instruments'
+import { getInstrumentsWithUnions } from '@/app/http/get-instruments-with-unions'
 import { ListDataRequest, ListDataResponse } from '@/app/http/list-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,8 +54,8 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
     resolver: zodResolver(updatedDataChart),
   })
   const { data: instrumentList, isLoading } = useQuery({
-    queryKey: ['list-instruments'],
-    queryFn: getInstruments,
+    queryKey: ['list-instruments-with-unions'],
+    queryFn: getInstrumentsWithUnions,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
 
@@ -71,15 +71,15 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
     })
   }
   const startDateValue = watch('startDate')
-  const instrumendSelectedId = watch('local')
+  const instrumentSelectedId = watch('local')
 
   useEffect(() => {
-    if (!instrumendSelectedId || !instrumentList) return
+    if (!instrumentSelectedId || !instrumentList) return
     const instrument = instrumentList.find(
-      (instrument) => instrument.id === instrumendSelectedId,
+      (instrument) => instrument.id === instrumentSelectedId,
     )
     setInitialDate(dayjs(instrument?.createdAt).format('YYYY-MM-DDTHH:mm'))
-  }, [instrumendSelectedId, instrumentList])
+  }, [instrumentSelectedId, instrumentList])
 
   useEffect(() => {
     if (!startDateValue) return
@@ -197,7 +197,7 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
                   <Input
                     id="startDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(initialDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"
@@ -225,7 +225,7 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
                   <Input
                     id="endDate"
                     type="datetime-local"
-                    disabled={!instrumendSelectedId}
+                    disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
                     max="9999-12-31T23:59"
                     className="dark:bg-slate-900 h-8"

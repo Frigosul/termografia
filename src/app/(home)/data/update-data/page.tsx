@@ -25,6 +25,24 @@ export default function PageManagedData() {
     },
   })
 
+  const formattedDataTemp = dataValue?.chartTemperature?.map((temp) => {
+    return {
+      temperature: temp.value,
+      updatedUserAtTemp: temp.updatedUserAt,
+      updatedAtTemp: temp.updatedAt,
+      id: temp.id,
+      time: temp.time,
+    }
+  })
+  const formattedDataPress = dataValue?.chartPressure?.map((press) => {
+    return {
+      pressure: press.value,
+      updatedUserAtPress: press.updatedUserAt,
+      updatedAtPress: press.updatedAt,
+      id: press.id,
+      time: press.time,
+    }
+  })
   return (
     <main className="overflow-hidden flex-1 flex flex-col p-4 sm:p-6 md:p-6">
       <div className="w-full max-w-screen-xl">
@@ -45,9 +63,11 @@ export default function PageManagedData() {
         dataValue?.chartTemperature && (
           <TableEditValues
             instrumentType={
-              dataValue.chartType === 'temp/press' ? 'press' : 'temp'
+              dataValue.chartType === 'temp/press' ? 'PRESSURE' : 'TEMPERATURE'
             }
-            data={dataValue.chartTemperature}
+            dataPressure={formattedDataPress || []}
+            data={formattedDataTemp || []}
+            joinInstruments={dataValue.joinInstrument}
           />
         )
       )}

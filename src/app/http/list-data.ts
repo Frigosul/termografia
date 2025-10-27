@@ -50,6 +50,7 @@ export type ListDataResponse = {
   chartPressure?: PressureData[]
   error?: string
   description?: string
+  joinInstrument: boolean
 }
 
 export async function listData({

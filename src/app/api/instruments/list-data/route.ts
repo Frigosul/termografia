@@ -39,7 +39,11 @@ export async function POST(req: NextRequest) {
       },
     },
   })
+
+
+
   if (!instrumentData) {
+
     const joinInstrumentData = await prisma.joinInstrument.findUnique({
       where: {
         id: local,
@@ -48,9 +52,6 @@ export async function POST(req: NextRequest) {
         id: true,
         name: true,
         firstInstrument: {
-          // select: {
-          //   type: true,
-          // },
           include: {
             instrumentData: {
               select: {
@@ -70,9 +71,6 @@ export async function POST(req: NextRequest) {
           },
         },
         secondInstrument: {
-          // select: {
-          //   type: true,
-          // },
           include: {
             instrumentData: {
               select: {
@@ -146,6 +144,7 @@ export async function POST(req: NextRequest) {
       chartType: 'temp/press',
       dateClose: startDate,
       dateOpen: endDate,
+      joinInstrument: true,
       chartTemperature: chartTemperature!.map((temp) => ({
         id: temp.id,
         time: temp.createdAt.toISOString(),
@@ -229,10 +228,10 @@ export async function POST(req: NextRequest) {
   let chartPressure: DataItem[] = []
   if (instrumentData.type === 'PRESSURE') {
     chartPressure = await filterByInterval({
+      instrumentId: instrumentData.id,
       data: instrumentData?.instrumentData,
       intervalMinutes: graphVariation,
       endDate,
-      instrumentId: instrumentData.id,
     })
   }
 
@@ -242,6 +241,7 @@ export async function POST(req: NextRequest) {
     chartType: instrumentData.type === 'PRESSURE' ? 'temp/press' : 'temp',
     dateClose: startDate,
     dateOpen: endDate,
+    joinInstrument: false,
     chartTemperature: chartTemperature.map((temp) => ({
       id: temp.id,
       time: temp.createdAt.toISOString(),

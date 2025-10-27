@@ -21,7 +21,7 @@ export interface GenerateDataResponse {
     time: string
     value: number
   }[]
-  instrumentType: 'press' | 'temp'
+  instrumentType: 'PRESSURE' | 'TEMPERATURE'
   error?: string
 }
 
