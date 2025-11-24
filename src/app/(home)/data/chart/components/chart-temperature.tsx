@@ -117,18 +117,21 @@ export function ChartTemperature({
           <span>
             Empresa:{' '}
             <span className="capitalize">
-              Frigosul frigorífico Sul LTDA.
+              {process.env.NEXT_PUBLIC_ENTERPRISE}
             </span>{' '}
           </span>
           <span>
-            CNPJ: <span>02.591.772/0001-70</span>{' '}
+            CNPJ: <span> {process.env.NEXT_PUBLIC_CNPJ}</span>{' '}
           </span>
           <span>
             Cidade:{' '}
-            <span className="capitalize">aparecida do Taboado - MS</span>{' '}
+            <span className="capitalize">
+              {' '}
+              {process.env.NEXT_PUBLIC_ADDRESS}
+            </span>{' '}
           </span>
           <span>
-            SIF: <span>889</span>{' '}
+            SIF: <span>{process.env.NEXT_PUBLIC_SIF}</span>{' '}
           </span>
         </div>
       </div>

@@ -31,7 +31,6 @@ export default function PageChart() {
   })
 
   const divPdfRef = useRef<HTMLDivElement>(null)
-  console.log(dataChart?.chartTemperature)
 
   return (
     <ScrollArea className="flex-1">
