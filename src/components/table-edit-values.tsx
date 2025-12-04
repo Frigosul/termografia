@@ -122,11 +122,17 @@ export function TableEditValues({
         p.pressure === mergedNormalized[i].pressure
       )
 
-      if (sameContent) return prev
+      if (sameContent) {
+        // sem alteração real: não mudamos tableData nem currentPage
+        return prev
+      }
+
+      // houve alteração: atualiza tableData e reseta a página
+      setCurrentPage(1)
       return mergedNormalized
     })
-    setCurrentPage(1)
   }, [mergedNormalized])
+
 
 
 
@@ -449,6 +455,7 @@ export function TableEditValues({
         <TableBody className="overflow-y-auto">
           {paginatedData.map((row) => {
             const rowKey = row.id ?? row.temperatureId ?? row.pressureId ?? row.time
+            // console.log(currentPage, paginatedData);
 
             return (
               <TableRowEdit
@@ -490,7 +497,11 @@ export function TableEditValues({
             <PaginationItem>
               <PaginationLink
                 onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  setCurrentPage((p) => {
+                    const item = Math.min(p + 1, totalPages)
+                    console.log(p);
+                    return item
+                  })
                 }
               >
                 <ChevronRight strokeWidth={1} />
