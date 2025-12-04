@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAppearanceStore } from '@/stores/useAppearanceStore'
@@ -8,6 +9,7 @@ import { memo, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
+import { setDifferential } from '@/app/http/set-differential'
 import { setSetPoint } from '@/app/http/set-setpoint'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -49,10 +51,12 @@ const Chart = memo(function Chart({
   },
 }: ChartProps) {
   const { register, handleSubmit, watch, reset } = useForm()
+  const { register: registerFormDifferential, handleSubmit: handleSubmitFormDifferential, watch: watchDifferential, reset: resetDifferential } = useForm()
   const { openModal } = useModalStore()
   const { appearanceMode } = useAppearanceStore()
   const session = useSession()
   const verifyValueInSetpoint = watch('setpoint')
+  const verifyValueInDifferential = watchDifferential('differential')
 
   const valueInPercent = Math.min(
     Math.max(
@@ -99,12 +103,37 @@ const Chart = memo(function Chart({
       console.error(error)
     },
   })
+  const setDifferentialMutation = useMutation({
+    mutationFn: setDifferential,
+    onSuccess: async () => {
+      toast.success('Diferencial enviado com sucesso', {
+        position: 'top-right',
+        icon: <CircleCheck />,
+      })
+      resetDifferential()
+    },
+    onError: (error) => {
+      toast.error('Erro encontrado, por favor tente novamente. ', {
+        position: 'top-right',
+        icon: <CircleX />,
+      })
+      console.error(error)
+    },
+  })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function handleSetPoint(data: any) {
     setSetpointMutation.mutateAsync({
       id: idSitrad,
       setpoint: data.setpoint,
+      model,
+    })
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function handleDifferential(data: any) {
+    setDifferentialMutation.mutateAsync({
+      id: idSitrad,
+      differential: data.differential,
       model,
     })
   }
@@ -298,32 +327,61 @@ const Chart = memo(function Chart({
               />
             </span>
             {session.data?.role === 'manage' && model !== 78 && (
-              <form
-                onSubmit={handleSubmit(handleSetPoint)}
-                className="flex items-center justify-between w-full gap-1 mt-2"
-              >
-                <Input
-                  type="number"
-                  {...register('setpoint')}
-                  min={minValue}
-                  max={maxValue}
-                  className="z-30  h-8 dark:bg-slate-900"
-                  step="0.1"
-                  placeholder="setpoint"
-                />
-                <Button
-                  disabled={
-                    !verifyValueInSetpoint || setSetpointMutation.isPending
-                  }
-                  className="z-30 h-8 px-2"
+              <div>
+                <form
+                  onSubmit={handleSubmit(handleSetPoint)}
+                  className="flex items-center justify-between w-full gap-1 mt-2"
                 >
-                  {setSetpointMutation.isPending ? (
-                    <Loader2 className="size-5 dark:text-white animate-spin" />
-                  ) : (
-                    <Send className="size-4 dark:text-white" />
-                  )}
-                </Button>
-              </form>
+                  <Input
+                    type="number"
+                    {...register('setpoint')}
+                    min={minValue}
+                    max={maxValue}
+                    className="z-30  h-8 dark:bg-slate-900"
+                    step="0.1"
+                    placeholder="setpoint"
+                  />
+                  <Button
+                    disabled={
+                      !verifyValueInSetpoint || setSetpointMutation.isPending
+                    }
+                    className="z-30 h-8 px-2"
+                  >
+                    {setSetpointMutation.isPending ? (
+                      <Loader2 className="size-5 dark:text-white animate-spin" />
+                    ) : (
+                      <Send className="size-4 dark:text-white" />
+                    )}
+                  </Button>
+                </form>
+                <form
+                  onSubmit={handleSubmitFormDifferential(handleDifferential)}
+                  className="flex items-center justify-between w-full gap-1 mt-2"
+                >
+                  <Input
+                    type="number"
+                    {...registerFormDifferential('differential')}
+                    min={minValue}
+                    max={maxValue}
+                    className="z-30  h-8 dark:bg-slate-900"
+                    step="0.1"
+                    placeholder="Diferencial"
+                  />
+                  <Button
+                    disabled={
+                      !verifyValueInDifferential ||
+                      setDifferentialMutation.isPending
+                    }
+                    className="z-30 h-8 px-2"
+                  >
+                    {setDifferentialMutation.isPending ? (
+                      <Loader2 className="size-5 dark:text-white animate-spin" />
+                    ) : (
+                      <Send className="size-4 dark:text-white" />
+                    )}
+                  </Button>
+                </form>
+              </div>
             )}
           </div>
         )}
