@@ -123,11 +123,9 @@ export function TableEditValues({
       )
 
       if (sameContent) {
-        // sem alteração real: não mudamos tableData nem currentPage
         return prev
       }
 
-      // houve alteração: atualiza tableData e reseta a página
       setCurrentPage(1)
       return mergedNormalized
     })
