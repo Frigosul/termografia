@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
+import { convertToUTC } from './date-timezone-converter'
 
 export interface DataItem {
   id: string
@@ -102,13 +103,12 @@ export async function filterByInterval<T extends DataItem>({
   }
 
   if (endDate) {
-    const end = dayjs(endDate)
+    const end = convertToUTC(endDate)
     const lastItem = result[result.length - 1]
-
     let finalItem = await prisma.instrumentData.findFirst({
       where: {
         instrumentId,
-        createdAt: end.toDate(),
+        createdAt: end,
       },
     })
 
@@ -118,7 +118,7 @@ export async function filterByInterval<T extends DataItem>({
       finalValue = finalItem.editData
     } else {
       const generatedItem = generateMissingDataItem(
-        end.toDate(),
+        end,
         lastKnownValue,
         averageValue,
       )
