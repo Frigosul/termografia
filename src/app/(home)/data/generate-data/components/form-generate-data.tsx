@@ -36,7 +36,11 @@ const generateStandards = z.object({
   variation: z.string({ message: 'Defina a variação.' }),
   startDate: z.string({ message: 'Defina data de fechamento.' }),
   defrostDate: z.string({ message: 'Defina data de degelo.' }),
-  endDate: z.string({ message: 'Defina data de abertura.' }),
+  endDate: z
+    .string({ message: 'Defina data de abertura.' })
+    .refine((value) => !dayjs(value).isAfter(dayjs()), {
+      message: 'A data final não pode ser maior que a data e hora atual.',
+    }),
   generateMode: z.string({ message: 'Defina o modo.' }).optional(),
   initialTemp: z
     .union([z.number({ message: 'Defina a temperatura.' }), z.nan()])
@@ -57,12 +61,17 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minDefrostDate, setMinDefrostDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
+  const [maxDate, setMaxDate] = useState('')
 
   const { data: instrumentList, isLoading } = useQuery({
     queryKey: ['list-instruments'],
     queryFn: getInstruments,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
+
+  useEffect(() => {
+    setMaxDate(dayjs().format('YYYY-MM-DDTHH:mm'))
+  }, [])
 
   const {
     register,
@@ -374,7 +383,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                     type="datetime-local"
                     disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
-                    max="9999-12-31T23:59"
+                    max={maxDate}
                     className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
                   />

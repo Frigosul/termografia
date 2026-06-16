@@ -53,7 +53,11 @@ const generateDataChart = z.object({
   minValue: z.union([z.number(), z.nan()]).optional(),
   maxValue: z.union([z.number(), z.nan()]).optional(),
   startDate: z.string({ message: 'Defina a data de início.' }),
-  endDate: z.string({ message: 'Defina a data final.' }),
+  endDate: z
+    .string({ message: 'Defina a data final.' })
+    .refine((value) => !dayjs(value).isAfter(dayjs()), {
+      message: 'A data final não pode ser maior que a data e hora atual.',
+    }),
   description: z.string().optional(),
 })
 
@@ -72,6 +76,7 @@ export function FormGenerateChart({
 }: FormGenerateChartProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
+  const [maxDate, setMaxDate] = useState('')
   const reactToPrintFn = useReactToPrint({
     documentTitle: 'Gráfico',
     contentRef: divRef,
@@ -117,6 +122,10 @@ export function FormGenerateChart({
     queryFn: getInstrumentsWithUnions,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
+
+  useEffect(() => {
+    setMaxDate(dayjs().format('YYYY-MM-DDTHH:mm'))
+  }, [])
 
   async function handleGenerateDataChart(data: GenerateDataChart) {
     await mutate({
@@ -466,7 +475,7 @@ export function FormGenerateChart({
                     type="datetime-local"
                     disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
-                    max="9999-12-31T23:59"
+                    max={maxDate}
                     className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
                   />

@@ -30,7 +30,11 @@ const updatedDataChart = z.object({
   local: z.string({ message: 'Selecione o local desejado.' }),
   variation: z.string({ message: 'Defina a variação.' }),
   startDate: z.string({ message: 'Defina a data de início.' }),
-  endDate: z.string({ message: 'Defina a data final.' }),
+  endDate: z
+    .string({ message: 'Defina a data final.' })
+    .refine((value) => !dayjs(value).isAfter(dayjs()), {
+      message: 'A data final não pode ser maior que a data e hora atual.',
+    }),
 })
 
 type UpdatedDataChart = z.infer<typeof updatedDataChart>
@@ -43,6 +47,7 @@ interface FormUpdateDataProps {
 export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
   const [initialDate, setInitialDate] = useState<string | Date>('')
   const [minEndDate, setMinEndDate] = useState<string | Date>('')
+  const [maxDate, setMaxDate] = useState('')
   const {
     register,
     handleSubmit,
@@ -58,6 +63,10 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
     queryFn: getInstrumentsWithUnions,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
+
+  useEffect(() => {
+    setMaxDate(dayjs().format('YYYY-MM-DDTHH:mm'))
+  }, [])
 
   function handleUpdatedDataChart(data: UpdatedDataChart) {
     const startDataUtc = dayjs(data.startDate).format('YYYY-MM-DDTHH:mm')
@@ -227,7 +236,7 @@ export function FormUpdatedData({ mutate, isPending }: FormUpdateDataProps) {
                     type="datetime-local"
                     disabled={!instrumentSelectedId}
                     min={String(minEndDate)}
-                    max="9999-12-31T23:59"
+                    max={maxDate}
                     className="dark:bg-slate-900 h-8"
                     {...register('endDate')}
                   />
