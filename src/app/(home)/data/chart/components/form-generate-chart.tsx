@@ -313,6 +313,7 @@ export function FormGenerateChart({
                   <Input
                     id="limit"
                     type="number"
+                    step="0.1"
                     className="[appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     {...register('limit', { valueAsNumber: true })}
                   />
