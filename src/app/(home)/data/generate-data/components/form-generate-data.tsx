@@ -29,6 +29,7 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { parseDecimal } from '@/utils/parse-decimal'
 dayjs.extend(utc)
 
 const generateStandards = z.object({
@@ -281,7 +282,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                     type="number"
                     step="0.1"
                     className="[appearance:textfield]  w-24 h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('initialTemp', { valueAsNumber: true })}
+                    {...register('initialTemp', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>
@@ -305,7 +306,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
                     type="number"
                     step="0.1"
                     className="[appearance:textfield] w-24 h-8  dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('averageTemp', { valueAsNumber: true })}
+                    {...register('averageTemp', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>

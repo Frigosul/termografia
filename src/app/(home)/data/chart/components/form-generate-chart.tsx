@@ -25,6 +25,7 @@ import { RefObject, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useReactToPrint } from 'react-to-print'
 import { z } from 'zod'
+import { parseDecimal } from '@/utils/parse-decimal'
 dayjs.extend(utc)
 
 const generateDataChart = z.object({
@@ -315,7 +316,7 @@ export function FormGenerateChart({
                     type="number"
                     step="0.1"
                     className="[appearance:textfield] h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('limit', { valueAsNumber: true })}
+                    {...register('limit', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>
@@ -341,7 +342,7 @@ export function FormGenerateChart({
                     id="detour"
                     type="number"
                     className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('detour', { valueAsNumber: true })}
+                    {...register('detour', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>
@@ -367,7 +368,7 @@ export function FormGenerateChart({
                     id="variationTemp"
                     type="number"
                     className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('variationTemp', { valueAsNumber: true })}
+                    {...register('variationTemp', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>
@@ -392,9 +393,7 @@ export function FormGenerateChart({
                     id="minValue"
                     type="number"
                     className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('minValue', {
-                      valueAsNumber: true,
-                    })}
+                    {...register('minValue', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>
@@ -420,9 +419,7 @@ export function FormGenerateChart({
                     id="maxValue"
                     type="number"
                     className="[appearance:textfield] h-8 dark:bg-slate-900  [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    {...register('maxValue', {
-                      valueAsNumber: true,
-                    })}
+                    {...register('maxValue', { setValueAs: parseDecimal })}
                   />
                 </div>
               </TooltipTrigger>

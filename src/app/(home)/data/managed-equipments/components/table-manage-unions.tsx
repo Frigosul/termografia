@@ -15,6 +15,7 @@ import {
 import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
 import { useModalStore } from '@/stores/useModalStore'
+import { parseDecimal } from '@/utils/parse-decimal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import Fuse from 'fuse.js'
 import { CircleCheck, CircleX, Search, Trash2 } from 'lucide-react'
@@ -138,7 +139,7 @@ export function TableManagedUnions() {
               'maxValue',
               'displayOrder',
             ].includes(field)
-              ? Number(inputValue)
+              ? parseDecimal(inputValue)
               : inputValue
 
             return { ...item, [field]: updatedValue }

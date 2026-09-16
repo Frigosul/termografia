@@ -25,6 +25,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { normalizeAndMergeKeepIds } from '@/utils/normalize-and-merge-keep-ids'
+import { parseDecimal } from '@/utils/parse-decimal'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -179,7 +180,7 @@ export function TableEditValues({
   function handleSearchData(searchData: SearchData) {
     const { search, searchParams } = searchData
     const searchDate = dayjs(search, 'DD/MM/YYYY - HH:mm', true)
-    const searchValue = parseFloat(search)
+    const searchValue = parseDecimal(search)
 
     const filtered = tableData.filter((row) => {
       const rowDate = dayjs(row.time)
@@ -236,7 +237,7 @@ export function TableEditValues({
         const now = dayjs().toISOString()
 
         if (field === 'temperature') {
-          const valNum = Number(valueToSave)
+          const valNum = parseDecimal(valueToSave)
           // Se o valor não mudou, retorna o registro original
           if (r.temperature === valNum || isNaN(valNum)) return r
 
@@ -250,7 +251,7 @@ export function TableEditValues({
         }
 
         if (field === 'pressure') {
-          const valNum = Number(valueToSave)
+          const valNum = parseDecimal(valueToSave)
           // Se o valor não mudou, retorna o registro original
           if (r.pressure === valNum || isNaN(valNum)) return r
 

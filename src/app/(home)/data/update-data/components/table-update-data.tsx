@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formattedDateTime } from '@/utils/formatted-datetime'
+import { parseDecimal } from '@/utils/parse-decimal'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -120,7 +121,7 @@ export function TableUpdateData({ data }: TableProps) {
             return item.id === rowId
               ? {
                 ...item,
-                [field]: field === 'value' ? Number(inputValue) : inputValue,
+                [field]: field === 'value' ? parseDecimal(inputValue) : inputValue,
                 updatedUserAt: String(session?.user?.name),
                 updatedAt: dayjs().format('YYYY-MM-DDTHH:mm'),
               }
@@ -288,6 +289,7 @@ export function TableUpdateData({ data }: TableProps) {
                     <input
                       className="bg-transparent w-full h-full  text-center m-0"
                       type="text"
+                      inputMode="decimal"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onBlur={() => handleSave(row.id, 'value')}

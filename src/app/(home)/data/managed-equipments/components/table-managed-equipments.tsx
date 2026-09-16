@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/table'
 import { useDebounce } from '@/hooks/useDebounce'
 import queryClient from '@/lib/react-query'
+import { parseDecimal } from '@/utils/parse-decimal'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import Fuse from 'fuse.js'
 import { CircleCheck, CircleX, EllipsisVertical, Search } from 'lucide-react'
@@ -126,7 +127,7 @@ export function TableManagedEquipments() {
               'maxValue',
               'orderDisplay',
             ].includes(field)
-              ? Number(inputValue)
+              ? parseDecimal(inputValue)
               : inputValue
 
             return { ...item, [field]: updatedValue }

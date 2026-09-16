@@ -64,7 +64,8 @@ export const TableRowEdit = ({
           >
             {editCell.rowId === row.id && editCell.field === 'temperature' ? (
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={() => handleSave(row.id, 'temperature', inputValue)}
@@ -85,7 +86,8 @@ export const TableRowEdit = ({
           >
             {editCell.rowId === row.id && editCell.field === 'pressure' ? (
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={() => handleSave(row.id, 'pressure', inputValue)}
@@ -111,7 +113,8 @@ export const TableRowEdit = ({
           {editCell.rowId === row.id && (
             instrumentType === 'PRESSURE' && editCell.field === 'pressure' ? (
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={() => handleSave(row.id, 'pressure', inputValue)}
@@ -122,7 +125,8 @@ export const TableRowEdit = ({
               />
             ) : instrumentType === 'TEMPERATURE' && editCell.field === 'temperature' ? (
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onBlur={() => handleSave(row.id, 'temperature', inputValue)}
