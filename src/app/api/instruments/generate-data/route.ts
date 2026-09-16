@@ -21,6 +21,7 @@ interface GenerateDataRequest {
   instrumentId: string
   variation: number
   initialTemp?: number
+  finalTemp?: number
   averageTemp?: number
   generateMode?: GenerateDataModeType
   instrumentType: 'TEMPERATURE' | 'PRESSURE'
@@ -148,6 +149,7 @@ export async function POST(request: NextRequest) {
       variation,
       averageTemp,
       initialTemp,
+      finalTemp,
       generateMode = 'n1',
     } = body
 
@@ -181,6 +183,7 @@ export async function POST(request: NextRequest) {
       endDate,
       instrumentType: instrument.type as 'TEMPERATURE' | 'PRESSURE',
       initialValue: initValue,
+      finalValue: finalTemp,
       averageValue: avgValue,
       generateMode,
       defrostDate,
@@ -197,6 +200,7 @@ export async function POST(request: NextRequest) {
       endDate,
       instrumentId,
       averageValue: avgValue,
+      finalValue: finalTemp,
     })
 
     const formatReturnData = variationSensorData.map((item) => {

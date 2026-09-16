@@ -36,6 +36,7 @@ interface FilterByIntervalParams<T> {
   endDate: string
   instrumentId: string
   averageValue?: number
+  finalValue?: number
 }
 
 export async function filterByInterval<T extends DataItem>({
@@ -44,6 +45,7 @@ export async function filterByInterval<T extends DataItem>({
   instrumentId,
   intervalMinutes,
   averageValue,
+  finalValue: requestedFinalValue,
 }: FilterByIntervalParams<T>): Promise<T[]> {
   if (data.length === 0) return []
 
@@ -112,17 +114,19 @@ export async function filterByInterval<T extends DataItem>({
       },
     })
 
-    let finalValue: number
+    let finalValue =
+      typeof requestedFinalValue === 'number' &&
+      !Number.isNaN(requestedFinalValue)
+        ? requestedFinalValue
+        : finalItem?.editData
 
-    if (finalItem) {
-      finalValue = finalItem.editData
-    } else {
+    if (!finalItem) {
       const generatedItem = generateMissingDataItem(
         end,
         lastKnownValue,
         averageValue,
       )
-      finalValue = generatedItem.editData
+      finalValue ??= generatedItem.editData
 
       finalItem = await prisma.instrumentData.create({
         data: {
@@ -139,12 +143,12 @@ export async function filterByInterval<T extends DataItem>({
         id: finalItem.id,
         createdAt: finalItem.createdAt,
         updatedAt: finalItem.updatedAt,
-        editData: finalItem.editData,
+        editData: finalValue,
         userEditData: finalItem.userEditData,
       } as T)
     }
 
-    lastKnownValue = finalValue
+    lastKnownValue = finalValue ?? null
   }
 
   return result

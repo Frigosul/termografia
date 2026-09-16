@@ -9,6 +9,7 @@ export interface GenerateDataRequest {
   variation: number
   userName: string
   initialTemp?: number
+  finalTemp?: number
   averageTemp?: number
   generateMode?: GenerateDataModeType
 }
@@ -34,6 +35,7 @@ export async function generateData({
   averageTemp,
   generateMode,
   initialTemp,
+  finalTemp,
   userName,
 }: GenerateDataRequest): Promise<GenerateDataResponse> {
   const response = await fetchServer(`/api/instruments/generate-data`, {
@@ -51,6 +53,7 @@ export async function generateData({
       averageTemp,
       generateMode,
       initialTemp,
+      finalTemp,
     }),
   })
   if (!response.ok) {

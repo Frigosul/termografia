@@ -9,6 +9,7 @@ interface GenerateSimulatedDataParams {
   instrumentType: 'TEMPERATURE' | 'PRESSURE'
   initialValue: number
   averageValue: number
+  finalValue?: number
   generateMode?: GenerateDataModeType
   defrostDate: string
 }
@@ -19,6 +20,7 @@ export function generateSimulatedData({
   instrumentType,
   initialValue,
   averageValue,
+  finalValue,
   generateMode,
   defrostDate,
 }: GenerateSimulatedDataParams): SensorData[] {
@@ -136,6 +138,10 @@ export function generateSimulatedData({
 
     isFirstValue = false
     currentDate = currentDate.add(1, 'minute')
+  }
+
+  if (typeof finalValue === 'number' && !Number.isNaN(finalValue)) {
+    sensorData[sensorData.length - 1].value = finalValue
   }
 
   return sensorData

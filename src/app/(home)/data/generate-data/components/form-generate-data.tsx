@@ -46,6 +46,9 @@ const generateStandards = z.object({
   initialTemp: z
     .union([z.number({ message: 'Defina a temperatura.' }), z.nan()])
     .optional(),
+  finalTemp: z
+    .union([z.number({ message: 'Defina a temperatura.' }), z.nan()])
+    .optional(),
   averageTemp: z
     .union([z.number({ message: 'Defina a média.' }), z.nan()])
     .optional(),
@@ -97,6 +100,7 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
       instrumentId: data.local,
       averageTemp: data.averageTemp,
       initialTemp: data.initialTemp,
+      finalTemp: data.finalTemp,
       generateMode: data.generateMode as 'n1' | 'n2' | 'n3' | undefined,
       userName: String(session?.user?.name),
     })
@@ -291,6 +295,30 @@ export function FormGenerateData({ mutate, isPending }: FormGenerateDataProps) {
             {errors.initialTemp?.message && (
               <p className="text-red-500 text-xs font-light">
                 {errors.initialTemp?.message}
+              </p>
+            )}
+          </div>
+          <div className="h-[4.5rem]">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Label className="font-light text-xs" htmlFor="finalTemp">
+                    Valor final
+                  </Label>
+                  <Input
+                    id="finalTemp"
+                    type="number"
+                    step="0.1"
+                    className="[appearance:textfield] w-24 h-8 dark:bg-slate-900 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    {...register('finalTemp', { setValueAs: parseDecimal })}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Valor final</TooltipContent>
+            </Tooltip>
+            {errors.finalTemp?.message && (
+              <p className="text-red-500 text-xs font-light">
+                {errors.finalTemp?.message}
               </p>
             )}
           </div>
