@@ -4,11 +4,13 @@ import { cn } from '@/lib/utils'
 import { parseDecimal } from '@/utils/parse-decimal'
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  nativeNumber?: boolean
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, inputMode, onChange, ...props }, ref) => {
-    const isDecimalInput = type === 'number'
+  ({ className, type, inputMode, nativeNumber, onChange, ...props }, ref) => {
+    const isDecimalInput = type === 'number' && !nativeNumber
 
     return (
       <input

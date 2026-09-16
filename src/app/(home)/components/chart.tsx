@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAppearanceStore } from '@/stores/useAppearanceStore'
 import { useModalStore } from '@/stores/useModalStore'
-import { parseDecimal } from '@/utils/parse-decimal'
 import { CircleCheck, CircleX, Loader2, Send } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { memo, useMemo, useRef } from 'react'
@@ -335,7 +334,8 @@ const Chart = memo(function Chart({
                 >
                   <Input
                     type="number"
-                    {...register('setpoint', { setValueAs: parseDecimal })}
+                    nativeNumber
+                    {...register('setpoint')}
                     min={minValue}
                     max={maxValue}
                     className="z-30  h-8 dark:bg-slate-900"
@@ -361,9 +361,8 @@ const Chart = memo(function Chart({
                 >
                   <Input
                     type="number"
-                    {...registerFormDifferential('differential', {
-                      setValueAs: parseDecimal,
-                    })}
+                    nativeNumber
+                    {...registerFormDifferential('differential')}
                     min={minValue}
                     max={maxValue}
                     className="z-30  h-8 dark:bg-slate-900"
@@ -517,7 +516,8 @@ const Chart = memo(function Chart({
           >
             <Input
               type="number"
-              {...register('setpoint', { setValueAs: parseDecimal })}
+              nativeNumber
+              {...register('setpoint')}
               min={minValue}
               max={maxValue}
               className="z-30  h-8 dark:bg-slate-900"
