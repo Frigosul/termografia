@@ -11,6 +11,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
 import { setDifferential } from '@/app/http/set-differential'
 import { setSetPoint } from '@/app/http/set-setpoint'
+import { gaugePercent } from '@/utils/gauge-percent'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 interface ChartProps {
@@ -58,15 +59,16 @@ const Chart = memo(function Chart({
   const verifyValueInSetpoint = watch('setpoint')
   const verifyValueInDifferential = watchDifferential('differential')
 
-  const valueInPercent = Math.min(
-    Math.max(
-      (((type === 'press' ? pressure : temperature) - minValue) /
-        (maxValue - minValue)) *
-      100,
-      0,
-    ),
-    100,
+  const gaugeValue = gaugePercent(
+    type === 'press' ? pressure : temperature,
+    minValue,
+    maxValue,
   )
+
+  console.log(maxValue, minValue, setPoint);
+
+  const hasGaugeRange = gaugeValue !== null
+  const valueInPercent = gaugeValue ?? 0
   const colorInPercent =
     valueInPercent >= 90
       ? 'text-red-600'
@@ -148,6 +150,8 @@ const Chart = memo(function Chart({
       })
     }
 
+    if (!hasGaugeRange) return
+
     if (valueInPercent <= 10 && lastWarning.current !== 'low') {
       showTemperatureWarning(
         name,
@@ -167,7 +171,7 @@ const Chart = memo(function Chart({
     ) {
       lastWarning.current = null
     }
-  }, [valueInPercent, type, name])
+  }, [valueInPercent, hasGaugeRange, type, name])
 
   if (appearanceMode === 'graph') {
     return (
@@ -191,7 +195,7 @@ const Chart = memo(function Chart({
             <PieChart>
               <Pie
                 data={
-                  !error && !isSensorError
+                  !error && !isSensorError && hasGaugeRange
                     ? data
                     : [{ value: 0 }, { value: 100 }]
                 }
